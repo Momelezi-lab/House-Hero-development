@@ -687,24 +687,49 @@
         document.getElementById('loading-overlay').classList.remove('hidden');
 
         try {
+          console.log('[INFO] Submitting booking to:', `${API_BASE_URL}/api/service-requests`);
+          console.log('[INFO] Booking data:', bookingData);
+          
           const response = await fetch(`${API_BASE_URL}/api/service-requests`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bookingData)
           });
 
-          const result = await response.json();
+          console.log('[INFO] Response status:', response.status);
+          console.log('[INFO] Response OK:', response.ok);
 
-          if (response.ok) {
-            window.location.href = `booking-success.html?request_id=${result.request_id}&total=${result.total_customer_paid}`;
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('[ERROR] Response not OK:', errorText);
+            let errorData;
+            try {
+              errorData = JSON.parse(errorText);
+            } catch (e) {
+              errorData = { error: errorText || 'Unknown error occurred' };
+            }
+            alert(errorData.error || 'Error creating booking');
+            document.getElementById('loading-overlay').classList.add('hidden');
+            return;
+          }
+
+          const result = await response.json();
+          console.log('[INFO] Booking response:', result);
+
+          if (result.request_id && result.total_customer_paid !== undefined) {
+            console.log('[INFO] Booking successful, redirecting to success page...');
+            console.log('[INFO] Request ID:', result.request_id);
+            console.log('[INFO] Total:', result.total_customer_paid);
+            window.location.href = `./booking-success.html?request_id=${result.request_id}&total=${result.total_customer_paid}`;
           } else {
-            alert(result.error || 'Error creating booking');
+            console.error('[ERROR] Missing request_id or total_customer_paid in response:', result);
+            alert('Booking created but missing confirmation details. Please check the admin dashboard.');
             document.getElementById('loading-overlay').classList.add('hidden');
           }
         } catch (error) {
-          console.error('Error:', error);
-          console.error('API_BASE_URL:', API_BASE_URL);
-          console.error('Full error details:', error.message);
+          console.error('[ERROR] Exception during booking:', error);
+          console.error('[ERROR] API_BASE_URL:', API_BASE_URL);
+          console.error('[ERROR] Full error details:', error.message);
           alert(`Network error: ${error.message}. Please check if the backend is running on ${API_BASE_URL}`);
           document.getElementById('loading-overlay').classList.add('hidden');
         }
