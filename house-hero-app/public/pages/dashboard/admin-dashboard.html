@@ -2530,8 +2530,20 @@
       </main>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/config.js"></script>
     <script src="/js/script.js"></script>
     <script>
+      // Ensure API_BASE_URL is defined (fallback if config.js didn't load)
+      if (typeof API_BASE_URL === 'undefined') {
+        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        var API_BASE_URL = isProduction 
+          ? 'https://house-hero-backend.onrender.com' 
+          : 'http://127.0.0.1:5001';
+        console.log('[INFO] Using fallback API_BASE_URL:', API_BASE_URL);
+      } else {
+        console.log('[INFO] Using API_BASE_URL from config:', API_BASE_URL);
+      }
+      
       // Persistent admin login using localStorage
       function showAdminDashboard() {
         document.getElementById("admin-login").style.display = "none";
@@ -4676,15 +4688,21 @@
         if (params.length) url += '?' + params.join('&');
         
         try {
+          console.log('[INFO] Fetching service requests from:', url);
           const response = await fetch(url);
-          if (!response.ok) throw new Error('Failed to fetch service requests');
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('[ERROR] API response not OK:', response.status, errorText);
+            throw new Error(`Failed to fetch service requests: ${response.status} ${errorText}`);
+          }
           const requests = await response.json();
+          console.log('[INFO] Loaded service requests:', requests.length);
           displayServiceRequests(requests);
         } catch (error) {
           console.error('[ERROR] Failed to load service requests:', error);
           const tbody = document.getElementById('service-requests-table-body');
           if (tbody) {
-            tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 2rem; color: #ef4444;">Error loading service requests. Please try again.</td></tr>';
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 2rem; color: #ef4444;">Error loading service requests: ${error.message}. Please check if the backend is running on ${API_BASE_URL}.</td></tr>`;
           }
         }
       }
@@ -4854,21 +4872,41 @@
 
       async function loadProvidersForRequestSelect() {
         try {
+          console.log('[INFO] Fetching providers from:', `${API_BASE_URL}/api/providers`);
           const response = await fetch(`${API_BASE_URL}/api/providers`);
-          if (!response.ok) throw new Error('Failed to fetch providers');
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('[ERROR] Failed to fetch providers:', response.status, errorText);
+            throw new Error(`Failed to fetch providers: ${response.status}`);
+          }
           const providers = await response.json();
+          console.log('[INFO] Loaded providers:', providers.length);
           const select = document.getElementById('detail-request-provider');
-          if (!select) return;
+          if (!select) {
+            console.warn('[WARN] Provider select element not found');
+            return;
+          }
           
           select.innerHTML = '<option value="">Select Provider</option>';
-          providers.forEach(provider => {
+          if (providers.length === 0) {
             const option = document.createElement('option');
-            option.value = provider.id;
-            option.textContent = `${provider.name} - ${provider.phone}`;
+            option.textContent = 'No providers available';
+            option.disabled = true;
             select.appendChild(option);
-          });
+          } else {
+            providers.forEach(provider => {
+              const option = document.createElement('option');
+              option.value = provider.id;
+              option.textContent = `${provider.name} - ${provider.phone}`;
+              select.appendChild(option);
+            });
+          }
         } catch (error) {
           console.error('[ERROR] Failed to load providers:', error);
+          const select = document.getElementById('detail-request-provider');
+          if (select) {
+            select.innerHTML = '<option value="">Error loading providers</option>';
+          }
         }
       }
 
@@ -5075,7 +5113,5 @@
         }
       });
     </script>
-    <script src="/js/config.js"></script>
-    <script src="/js/script.js"></script>
   </body>
 </html>

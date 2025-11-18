@@ -39,8 +39,13 @@ CORS(app,
          "https://house-hero.netlify.app",           # Your Netlify frontend
          "https://house-hero-backend.onrender.com",  # Your Render backend
          "http://localhost:3000",                    # Local development
+         "http://127.0.0.1:3000",                    # Local development (alternative)
+         "http://localhost:5000",                    # Local development
          "http://127.0.0.1:5000",                   # Local development
-         "http://127.0.0.1:5001"                    # Local development
+         "http://localhost:5001",                    # Local development
+         "http://127.0.0.1:5001",                   # Local development
+         "file://",                                  # File protocol (for direct HTML file access)
+         "*"                                         # Allow all origins in development (remove in production)
      ],
      methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
      allow_headers=["Content-Type", "Authorization"],
@@ -497,6 +502,12 @@ def create_provider():
 def get_providers():
     providers = ServiceProvider.query.all()
     return jsonify([p.to_dict() for p in providers])
+
+@app.route('/api/providers/<int:provider_id>', methods=['GET'])
+def get_provider(provider_id):
+    """Get a specific provider by ID"""
+    provider = ServiceProvider.query.get_or_404(provider_id)
+    return jsonify(provider.to_dict())
 
 @app.route('/api/providers/<int:provider_id>', methods=['PATCH'])
 def update_provider(provider_id):

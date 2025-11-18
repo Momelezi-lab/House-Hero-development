@@ -225,6 +225,17 @@
 
     <script src="../../js/config.js"></script>
     <script>
+      // Ensure API_BASE_URL is defined (fallback if config.js didn't load)
+      if (typeof API_BASE_URL === 'undefined') {
+        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        var API_BASE_URL = isProduction 
+          ? 'https://house-hero-backend.onrender.com' 
+          : 'http://127.0.0.1:5001';
+        console.log('[INFO] Using fallback API_BASE_URL:', API_BASE_URL);
+      } else {
+        console.log('[INFO] Using API_BASE_URL from config:', API_BASE_URL);
+      }
+      
       // Global state
       let categories = [];
       let pricingData = {};
@@ -233,10 +244,12 @@
 
       // Initialize
       document.addEventListener('DOMContentLoaded', () => {
+        console.log('[INFO] DOM Content Loaded, initializing form...');
         initializeTimeSlots();
         setMinDate();
         loadCategories();
         setupFormHandlers();
+        console.log('[INFO] Form initialization complete');
       });
 
       // Set minimum date to today
@@ -376,28 +389,49 @@
 
       // Load categories from API or use hardcoded list
       async function loadCategories() {
+        console.log('[INFO] Loading categories, API_BASE_URL:', API_BASE_URL);
         try {
           const response = await fetch(`${API_BASE_URL}/api/pricing/categories`);
+          console.log('[INFO] Categories API response status:', response.status);
           if (response.ok) {
             const apiCategories = await response.json();
+            console.log('[INFO] Categories from API:', apiCategories);
             if (apiCategories && apiCategories.length > 0) {
               categories = apiCategories;
+              console.log('[INFO] Using categories from API:', categories.length);
             } else {
+              console.warn('[WARN] API returned empty categories, using hardcoded list');
               categories = SERVICE_CATEGORIES;
             }
           } else {
+            console.warn('[WARN] API response not OK, using hardcoded list');
             categories = SERVICE_CATEGORIES;
           }
         } catch (error) {
-          console.error('Error loading categories from API, using hardcoded list:', error);
+          console.error('[ERROR] Error loading categories from API, using hardcoded list:', error);
           categories = SERVICE_CATEGORIES;
         }
+        console.log('[INFO] Final categories to use:', categories.length, categories);
         populateCategoryDropdowns();
       }
 
       // Populate category dropdowns
       function populateCategoryDropdowns() {
-        document.querySelectorAll('.category-select').forEach(select => {
+        console.log('[INFO] Populating category dropdowns, categories count:', categories.length);
+        const selects = document.querySelectorAll('.category-select');
+        console.log('[INFO] Found category selects:', selects.length);
+        
+        if (selects.length === 0) {
+          console.error('[ERROR] No category-select elements found!');
+          return;
+        }
+        
+        if (categories.length === 0) {
+          console.error('[ERROR] Categories array is empty!');
+          categories = SERVICE_CATEGORIES; // Fallback
+        }
+        
+        selects.forEach(select => {
           const currentValue = select.value;
           select.innerHTML = '<option value="">Select Category</option>';
           categories.forEach(cat => {
@@ -407,6 +441,7 @@
             select.appendChild(option);
           });
           if (currentValue) select.value = currentValue;
+          console.log('[INFO] Populated select with', categories.length, 'categories');
         });
       }
 
@@ -668,7 +703,9 @@
           }
         } catch (error) {
           console.error('Error:', error);
-          alert('Network error. Please try again.');
+          console.error('API_BASE_URL:', API_BASE_URL);
+          console.error('Full error details:', error.message);
+          alert(`Network error: ${error.message}. Please check if the backend is running on ${API_BASE_URL}`);
           document.getElementById('loading-overlay').classList.add('hidden');
         }
       }
