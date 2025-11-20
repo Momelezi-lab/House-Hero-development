@@ -85,14 +85,6 @@
       .dark select option {
         color: #1f2937;
       }
-
-      #gmap {
-        height: 250px;
-        width: 100%;
-        border-radius: 10px;
-        margin-top: 0.5rem;
-        margin-bottom: 1rem;
-      }
     </style>
   </head>
   <body class="bg-gray-50 text-gray-900 min-h-screen">
@@ -232,7 +224,6 @@
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 text-gray-900"
               autocomplete="off"
             />
-            <div id="gmap"></div>
             <div
               id="address-warning"
               class="text-red-600 font-medium mt-2 hidden"
@@ -338,49 +329,21 @@
     <script src="/js/config.js"></script>
     <script src="/js/script.js"></script>
     <script>
-      let gmap, gmarker, autocomplete;
-
-      function initGMap() {
-        gmap = new google.maps.Map(document.getElementById("gmap"), {
-          center: { lat: -25.9992, lng: 28.1266 },
-          zoom: 12,
-        });
-        gmarker = new google.maps.Marker({ map: gmap });
+      // Address validation without map
+      function initAddressValidation() {
         const addressInput = document.getElementById("address");
-        autocomplete = new google.maps.places.Autocomplete(addressInput, {
-          types: ["geocode"],
-          componentRestrictions: { country: "za" },
-        });
-        autocomplete.addListener("place_changed", function () {
-          const place = autocomplete.getPlace();
-          if (!place.geometry) return;
-          gmap.setCenter(place.geometry.location);
-          gmarker.setPosition(place.geometry.location);
-          // Show warning if not Midrand or Johannesburg, but do not disable submit
-          const address = addressInput.value;
-          if (
-            !address.includes("Midrand") &&
-            !address.includes("Johannesburg")
-          ) {
-            document
-              .getElementById("address-warning")
-              .classList.remove("hidden");
-          } else {
-            document.getElementById("address-warning").classList.add("hidden");
-          }
-        });
-        // Also check on manual input
+        const addressWarning = document.getElementById("address-warning");
+        
+        // Check address on input
         addressInput.addEventListener("input", function () {
           const address = addressInput.value;
           if (
             !address.includes("Midrand") &&
             !address.includes("Johannesburg")
           ) {
-            document
-              .getElementById("address-warning")
-              .classList.remove("hidden");
+            addressWarning.classList.remove("hidden");
           } else {
-            document.getElementById("address-warning").classList.add("hidden");
+            addressWarning.classList.add("hidden");
           }
         });
       }
@@ -445,6 +408,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         initDarkMode();
         initSidebarMenu();
+        initAddressValidation();
 
         document
           .getElementById("booking-form")
@@ -481,10 +445,5 @@
           });
       });
     </script>
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADPVyJOYeH7DIOD3x9jmJPmfG_LKvXzsc&libraries=places&callback=initGMap"
-      async
-      defer
-    ></script>
   </body>
 </html>

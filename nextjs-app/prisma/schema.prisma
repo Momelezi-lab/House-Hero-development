@@ -1,0 +1,154 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String   @unique
+  passwordHash String  @map("password_hash")
+  phone       String?
+  registered  String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Booking {
+  id        Int      @id @default(autoincrement())
+  name      String
+  address   String
+  date      String
+  time      String
+  service   String
+  details   String?
+  status    String   @default("pending")
+  amount    Float    @default(0.0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("bookings")
+}
+
+model Complaint {
+  id                Int       @id @default(autoincrement())
+  name              String
+  email             String?
+  type              String
+  title             String
+  description       String
+  status            String    @default("pending")
+  date              String
+  serviceProvider    String?   @map("service_provider")
+  desiredResolution String?   @map("desired_resolution")
+  contactPreference String?   @map("contact_preference")
+  urgencyLevel      String?   @map("urgency_level")
+  serviceDate       String?   @map("service_date")
+  isAnonymous      Boolean   @default(false) @map("is_anonymous")
+  followUpEnabled   Boolean   @default(true) @map("follow_up_enabled")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@map("complaints")
+}
+
+model ServiceProvider {
+  id              Int      @id @default(autoincrement())
+  name            String
+  serviceType     String   @map("service_type")
+  phone           String
+  email           String
+  address         String?
+  experienceYears Int      @default(0) @map("experience_years")
+  hourlyRate      Float    @default(0.0) @map("hourly_rate")
+  rating          Float    @default(0.0)
+  totalBookings   Int      @default(0) @map("total_bookings")
+  status          String   @default("active")
+  registered      String
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  serviceRequests ServiceRequest[]
+
+  @@map("service_providers")
+}
+
+model ServicePricing {
+  id                    Int      @id @default(autoincrement())
+  serviceCategory       String   @map("service_category")
+  serviceType           String   @map("service_type")
+  itemDescription       String?  @map("item_description")
+  providerBasePrice     Float    @map("provider_base_price")
+  customerDisplayPrice  Float    @map("customer_display_price")
+  colorSurchargeProvider Float   @default(0) @map("color_surcharge_provider")
+  colorSurchargeCustomer Float   @default(0) @map("color_surcharge_customer")
+  isWhiteApplicable     Boolean  @default(false) @map("is_white_applicable")
+  commissionPercentage  Float    @default(10) @map("commission_percentage")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  @@map("service_pricing")
+}
+
+model Customer {
+  customerId     Int      @id @default(autoincrement()) @map("customer_id")
+  customerName   String   @map("customer_name")
+  customerEmail  String   @map("customer_email")
+  customerPhone  String   @map("customer_phone")
+  savedAddresses String? @map("saved_addresses")
+  totalBookings  Int      @default(0) @map("total_bookings")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  serviceRequests ServiceRequest[]
+
+  @@map("customers")
+}
+
+model ServiceRequest {
+  requestId              Int       @id @default(autoincrement()) @map("request_id")
+  customerId             Int?      @map("customer_id")
+  customerName           String    @map("customer_name")
+  customerEmail          String    @map("customer_email")
+  customerPhone          String    @map("customer_phone")
+  customerAddress        String    @map("customer_address")
+  unitNumber             String?   @map("unit_number")
+  complexName            String?   @map("complex_name")
+  accessInstructions     String?   @map("access_instructions")
+  preferredDate          DateTime  @map("preferred_date")
+  preferredTime          String    @map("preferred_time")
+  additionalNotes        String?   @map("additional_notes")
+  selectedItems          String?   @map("selected_items")
+  totalCustomerPaid      Float?    @map("total_customer_paid")
+  totalProviderPayout    Float?    @map("total_provider_payout")
+  totalCommissionEarned  Float?    @map("total_commission_earned")
+  status                 String    @default("pending")
+  priority               String    @default("medium")
+  assignedProviderId     Int?      @map("assigned_provider_id")
+  providerName           String?   @map("provider_name")
+  providerPhone          String?   @map("provider_phone")
+  providerEmail          String?   @map("provider_email")
+  paymentMethod          String?   @map("payment_method")
+  customerPaymentReceived Boolean  @default(false) @map("customer_payment_received")
+  providerPaymentMade    Boolean  @default(false) @map("provider_payment_made")
+  commissionCollected     Boolean  @default(false) @map("commission_collected")
+  adminNotes             String?   @map("admin_notes")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
+  confirmedAt            DateTime? @map("confirmed_at")
+  completedAt            DateTime? @map("completed_at")
+  reminderSentAt         DateTime? @map("reminder_sent_at")
+
+  customer  Customer?         @relation(fields: [customerId], references: [customerId])
+  provider  ServiceProvider?  @relation(fields: [assignedProviderId], references: [id])
+
+  @@map("service_requests")
+}

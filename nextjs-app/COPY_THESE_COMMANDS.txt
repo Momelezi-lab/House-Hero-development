@@ -1,0 +1,22 @@
+========================================
+COPY AND PASTE THESE COMMANDS
+========================================
+
+Open PowerShell and copy-paste these commands ONE BY ONE:
+
+1. Navigate to folder:
+cd C:\Users\fuzil\OneDrive\Desktop\House-Hero-development-main\nextjs-app
+
+2. Refresh PATH:
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+3. Test npm:
+npm --version
+
+4. Start server:
+npm run dev
+
+========================================
+OR: Double-click START.ps1 or START.bat
+========================================
+

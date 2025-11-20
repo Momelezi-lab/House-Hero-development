@@ -33,23 +33,15 @@ app.config['ADMIN_PHONE'] = os.environ.get('ADMIN_PHONE', '+27 11 123 4567')
 
 mail = Mail(app)
 
-# CORS configuration for production
+# CORS configuration - Allow all origins for development
 CORS(app, 
-     origins=[
-         "https://house-hero.netlify.app",           # Your Netlify frontend
-         "https://house-hero-backend.onrender.com",  # Your Render backend
-         "http://localhost:3000",                    # Local development
-         "http://127.0.0.1:3000",                    # Local development (alternative)
-         "http://localhost:5000",                    # Local development
-         "http://127.0.0.1:5000",                   # Local development
-         "http://localhost:5001",                    # Local development
-         "http://127.0.0.1:5001",                   # Local development
-         "file://",                                  # File protocol (for direct HTML file access)
-         "*"                                         # Allow all origins in development (remove in production)
-     ],
-     methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-     allow_headers=["Content-Type", "Authorization"],
-     supports_credentials=True
+     resources={r"/api/*": {
+         "origins": "*",
+         "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+         "allow_headers": ["Content-Type", "Authorization"],
+         "supports_credentials": False
+     }},
+     supports_credentials=False
 )
 
 db = SQLAlchemy(app)

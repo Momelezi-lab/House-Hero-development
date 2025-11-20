@@ -1,0 +1,30 @@
+========================================
+QUICK START - Copy These Commands
+========================================
+
+1. CLOSE and REOPEN PowerShell (important!)
+
+2. Navigate to project:
+   cd C:\Users\fuzil\OneDrive\Desktop\House-Hero-development-main\nextjs-app
+
+3. Verify Node.js:
+   node --version
+   npm --version
+
+4. Install dependencies:
+   npm install
+
+5. Set up database:
+   npm run db:generate
+   npm run db:push
+
+6. Start server:
+   npm run dev
+
+7. Open browser:
+   http://localhost:3000
+
+========================================
+IMPORTANT: Close and reopen PowerShell first!
+========================================
+
