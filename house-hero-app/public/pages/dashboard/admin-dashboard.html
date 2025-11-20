@@ -2548,10 +2548,6 @@
       function showAdminDashboard() {
         document.getElementById("admin-login").style.display = "none";
         document.getElementById("admin-content").style.display = "flex";
-        // Create logout button when dashboard is shown
-        if (typeof createLogoutButton === 'function') {
-          createLogoutButton();
-        }
         loadDashboard();
         loadAllBookings();
         // Render charts
@@ -2625,36 +2621,16 @@
         }
       };
       // Add admin logout button
-      function createLogoutButton() {
-        // Remove existing logout button if any
-        const existingBtn = document.getElementById("admin-logout-btn");
-        if (existingBtn) {
-          existingBtn.remove();
-        }
-        
-        const logoutBtn = document.createElement("button");
-        logoutBtn.id = "admin-logout-btn";
-        logoutBtn.textContent = "Logout";
-        logoutBtn.style =
-          "position:fixed;top:24px;right:32px;background:#ef4444;color:#fff;padding:0.5rem 1.2rem;border:none;border-radius:8px;cursor:pointer;font-weight:600;z-index:10001;box-shadow:0 2px 8px rgba(0,0,0,0.2);";
-        logoutBtn.onclick = function () {
-          console.log('[INFO] Logout clicked');
-          localStorage.removeItem("isAdminLoggedIn");
-          localStorage.removeItem("adminActiveSection");
-          document.getElementById("admin-content").style.display = "none";
-          document.getElementById("admin-login").style.display = "flex";
-          document.getElementById("admin-password").value = "";
-          document.getElementById("admin-error").style.display = "none";
-          // Remove logout button
-          logoutBtn.remove();
-        };
-        document.body.appendChild(logoutBtn);
-      }
-      
-      // Create logout button only when admin is logged in
-      if (localStorage.getItem("isAdminLoggedIn") === "true") {
-        createLogoutButton();
-      }
+      const logoutBtn = document.createElement("button");
+      logoutBtn.textContent = "Logout";
+      logoutBtn.style =
+        "position:fixed;top:24px;right:32px;background:#ef4444;color:#fff;padding:0.5rem 1.2rem;border:none;border-radius:8px;cursor:pointer;font-weight:600;z-index:10001;";
+      logoutBtn.onclick = function () {
+        localStorage.removeItem("isAdminLoggedIn");
+        document.getElementById("admin-content").style.display = "none";
+        document.getElementById("admin-login").style.display = "flex";
+      };
+      document.body.appendChild(logoutBtn);
       // Sidebar navigation
       const navs = [
         { id: "nav-dashboard", section: "dashboard-section" },

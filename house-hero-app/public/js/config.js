@@ -14,8 +14,9 @@ const config = {
 const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
 const currentConfig = isProduction ? config.production : config.development;
 
-// Export the API base URL
+// Export the API base URL (make it globally accessible)
 const API_BASE_URL = currentConfig.apiBaseUrl;
+window.API_BASE_URL = API_BASE_URL; // Also assign to window for global access
 
 // Log the current configuration for debugging
 console.log('Environment:', isProduction ? 'Production' : 'Development');

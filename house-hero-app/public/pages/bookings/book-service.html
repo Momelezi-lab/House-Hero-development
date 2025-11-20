@@ -62,48 +62,89 @@
           <form id="booking-form" class="space-y-8">
             <!-- SECTION 1: Service Selection -->
             <section class="bg-white rounded-lg shadow-md p-6">
-              <h2 class="text-2xl font-bold mb-6 text-gray-800">Service Selection</h2>
+              <h2 class="text-2xl font-bold mb-6 text-gray-800">Select Your Services</h2>
               
-              <div id="items-container" class="space-y-6">
-                <!-- Item Template -->
-                <div class="item-row border border-gray-200 rounded-lg p-4 bg-gray-50">
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-2">Service Category *</label>
-                      <select name="category" class="category-select w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
-                        <option value="">Select Category</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-2">Service Type *</label>
-                      <select name="type" class="type-select w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required disabled>
-                        <option value="">Select Category First</option>
-                      </select>
-                    </div>
+              <!-- Category Selection -->
+              <div id="category-selection" class="mb-8">
+                <h3 class="text-lg font-semibold mb-4 text-gray-700">Choose a Service Category</h3>
+                <div id="category-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Couch Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Couch Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Couch Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
                   </div>
-                  
-                  <div id="white-checkbox-container" class="mb-4 hidden">
-                    <label class="flex items-center space-x-2 cursor-pointer">
-                      <input type="checkbox" name="is_white" class="white-checkbox w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                      <span class="text-sm font-medium text-gray-700 white-checkbox-label"></span>
-                    </label>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Carpet Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Carpet Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Carpet Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
                   </div>
-                  
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-2">Quantity *</label>
-                      <input type="number" name="quantity" min="1" max="10" value="1" class="quantity-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
-                    </div>
-                    <div class="flex items-end">
-                      <button type="button" class="remove-item-btn hidden text-red-600 hover:text-red-800 font-medium text-sm">Remove Item</button>
-                    </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Fitted Carpet Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Fitted Carpet Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Fitted Carpet Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Mattress Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Mattress Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Mattress Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Headboard Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Headboard Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Headboard Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Sleigh Bed Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Sleigh Bed Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Sleigh Bed Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Standard Apartment Cleaning" onclick="if(window.selectCategory) window.selectCategory('Standard Apartment Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Standard Apartment Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Apartment Spring Cleaning" onclick="if(window.selectCategory) window.selectCategory('Apartment Spring Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Apartment Spring Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Apartment Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Apartment Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Apartment Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Empty Apartment Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Empty Apartment Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Empty Apartment Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="House Spring Cleaning" onclick="if(window.selectCategory) window.selectCategory('House Spring Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">House Spring Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="House Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('House Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">House Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Empty House Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Empty House Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Empty House Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
                   </div>
                 </div>
               </div>
               
-              <button type="button" id="add-item-btn" class="mt-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-colors">
-                + Add Another Item
-              </button>
+              <!-- Service Type Selection (shown when category is selected) -->
+              <div id="service-type-selection" class="mb-8 hidden">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-lg font-semibold text-gray-700">
+                    Select Service Type: <span id="selected-category-name" class="text-blue-600"></span>
+                  </h3>
+                  <button type="button" id="back-to-categories" class="text-blue-600 hover:text-blue-800 font-medium text-sm">
+                    ← Back to Categories
+                  </button>
+                </div>
+                <div id="service-type-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <!-- Service types will be populated here -->
+                </div>
+              </div>
+              
+              <!-- Selected Items Cart -->
+              <div id="selected-items" class="mt-8">
+                <h3 class="text-lg font-semibold mb-4 text-gray-700">Your Selected Services</h3>
+                <div id="cart-items-list" class="space-y-3">
+                  <p class="text-gray-500 text-sm">No services selected yet. Choose a category above to get started.</p>
+                </div>
+              </div>
             </section>
 
             <!-- SECTION 2: Schedule Details -->
@@ -225,32 +266,54 @@
 
     <script src="../../js/config.js"></script>
     <script>
-      // Ensure API_BASE_URL is defined (fallback if config.js didn't load)
-      if (typeof API_BASE_URL === 'undefined') {
-        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-        var API_BASE_URL = isProduction 
-          ? 'https://house-hero-backend.onrender.com' 
-          : 'http://127.0.0.1:5001';
-        console.log('[INFO] Using fallback API_BASE_URL:', API_BASE_URL);
-      } else {
-        console.log('[INFO] Using API_BASE_URL from config:', API_BASE_URL);
+      // Use window.API_BASE_URL from config.js (already set by config.js)
+      // Don't redeclare API_BASE_URL - config.js already declared it
+      // Fallback if config.js didn't load
+      if (!window.API_BASE_URL) {
+        const isProd = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        window.API_BASE_URL = isProd ? 'https://house-hero-backend.onrender.com' : 'http://127.0.0.1:5001';
       }
+      console.log('[INFO] Using API_BASE_URL:', window.API_BASE_URL);
       
       // Global state
-      let categories = [];
-      let pricingData = {};
       let cartItems = [];
+      let selectedCategory = null;
       const CALLOUT_FEE = 100; // R100 callout fee for all bookings
+      
+      // Declare selectCategory early so inline onclick can use it
+      let selectCategory = null;
 
       // Initialize
-      document.addEventListener('DOMContentLoaded', () => {
-        console.log('[INFO] DOM Content Loaded, initializing form...');
-        initializeTimeSlots();
-        setMinDate();
-        loadCategories();
-        setupFormHandlers();
-        console.log('[INFO] Form initialization complete');
-      });
+      function init() {
+        console.log('Initializing booking form...');
+        try {
+          initializeTimeSlots();
+          setMinDate();
+          attachCategoryHandlers(); // Cards are already in HTML, just attach handlers
+          setupFormHandlers();
+          console.log('Booking form initialized successfully');
+          console.log('Test: selectCategory function available:', typeof selectCategory);
+          console.log('Test: HARDCODED_PRICING available:', typeof HARDCODED_PRICING);
+        } catch (error) {
+          console.error('Error initializing form:', error);
+        }
+      }
+      
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        // DOM already loaded
+        init();
+      }
+      
+      // Also try attaching handlers after a delay as backup
+      setTimeout(() => {
+        const cards = document.querySelectorAll('.category-card');
+        if (cards.length > 0) {
+          console.log('Backup: Re-attaching handlers to', cards.length, 'cards');
+          attachCategoryHandlers();
+        }
+      }, 500);
 
       // Set minimum date to today
       function setMinDate() {
@@ -387,87 +450,140 @@
         ]
       };
 
-      // Load categories from API or use hardcoded list
-      async function loadCategories() {
-        console.log('[INFO] Loading categories, API_BASE_URL:', API_BASE_URL);
-        try {
-          const response = await fetch(`${API_BASE_URL}/api/pricing/categories`);
-          console.log('[INFO] Categories API response status:', response.status);
-          if (response.ok) {
-            const apiCategories = await response.json();
-            console.log('[INFO] Categories from API:', apiCategories);
-            if (apiCategories && apiCategories.length > 0) {
-              categories = apiCategories;
-              console.log('[INFO] Using categories from API:', categories.length);
-            } else {
-              console.warn('[WARN] API returned empty categories, using hardcoded list');
-              categories = SERVICE_CATEGORIES;
-            }
-          } else {
-            console.warn('[WARN] API response not OK, using hardcoded list');
-            categories = SERVICE_CATEGORIES;
-          }
-        } catch (error) {
-          console.error('[ERROR] Error loading categories from API, using hardcoded list:', error);
-          categories = SERVICE_CATEGORIES;
-        }
-        console.log('[INFO] Final categories to use:', categories.length, categories);
-        populateCategoryDropdowns();
-      }
-
-      // Populate category dropdowns
-      function populateCategoryDropdowns() {
-        console.log('[INFO] Populating category dropdowns, categories count:', categories.length);
-        const selects = document.querySelectorAll('.category-select');
-        console.log('[INFO] Found category selects:', selects.length);
+      // Attach click handlers to existing category cards (they're already in HTML)
+      // Note: Cards now have inline onclick handlers, but we'll keep this as backup
+      function attachCategoryHandlers() {
+        console.log('Attaching click handlers to category cards...');
+        const cards = document.querySelectorAll('.category-card');
+        console.log('Found', cards.length, 'category cards');
         
-        if (selects.length === 0) {
-          console.error('[ERROR] No category-select elements found!');
+        if (cards.length === 0) {
+          console.error('No category cards found!');
           return;
         }
         
-        if (categories.length === 0) {
-          console.error('[ERROR] Categories array is empty!');
-          categories = SERVICE_CATEGORIES; // Fallback
+        // Cards already have inline onclick, but we can verify they work
+        console.log('Category cards have inline onclick handlers. selectCategory available:', typeof window.selectCategory);
+        console.log('All category card handlers ready');
+      }
+
+      // Select a category and show service types
+      selectCategory = function(category) {
+        console.log('selectCategory called with:', category);
+        selectedCategory = category;
+        const items = HARDCODED_PRICING[category] || [];
+        console.log('Found items for category:', items.length);
+        
+        if (items.length === 0) {
+          alert(`No service types found for "${category}". Please check the console.`);
+          return;
         }
         
-        selects.forEach(select => {
-          const currentValue = select.value;
-          select.innerHTML = '<option value="">Select Category</option>';
-          categories.forEach(cat => {
-            const option = document.createElement('option');
-            option.value = cat;
-            option.textContent = cat;
-            select.appendChild(option);
+        // Hide category selection, show service type selection
+        const categorySelection = document.getElementById('category-selection');
+        const serviceTypeSelection = document.getElementById('service-type-selection');
+        const selectedCategoryName = document.getElementById('selected-category-name');
+        
+        if (!categorySelection || !serviceTypeSelection || !selectedCategoryName) {
+          console.error('Required elements not found:', {
+            categorySelection: !!categorySelection,
+            serviceTypeSelection: !!serviceTypeSelection,
+            selectedCategoryName: !!selectedCategoryName
           });
-          if (currentValue) select.value = currentValue;
-          console.log('[INFO] Populated select with', categories.length, 'categories');
+          alert('Error: Could not find required elements. Check console.');
+          return;
+        }
+        
+        categorySelection.classList.add('hidden');
+        serviceTypeSelection.classList.remove('hidden');
+        selectedCategoryName.textContent = category;
+        console.log('UI updated - category hidden, service types shown');
+        
+        // Render service type cards
+        const container = document.getElementById('service-type-cards');
+        if (!container) {
+          console.error('Service type cards container not found!');
+          return;
+        }
+        
+        container.innerHTML = '';
+        console.log('Rendering', items.length, 'service type cards');
+        
+        items.forEach((item, index) => {
+          const card = document.createElement('div');
+          card.className = 'service-type-card bg-white border-2 border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:shadow-md transition-all';
+          card.innerHTML = `
+            <div class="flex justify-between items-start mb-3">
+              <h4 class="font-semibold text-gray-800">${item.service_type}</h4>
+              <span class="text-lg font-bold text-blue-600">R${item.customer_display_price.toFixed(2)}</span>
+            </div>
+            ${item.is_white_applicable ? `<p class="text-xs text-gray-500 mb-2">+R${item.color_surcharge_customer.toFixed(2)} if white</p>` : ''}
+            <button type="button" class="add-service-btn w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium" 
+              data-category="${category}" 
+              data-type="${item.service_type}" 
+              data-price="${item.customer_display_price}"
+              data-white-applicable="${item.is_white_applicable}"
+              data-white-surcharge="${item.color_surcharge_customer}">
+              Add to Cart
+            </button>
+          `;
+          container.appendChild(card);
+          console.log(`Card ${index + 1} added: ${item.service_type} - R${item.customer_display_price.toFixed(2)}`);
         });
-      }
+        console.log('Service type cards rendered successfully. Total:', container.children.length);
+      };
+      
+      // Make selectCategory globally accessible immediately
+      window.selectCategory = selectCategory;
 
       // Setup form handlers
       function setupFormHandlers() {
-        // Category change handler
-        document.addEventListener('change', async (e) => {
-          if (e.target.classList.contains('category-select')) {
-            await handleCategoryChange(e.target);
-          }
-          if (e.target.classList.contains('type-select')) {
-            handleTypeChange(e.target);
-          }
-          if (e.target.classList.contains('white-checkbox') || e.target.classList.contains('quantity-input')) {
-            updateCart();
-            updateSummary();
-          }
+        // Back to categories button
+        document.getElementById('back-to-categories').addEventListener('click', () => {
+          document.getElementById('category-selection').classList.remove('hidden');
+          document.getElementById('service-type-selection').classList.add('hidden');
+          selectedCategory = null;
         });
 
-        // Add item button
-        document.getElementById('add-item-btn').addEventListener('click', addItemRow);
-
-        // Remove item buttons
+        // Add service button (event delegation)
         document.addEventListener('click', (e) => {
-          if (e.target.classList.contains('remove-item-btn')) {
-            removeItemRow(e.target.closest('.item-row'));
+          if (e.target.classList.contains('add-service-btn')) {
+            const btn = e.target;
+            const category = btn.dataset.category;
+            const type = btn.dataset.type;
+            const price = parseFloat(btn.dataset.price);
+            const isWhiteApplicable = btn.dataset.whiteApplicable === 'true';
+            const whiteSurcharge = parseFloat(btn.dataset.whiteSurcharge);
+            
+            // Show quantity/white selection modal or add directly
+            showAddToCartModal(category, type, price, isWhiteApplicable, whiteSurcharge);
+          }
+          
+          // Remove item from cart
+          if (e.target.classList.contains('remove-cart-item')) {
+            const index = parseInt(e.target.dataset.index);
+            cartItems.splice(index, 1);
+            renderCart();
+            updateSummary();
+          }
+          
+          // Update quantity
+          if (e.target.classList.contains('update-quantity')) {
+            const index = parseInt(e.target.dataset.index);
+            const newQuantity = parseInt(e.target.value) || 1;
+            if (newQuantity > 0 && newQuantity <= 10) {
+              cartItems[index].quantity = newQuantity;
+              renderCart();
+              updateSummary();
+            }
+          }
+          
+          // Toggle white surcharge
+          if (e.target.classList.contains('toggle-white')) {
+            const index = parseInt(e.target.dataset.index);
+            cartItems[index].isWhite = e.target.checked;
+            renderCart();
+            updateSummary();
           }
         });
 
@@ -475,138 +591,96 @@
         document.getElementById('booking-form').addEventListener('submit', handleSubmit);
       }
 
-      // Handle category selection
-      async function handleCategoryChange(select) {
-        const category = select.value;
-        const itemRow = select.closest('.item-row');
-        const typeSelect = itemRow.querySelector('.type-select');
-        const whiteContainer = itemRow.querySelector('#white-checkbox-container');
+      // Show modal to add item to cart with quantity and white option
+      function showAddToCartModal(category, type, price, isWhiteApplicable, whiteSurcharge) {
+        let quantity = 1;
+        let isWhite = false;
         
-        typeSelect.innerHTML = '<option value="">Loading...</option>';
-        typeSelect.disabled = true;
-        whiteContainer.classList.add('hidden');
-
-        if (!category) {
-          typeSelect.innerHTML = '<option value="">Select Category First</option>';
-          return;
-        }
-
-        // Try API first, then fallback to hardcoded data
-        let items = null;
-        try {
-          const response = await fetch(`${API_BASE_URL}/api/pricing?category=${encodeURIComponent(category)}`);
-          if (response.ok) {
-            items = await response.json();
-            if (items && items.length > 0) {
-              pricingData[category] = items;
-            }
-          }
-        } catch (error) {
-          console.warn('API call failed, using hardcoded data:', error);
-        }
-
-        // Fallback to hardcoded data if API failed or returned empty
-        if (!items || items.length === 0) {
-          if (HARDCODED_PRICING[category]) {
-            items = HARDCODED_PRICING[category].map(item => ({
-              service_type: item.service_type,
-              customer_display_price: item.customer_display_price,
-              is_white_applicable: item.is_white_applicable,
-              color_surcharge_customer: item.color_surcharge_customer,
-              provider_base_price: item.customer_display_price * 0.9, // 10% commission
-              color_surcharge_provider: item.color_surcharge_customer * 0.9
-            }));
-            pricingData[category] = items;
-          } else {
-            typeSelect.innerHTML = '<option value="">No options available</option>';
-            return;
-          }
+        // Simple prompt for quantity
+        const qtyInput = prompt(`How many "${type}" would you like?\n\nBase Price: R${price.toFixed(2)}${isWhiteApplicable ? `\nWhite Surcharge: +R${whiteSurcharge.toFixed(2)}` : ''}\n\nEnter quantity (1-10):`, '1');
+        
+        if (!qtyInput) return; // User cancelled
+        
+        quantity = parseInt(qtyInput) || 1;
+        if (quantity < 1) quantity = 1;
+        if (quantity > 10) quantity = 10;
+        
+        // Ask about white if applicable
+        if (isWhiteApplicable) {
+          isWhite = confirm(`Is this item white?\n\nThis will add R${whiteSurcharge.toFixed(2)} per item.\n\nClick OK if white, Cancel if not.`);
         }
         
-        // Populate dropdown
-        typeSelect.innerHTML = '<option value="">Select Service Type</option>';
-        items.forEach(item => {
-          const option = document.createElement('option');
-          option.value = item.service_type;
-          option.textContent = `${item.service_type} - R${item.customer_display_price.toFixed(2)}`;
-          option.dataset.pricing = JSON.stringify(item);
-          typeSelect.appendChild(option);
-        });
-        typeSelect.disabled = false;
-      }
-
-      // Handle type selection
-      function handleTypeChange(select) {
-        const itemRow = select.closest('.item-row');
-        const whiteContainer = itemRow.querySelector('#white-checkbox-container');
-        const whiteCheckbox = itemRow.querySelector('.white-checkbox');
-        const whiteLabel = itemRow.querySelector('.white-checkbox-label');
+        // Add to cart
+        const pricing = {
+          customer_display_price: price,
+          is_white_applicable: isWhiteApplicable,
+          color_surcharge_customer: whiteSurcharge,
+          provider_base_price: price * 0.9,
+          color_surcharge_provider: whiteSurcharge * 0.9
+        };
         
-        const selectedOption = select.options[select.selectedIndex];
-        if (!selectedOption.dataset.pricing) {
-          whiteContainer.classList.add('hidden');
-          return;
-        }
-
-        const pricing = JSON.parse(selectedOption.dataset.pricing);
-        
-        if (pricing.is_white_applicable) {
-          whiteLabel.textContent = `Is this item white? (+R${pricing.color_surcharge_customer.toFixed(2)})`;
-          whiteContainer.classList.remove('hidden');
-          whiteCheckbox.dataset.surcharge = pricing.color_surcharge_customer;
-        } else {
-          whiteContainer.classList.add('hidden');
-          whiteCheckbox.checked = false;
-        }
-        
-        updateCart();
+        cartItems.push({ category, type, quantity, isWhite, pricing });
+        renderCart();
         updateSummary();
       }
 
-      // Add new item row
-      function addItemRow() {
-        const container = document.getElementById('items-container');
-        const template = container.querySelector('.item-row').cloneNode(true);
+      // Render cart items
+      function renderCart() {
+        const container = document.getElementById('cart-items-list');
         
-        // Reset template
-        template.querySelector('.category-select').value = '';
-        template.querySelector('.type-select').innerHTML = '<option value="">Select Category First</option>';
-        template.querySelector('.type-select').disabled = true;
-        template.querySelector('#white-checkbox-container').classList.add('hidden');
-        template.querySelector('.white-checkbox').checked = false;
-        template.querySelector('.quantity-input').value = 1;
-        template.querySelector('.remove-item-btn').classList.remove('hidden');
-        
-        container.appendChild(template);
-        populateCategoryDropdowns();
-      }
-
-      // Remove item row
-      function removeItemRow(row) {
-        if (document.querySelectorAll('.item-row').length > 1) {
-          row.remove();
-          updateCart();
+        if (cartItems.length === 0) {
+          container.innerHTML = '<p class="text-gray-500 text-sm">No services selected yet. Choose a category above to get started.</p>';
           updateSummary();
+          return;
         }
-      }
-
-      // Update cart items
-      function updateCart() {
-        cartItems = [];
-        document.querySelectorAll('.item-row').forEach(row => {
-          const category = row.querySelector('.category-select').value;
-          const type = row.querySelector('.type-select').value;
-          const quantity = parseInt(row.querySelector('.quantity-input').value) || 1;
-          const isWhite = row.querySelector('.white-checkbox').checked;
-          
-          if (category && type) {
-            const selectedOption = row.querySelector('.type-select').options[row.querySelector('.type-select').selectedIndex];
-            if (selectedOption.dataset.pricing) {
-              const pricing = JSON.parse(selectedOption.dataset.pricing);
-              cartItems.push({ category, type, quantity, isWhite, pricing });
-            }
+        
+        container.innerHTML = '';
+        cartItems.forEach((item, index) => {
+          let price = item.pricing.customer_display_price;
+          if (item.isWhite && item.pricing.is_white_applicable) {
+            price += item.pricing.color_surcharge_customer;
           }
+          const lineTotal = price * item.quantity;
+          
+          const cartItem = document.createElement('div');
+          cartItem.className = 'bg-gray-50 border border-gray-200 rounded-lg p-4';
+          cartItem.innerHTML = `
+            <div class="flex justify-between items-start mb-2">
+              <div class="flex-1">
+                <h4 class="font-semibold text-gray-800">${item.type}</h4>
+                <p class="text-sm text-gray-600">${item.category}</p>
+                ${item.isWhite ? `<p class="text-xs text-blue-600 mt-1">✓ White (+R${item.pricing.color_surcharge_customer.toFixed(2)})</p>` : ''}
+              </div>
+              <button type="button" class="remove-cart-item text-red-600 hover:text-red-800 font-medium text-sm" data-index="${index}">
+                Remove
+              </button>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <label class="text-sm text-gray-700">Qty:</label>
+                <input type="number" min="1" max="10" value="${item.quantity}" 
+                  class="update-quantity w-16 px-2 py-1 border border-gray-300 rounded text-center" 
+                  data-index="${index}">
+              </div>
+              <div class="text-right">
+                <p class="text-sm text-gray-600">R${price.toFixed(2)} each</p>
+                <p class="text-lg font-bold text-blue-600">R${lineTotal.toFixed(2)}</p>
+              </div>
+            </div>
+            ${item.pricing.is_white_applicable ? `
+              <div class="mt-2">
+                <label class="flex items-center space-x-2 cursor-pointer">
+                  <input type="checkbox" ${item.isWhite ? 'checked' : ''} 
+                    class="toggle-white w-4 h-4 text-blue-600 border-gray-300 rounded" 
+                    data-index="${index}">
+                  <span class="text-sm text-gray-700">Is this item white? (+R${item.pricing.color_surcharge_customer.toFixed(2)})</span>
+                </label>
+              </div>
+            ` : ''}
+          `;
+          container.appendChild(cartItem);
         });
+        updateSummary();
       }
 
       // Update summary display
@@ -617,49 +691,48 @@
         const subtotalSection = document.getElementById('subtotal-section');
         
         if (cartItems.length === 0) {
-          itemsList.innerHTML = '<p class="text-gray-500">Add items to see your booking summary</p>';
-          totalPriceEl.textContent = 'R0.00';
-          subtotalSection.style.display = 'none';
+          if (itemsList) itemsList.innerHTML = '<p class="text-gray-500">Add items to see your booking summary</p>';
+          if (totalPriceEl) totalPriceEl.textContent = 'R0.00';
+          if (subtotalSection) subtotalSection.style.display = 'none';
           return;
         }
 
         let subtotal = 0;
-        itemsList.innerHTML = '';
-        
-        cartItems.forEach(item => {
-          let price = item.pricing.customer_display_price;
-          if (item.isWhite && item.pricing.is_white_applicable) {
-            price += item.pricing.color_surcharge_customer;
-          }
-          const lineTotal = price * item.quantity;
-          subtotal += lineTotal;
-          
-          const itemEl = document.createElement('div');
-          const whiteText = item.isWhite ? ' (White)' : '';
-          itemEl.className = 'flex justify-between text-sm';
-          itemEl.innerHTML = `
-            <span>• ${item.type}${whiteText} × ${item.quantity}</span>
-            <span class="font-semibold">R${lineTotal.toFixed(2)}</span>
-          `;
-          itemsList.appendChild(itemEl);
-        });
+        if (itemsList) {
+          itemsList.innerHTML = '';
+          cartItems.forEach(item => {
+            let price = item.pricing.customer_display_price;
+            if (item.isWhite && item.pricing.is_white_applicable) {
+              price += item.pricing.color_surcharge_customer;
+            }
+            const lineTotal = price * item.quantity;
+            subtotal += lineTotal;
+            
+            const itemEl = document.createElement('div');
+            const whiteText = item.isWhite ? ' (White)' : '';
+            itemEl.className = 'flex justify-between text-sm';
+            itemEl.innerHTML = `
+              <span>• ${item.type}${whiteText} × ${item.quantity}</span>
+              <span class="font-semibold">R${lineTotal.toFixed(2)}</span>
+            `;
+            itemsList.appendChild(itemEl);
+          });
+        }
         
         // Add callout fee to total
         const total = subtotal + CALLOUT_FEE;
         
-        subtotalPriceEl.textContent = `R${subtotal.toFixed(2)}`;
-        totalPriceEl.textContent = `R${total.toFixed(2)}`;
-        subtotalSection.style.display = 'block';
+        if (subtotalPriceEl) subtotalPriceEl.textContent = `R${subtotal.toFixed(2)}`;
+        if (totalPriceEl) totalPriceEl.textContent = `R${total.toFixed(2)}`;
+        if (subtotalSection) subtotalSection.style.display = 'block';
       }
 
       // Handle form submission
       async function handleSubmit(e) {
         e.preventDefault();
         
-        updateCart();
-        
         if (cartItems.length === 0) {
-          alert('Please add at least one service item');
+          alert('Please add at least one service item to your cart');
           return;
         }
 
@@ -687,50 +760,25 @@
         document.getElementById('loading-overlay').classList.remove('hidden');
 
         try {
-          console.log('[INFO] Submitting booking to:', `${API_BASE_URL}/api/service-requests`);
-          console.log('[INFO] Booking data:', bookingData);
-          
-          const response = await fetch(`${API_BASE_URL}/api/service-requests`, {
+          const response = await fetch(`${window.API_BASE_URL}/api/service-requests`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bookingData)
           });
 
-          console.log('[INFO] Response status:', response.status);
-          console.log('[INFO] Response OK:', response.ok);
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error('[ERROR] Response not OK:', errorText);
-            let errorData;
-            try {
-              errorData = JSON.parse(errorText);
-            } catch (e) {
-              errorData = { error: errorText || 'Unknown error occurred' };
-            }
-            alert(errorData.error || 'Error creating booking');
-            document.getElementById('loading-overlay').classList.add('hidden');
-            return;
-          }
-
           const result = await response.json();
-          console.log('[INFO] Booking response:', result);
 
-          if (result.request_id && result.total_customer_paid !== undefined) {
-            console.log('[INFO] Booking successful, redirecting to success page...');
-            console.log('[INFO] Request ID:', result.request_id);
-            console.log('[INFO] Total:', result.total_customer_paid);
-            window.location.href = `./booking-success.html?request_id=${result.request_id}&total=${result.total_customer_paid}`;
+          if (response.ok) {
+            window.location.href = `booking-success.html?request_id=${result.request_id}&total=${result.total_customer_paid}`;
           } else {
-            console.error('[ERROR] Missing request_id or total_customer_paid in response:', result);
-            alert('Booking created but missing confirmation details. Please check the admin dashboard.');
+            alert(result.error || 'Error creating booking');
             document.getElementById('loading-overlay').classList.add('hidden');
           }
         } catch (error) {
-          console.error('[ERROR] Exception during booking:', error);
-          console.error('[ERROR] API_BASE_URL:', API_BASE_URL);
-          console.error('[ERROR] Full error details:', error.message);
-          alert(`Network error: ${error.message}. Please check if the backend is running on ${API_BASE_URL}`);
+          console.error('Error:', error);
+          console.error('API_BASE_URL:', window.API_BASE_URL);
+          console.error('Full error details:', error.message);
+          alert(`Network error: ${error.message}. Please check if the backend is running on ${window.API_BASE_URL}`);
           document.getElementById('loading-overlay').classList.add('hidden');
         }
       }
