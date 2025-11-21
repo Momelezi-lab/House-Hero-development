@@ -85,8 +85,11 @@
       .dark select option {
         color: #1f2937;
       }
+<<<<<<< HEAD
 
       /* Map removed - previously used Google Maps */
+=======
+>>>>>>> 1e533b4361dde9579df50821049cbdd042dcef04
     </style>
   </head>
   <body class="bg-gray-50 text-gray-900 min-h-screen">
@@ -227,7 +230,10 @@
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 text-gray-900"
               autocomplete="off"
             />
+<<<<<<< HEAD
             <!-- Map removed -->
+=======
+>>>>>>> 1e533b4361dde9579df50821049cbdd042dcef04
             <div
               id="address-warning"
               class="text-red-600 font-medium mt-2 hidden"
@@ -365,6 +371,7 @@
     <script src="/js/config.js"></script>
     <script src="/js/script.js"></script>
     <script>
+<<<<<<< HEAD
       // Map functionality removed. Keep address warning behaviour based on manual input.
       document.addEventListener("DOMContentLoaded", function () {
         const addressInput = document.getElementById("address");
@@ -386,6 +393,26 @@
           });
         }
       });
+=======
+      // Address validation without map
+      function initAddressValidation() {
+        const addressInput = document.getElementById("address");
+        const addressWarning = document.getElementById("address-warning");
+        
+        // Check address on input
+        addressInput.addEventListener("input", function () {
+          const address = addressInput.value;
+          if (
+            !address.includes("Midrand") &&
+            !address.includes("Johannesburg")
+          ) {
+            addressWarning.classList.remove("hidden");
+          } else {
+            addressWarning.classList.add("hidden");
+          }
+        });
+      }
+>>>>>>> 1e533b4361dde9579df50821049cbdd042dcef04
 
       // Dark mode functionality
       function initDarkMode() {
@@ -447,6 +474,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         initDarkMode();
         initSidebarMenu();
+        initAddressValidation();
 
         document
           .getElementById("booking-form")
@@ -485,6 +513,9 @@
           });
       });
     </script>
+<<<<<<< HEAD
     <!-- Google Maps removed -->
+=======
+>>>>>>> 1e533b4361dde9579df50821049cbdd042dcef04
   </body>
 </html>

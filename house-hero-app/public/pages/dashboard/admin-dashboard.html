@@ -432,6 +432,14 @@
             ><i class="fa-solid fa-exclamation-triangle"></i>
             <span>Complaints</span></a
           >
+          <a href="#" id="nav-service-requests" class="admin-nav-btn"
+            ><i class="fa-solid fa-clipboard-list"></i>
+            <span>Service Requests</span></a
+          >
+          <a href="#" id="nav-financial" class="admin-nav-btn"
+            ><i class="fa-solid fa-chart-line"></i>
+            <span>Financial Reports</span></a
+          >
         </nav>
       </aside>
       <main class="admin-main">
@@ -1016,6 +1024,68 @@
             </div>
           </div>
         </section>
+        <section id="service-requests-section" style="display: none">
+          <div class="flex justify-between items-center mb-6">
+            <h2 style="color: #10169f; font-size: 1.8rem; font-weight: 700">Service Requests Management</h2>
+            <div class="flex gap-4">
+              <input type="text" id="request-search-input" placeholder="Search requests..." style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 6px; width: 250px;">
+              <select id="request-status-filter" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 6px;">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+          
+          <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.06); overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <thead style="background: #3b82f6; color: #fff;">
+                <tr>
+                  <th style="padding: 1rem; text-align: left;">Request ID</th>
+                  <th style="padding: 1rem; text-align: left;">Customer</th>
+                  <th style="padding: 1rem; text-align: left;">Service</th>
+                  <th style="padding: 1rem; text-align: left;">Date</th>
+                  <th style="padding: 1rem; text-align: left;">Status</th>
+                  <th style="padding: 1rem; text-align: left;">Customer Paid</th>
+                  <th style="padding: 1rem; text-align: left;">Provider Gets</th>
+                  <th style="padding: 1rem; text-align: left;">Commission</th>
+                  <th style="padding: 1rem; text-align: left;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="service-requests-table-body">
+                <!-- Service requests will be loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Service Request Detail Modal -->
+        <div id="service-request-detail-modal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 10000; align-items: center; justify-content: center;">
+          <div style="background: #fff; border-radius: 12px; padding: 2rem; max-width: 900px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative;">
+            <button onclick="closeServiceRequestDetail()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">✕</button>
+            <h2 style="color: #10169f; font-size: 1.8rem; margin-bottom: 1.5rem;">Request Details</h2>
+            <div id="service-request-detail-content">
+              <!-- Request details will be loaded here -->
+            </div>
+          </div>
+        </div>
+
+        <section id="financial-section" style="display: none">
+          <h2 style="color: #10169f; font-size: 1.8rem; font-weight: 700; margin-bottom: 1.5rem">Financial Reports</h2>
+          <div style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+            <input type="date" id="financial-report-from" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 6px;">
+            <input type="date" id="financial-report-to" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 6px;">
+            <button onclick="loadFinancialReport()" style="background: #3b82f6; color: #fff; padding: 0.5rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Apply Filters</button>
+            <button onclick="exportFinancialReport()" style="background: #22c55e; color: #fff; padding: 0.5rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Export CSV</button>
+          </div>
+          <div id="financial-report-content" style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.06); padding: 2rem;">
+            <!-- Financial report will be loaded here -->
+          </div>
+        </section>
+
         <section id="complaints-section" style="display: none">
           <h2 style="color: #10169f">Complaints Management</h2>
           <div style="margin-bottom: 1rem">
@@ -2462,8 +2532,20 @@
       </main>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/config.js"></script>
     <script src="/js/script.js"></script>
     <script>
+      // Ensure API_BASE_URL is defined (fallback if config.js didn't load)
+      if (typeof API_BASE_URL === 'undefined') {
+        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        var API_BASE_URL = isProduction 
+          ? 'https://house-hero-backend.onrender.com' 
+          : 'http://127.0.0.1:5001';
+        console.log('[INFO] Using fallback API_BASE_URL:', API_BASE_URL);
+      } else {
+        console.log('[INFO] Using API_BASE_URL from config:', API_BASE_URL);
+      }
+      
       // Persistent admin login using localStorage
       function showAdminDashboard() {
         document.getElementById("admin-login").style.display = "none";
@@ -2497,6 +2579,8 @@
           { id: "nav-services", section: "services-section" },
           { id: "nav-providers", section: "provider-section" },
           { id: "nav-complaints", section: "complaints-section" },
+          { id: "nav-service-requests", section: "service-requests-section" },
+          { id: "nav-financial", section: "financial-section" },
         ];
         const activeSection =
           localStorage.getItem("adminActiveSection") || "dashboard-section";
@@ -2515,6 +2599,12 @@
           }
           if (activeSection === "provider-section") {
             loadProviders();
+          }
+          if (activeSection === "service-requests-section") {
+            loadServiceRequests();
+          }
+          if (activeSection === "financial-section") {
+            loadFinancialReport();
           }
         }
       }
@@ -2551,6 +2641,8 @@
         { id: "nav-services", section: "services-section" },
         { id: "nav-providers", section: "provider-section" },
         { id: "nav-complaints", section: "complaints-section" },
+        { id: "nav-service-requests", section: "service-requests-section" },
+        { id: "nav-financial", section: "financial-section" },
       ];
       navs.forEach((nav) => {
         document.getElementById(nav.id).onclick = function (e) {
@@ -2597,26 +2689,50 @@
           if (nav.id === "nav-services") {
             loadServices();
           }
+          // If service requests section, load service requests
+          if (nav.id === "nav-service-requests") {
+            loadServiceRequests();
+          }
+          // If financial section, load financial report
+          if (nav.id === "nav-financial") {
+            loadFinancialReport();
+          }
         };
       });
       // Remove local fetchBookings and use the shared fetchBackendBookings from script.js
       // Dashboard widgets and latest bookings
       async function loadDashboard() {
         try {
+          // Try to load stats from service requests API first
+          try {
+            const statsResponse = await fetch(`${API_BASE_URL}/api/admin/stats`);
+            if (statsResponse.ok) {
+              const stats = await statsResponse.json();
+              document.getElementById("total-bookings").textContent = stats.total_bookings || 0;
+              document.getElementById("total-earnings").textContent = `R${(stats.this_month_revenue || 0).toFixed(2)}`;
+            }
+          } catch (error) {
+            console.warn("[WARN] Could not load stats from API, using fallback:", error);
+          }
+          
           const bookings = await fetchBackendBookings();
           const complaints = await fetchBackendComplaints();
           console.log("[DEBUG] Bookings fetched for dashboard:", bookings);
           console.log("[DEBUG] Complaints fetched for dashboard:", complaints);
-          document.getElementById("total-bookings").textContent =
-            bookings.length;
+          
+          // Fallback to bookings count if stats API didn't work
+          if (!document.getElementById("total-bookings").textContent || document.getElementById("total-bookings").textContent === "0") {
+            document.getElementById("total-bookings").textContent = bookings.length;
+          }
+          
           document.getElementById("total-users").textContent = "1"; // Demo only
-          document.getElementById("total-complaints").textContent =
-            complaints.length;
-          const confirmedBookings = bookings.filter(
-            (b) => b.status === "confirmed"
-          );
-          document.getElementById("total-earnings").textContent =
-            "R" + confirmedBookings.length * 500; // Demo: R500 per confirmed booking
+          document.getElementById("total-complaints").textContent = complaints.length;
+          
+          // Fallback earnings calculation if stats API didn't work
+          if (document.getElementById("total-earnings").textContent === "R0.00" || !document.getElementById("total-earnings").textContent.includes("R")) {
+            const confirmedBookings = bookings.filter((b) => b.status === "confirmed");
+            document.getElementById("total-earnings").textContent = "R" + confirmedBookings.length * 500; // Demo: R500 per confirmed booking
+          }
           const latest = bookings.slice(-5).reverse();
           const table = document.getElementById("latest-bookings-table");
           const validBookings = latest.filter(
@@ -4562,6 +4678,7 @@
         showActiveAdminSection();
       };
 
+<<<<<<< HEAD
       // Assign provider modal and functions
       let _assignBookingId = null;
       window.openAssignModal = async function (id) {
@@ -4683,10 +4800,423 @@
             <div><strong>Phone:</strong> ${p.phone || "-"}</div>
             <div><strong>Email:</strong> ${p.email || "-"}</div>
             <div><strong>Rating:</strong> ${p.rating || 0} (${p.total_bookings || 0} bookings)</div>
+=======
+      // Service Requests Management Functions
+      async function loadServiceRequests() {
+        const status = document.getElementById('request-status-filter')?.value || '';
+        const search = document.getElementById('request-search-input')?.value || '';
+        
+        let url = `${API_BASE_URL}/api/service-requests`;
+        const params = [];
+        if (status) params.push(`status=${status}`);
+        if (search) params.push(`search=${encodeURIComponent(search)}`);
+        if (params.length) url += '?' + params.join('&');
+        
+        try {
+          console.log('[INFO] Fetching service requests from:', url);
+          const response = await fetch(url);
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('[ERROR] API response not OK:', response.status, errorText);
+            throw new Error(`Failed to fetch service requests: ${response.status} ${errorText}`);
+          }
+          const requests = await response.json();
+          console.log('[INFO] Loaded service requests:', requests.length);
+          displayServiceRequests(requests);
+        } catch (error) {
+          console.error('[ERROR] Failed to load service requests:', error);
+          const tbody = document.getElementById('service-requests-table-body');
+          if (tbody) {
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 2rem; color: #ef4444;">Error loading service requests: ${error.message}. Please check if the backend is running on ${API_BASE_URL}.</td></tr>`;
+          }
+        }
+      }
+
+      function displayServiceRequests(requests) {
+        const tbody = document.getElementById('service-requests-table-body');
+        if (!tbody) return;
+        
+        if (requests.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 2rem; color: #6b7280;">No service requests found</td></tr>';
+          return;
+        }
+        
+        tbody.innerHTML = requests.map(req => {
+          const items = typeof req.selected_items === 'string' ? JSON.parse(req.selected_items) : req.selected_items;
+          const firstCategory = items && items.length > 0 ? items[0].category : 'N/A';
+          
+          return `
+            <tr style="border-bottom: 1px solid #e5e7eb; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor=''">
+              <td style="padding: 1rem; font-weight: 600; color: #3b82f6;">#${req.request_id}</td>
+              <td style="padding: 1rem;">${req.customer_name || 'N/A'}</td>
+              <td style="padding: 1rem;">${firstCategory}</td>
+              <td style="padding: 1rem;">${req.preferred_date || 'N/A'}</td>
+              <td style="padding: 1rem;">
+                <span style="padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 500; ${getServiceRequestStatusClass(req.status)}">
+                  ${req.status || 'pending'}
+                </span>
+              </td>
+              <td style="padding: 1rem; font-weight: 600;">R${(req.total_customer_paid || 0).toFixed(2)}</td>
+              <td style="padding: 1rem;">R${(req.total_provider_payout || 0).toFixed(2)}</td>
+              <td style="padding: 1rem; color: #22c55e; font-weight: 600;">R${(req.total_commission_earned || 0).toFixed(2)}</td>
+              <td style="padding: 1rem;">
+                <button onclick="viewServiceRequestDetail(${req.request_id})" style="background: #3b82f6; color: #fff; border: none; padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 500;">View</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      function getServiceRequestStatusClass(status) {
+        const classes = {
+          pending: 'background: #fef3c7; color: #92400e;',
+          confirmed: 'background: #dbeafe; color: #1e40af;',
+          in_progress: 'background: #e9d5ff; color: #6b21a8;',
+          completed: 'background: #d1fae5; color: #065f46;',
+          cancelled: 'background: #fee2e2; color: #991b1b;'
+        };
+        return classes[status] || 'background: #f3f4f6; color: #374151;';
+      }
+
+      async function viewServiceRequestDetail(requestId) {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/service-requests/${requestId}`);
+          if (!response.ok) throw new Error('Failed to fetch request details');
+          const request = await response.json();
+          
+          const items = typeof request.selected_items === 'string' ? JSON.parse(request.selected_items) : request.selected_items;
+          const itemsHtml = items && items.length > 0 ? items.map(item => `
+            <tr>
+              <td style="padding: 0.75rem; border-bottom: 1px solid #e5e7eb;">${item.type || 'N/A'}${item.is_white ? ' (White)' : ''}</td>
+              <td style="padding: 0.75rem; border-bottom: 1px solid #e5e7eb;">${item.quantity || 1}</td>
+              <td style="padding: 0.75rem; border-bottom: 1px solid #e5e7eb;">R${(item.customer_price || 0).toFixed(2)}</td>
+              <td style="padding: 0.75rem; border-bottom: 1px solid #e5e7eb;">R${(item.provider_price || 0).toFixed(2)}</td>
+              <td style="padding: 0.75rem; border-bottom: 1px solid #e5e7eb;">R${(item.commission || 0).toFixed(2)}</td>
+            </tr>
+          `).join('') : '<tr><td colspan="5" style="text-align: center; padding: 1rem;">No items found</td></tr>';
+          
+          document.getElementById('service-request-detail-content').innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+              <div>
+                <h3 style="font-weight: 700; margin-bottom: 1rem; color: #111;">Request ID: #${request.request_id}</h3>
+                <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                  <select id="detail-request-status" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 6px; flex: 1; min-width: 150px;">
+                    <option value="pending" ${request.status === 'pending' ? 'selected' : ''}>Pending</option>
+                    <option value="confirmed" ${request.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                    <option value="in_progress" ${request.status === 'in_progress' ? 'selected' : ''}>In Progress</option>
+                    <option value="completed" ${request.status === 'completed' ? 'selected' : ''}>Completed</option>
+                    <option value="cancelled" ${request.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                  </select>
+                  <select id="detail-request-priority" style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 6px; flex: 1; min-width: 150px;">
+                    <option value="low" ${request.priority === 'low' ? 'selected' : ''}>Low Priority</option>
+                    <option value="medium" ${request.priority === 'medium' ? 'selected' : ''}>Medium Priority</option>
+                    <option value="high" ${request.priority === 'high' ? 'selected' : ''}>High Priority</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #111;">Customer Information</h4>
+                <p style="margin: 0.25rem 0;">Name: ${request.customer_name || 'N/A'}</p>
+                <p style="margin: 0.25rem 0;">Phone: <a href="tel:${request.customer_phone}" style="color: #3b82f6; text-decoration: none;">${request.customer_phone || 'N/A'}</a></p>
+                <p style="margin: 0.25rem 0;">Email: <a href="mailto:${request.customer_email}" style="color: #3b82f6; text-decoration: none;">${request.customer_email || 'N/A'}</a></p>
+                <p style="margin: 0.25rem 0;">Address: ${request.customer_address || 'N/A'}</p>
+                ${request.unit_number ? `<p style="margin: 0.25rem 0;">Unit: ${request.unit_number}</p>` : ''}
+                ${request.complex_name ? `<p style="margin: 0.25rem 0;">Complex: ${request.complex_name}</p>` : ''}
+              </div>
+              
+              <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #111;">Schedule</h4>
+                <p style="margin: 0.25rem 0;">Date: ${request.preferred_date || 'N/A'}</p>
+                <p style="margin: 0.25rem 0;">Time: ${request.preferred_time || 'N/A'}</p>
+              </div>
+              
+              <div>
+                <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #111;">Services Requested</h4>
+                <div style="overflow-x: auto;">
+                  <table style="width: 100%; border-collapse: collapse; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+                    <thead style="background: #f3f4f6;">
+                      <tr>
+                        <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Item</th>
+                        <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Quantity</th>
+                        <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Customer Pays</th>
+                        <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Provider Gets</th>
+                        <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Commission</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${itemsHtml}
+                      <tr style="background: #fff3cd; font-weight: 500;">
+                        <td style="padding: 0.75rem; border-top: 1px solid #e5e7eb;" colspan="2">Callout Fee</td>
+                        <td style="padding: 0.75rem; border-top: 1px solid #e5e7eb;">R100.00</td>
+                        <td style="padding: 0.75rem; border-top: 1px solid #e5e7eb;">-</td>
+                        <td style="padding: 0.75rem; border-top: 1px solid #e5e7eb;">R100.00</td>
+                      </tr>
+                      <tr style="background: #f8fafc; font-weight: 600;">
+                        <td style="padding: 0.75rem; border-top: 2px solid #e5e7eb;" colspan="2">TOTALS</td>
+                        <td style="padding: 0.75rem; border-top: 2px solid #e5e7eb;">R${(request.total_customer_paid || 0).toFixed(2)}</td>
+                        <td style="padding: 0.75rem; border-top: 2px solid #e5e7eb;">R${(request.total_provider_payout || 0).toFixed(2)}</td>
+                        <td style="padding: 0.75rem; border-top: 2px solid #e5e7eb; color: #22c55e;">R${(request.total_commission_earned || 0).toFixed(2)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              
+              <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #111;">Provider Assignment</h4>
+                <select id="detail-request-provider" style="width: 100%; padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 6px; margin-bottom: 0.5rem;">
+                  <option value="">Select Provider</option>
+                </select>
+                ${request.provider_name ? `<p style="margin: 0.25rem 0;">Currently Assigned: <strong>${request.provider_name}</strong> (${request.provider_phone || 'N/A'})</p>` : '<p style="color: #6b7280;">No provider assigned</p>'}
+              </div>
+              
+              ${request.additional_notes ? `
+              <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #111;">Additional Notes</h4>
+                <p style="color: #374151;">${request.additional_notes}</p>
+              </div>
+              ` : ''}
+              
+              <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button onclick="saveServiceRequestDetail(${request.request_id})" style="background: #3b82f6; color: #fff; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; flex: 1;">Save Changes</button>
+                <button onclick="closeServiceRequestDetail()" style="background: #e5e7eb; color: #374151; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; flex: 1;">Close</button>
+              </div>
+            </div>
+          `;
+          
+          // Load providers for dropdown
+          await loadProvidersForRequestSelect();
+          
+          document.getElementById('service-request-detail-modal').style.display = 'flex';
+        } catch (error) {
+          console.error('[ERROR] Failed to load request detail:', error);
+          alert('Failed to load request details. Please try again.');
+        }
+      }
+
+      async function loadProvidersForRequestSelect() {
+        try {
+          console.log('[INFO] Fetching providers from:', `${API_BASE_URL}/api/providers`);
+          const response = await fetch(`${API_BASE_URL}/api/providers`);
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('[ERROR] Failed to fetch providers:', response.status, errorText);
+            throw new Error(`Failed to fetch providers: ${response.status}`);
+          }
+          const providers = await response.json();
+          console.log('[INFO] Loaded providers:', providers.length);
+          const select = document.getElementById('detail-request-provider');
+          if (!select) {
+            console.warn('[WARN] Provider select element not found');
+            return;
+          }
+          
+          select.innerHTML = '<option value="">Select Provider</option>';
+          if (providers.length === 0) {
+            const option = document.createElement('option');
+            option.textContent = 'No providers available';
+            option.disabled = true;
+            select.appendChild(option);
+          } else {
+            providers.forEach(provider => {
+              const option = document.createElement('option');
+              option.value = provider.id;
+              option.textContent = `${provider.name} - ${provider.phone}`;
+              select.appendChild(option);
+            });
+          }
+        } catch (error) {
+          console.error('[ERROR] Failed to load providers:', error);
+          const select = document.getElementById('detail-request-provider');
+          if (select) {
+            select.innerHTML = '<option value="">Error loading providers</option>';
+          }
+        }
+      }
+
+      async function saveServiceRequestDetail(requestId) {
+        const status = document.getElementById('detail-request-status')?.value;
+        const priority = document.getElementById('detail-request-priority')?.value;
+        const providerId = document.getElementById('detail-request-provider')?.value;
+        
+        try {
+          const updateData = {};
+          if (status) updateData.status = status;
+          if (priority) updateData.priority = priority;
+          
+          if (providerId) {
+            updateData.assigned_provider_id = parseInt(providerId);
+            const providerResponse = await fetch(`${API_BASE_URL}/api/providers/${providerId}`);
+            if (providerResponse.ok) {
+              const provider = await providerResponse.json();
+              updateData.provider_name = provider.name;
+              updateData.provider_phone = provider.phone;
+              updateData.provider_email = provider.email;
+            }
+          }
+          
+          const response = await fetch(`${API_BASE_URL}/api/service-requests/${requestId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updateData)
+          });
+          
+          if (response.ok) {
+            alert('Request updated successfully');
+            closeServiceRequestDetail();
+            loadServiceRequests();
+            // Also refresh dashboard if on dashboard
+            if (document.getElementById('dashboard-section').style.display !== 'none') {
+              loadDashboard();
+            }
+          } else {
+            const errorData = await response.json();
+            alert(`Failed to update request: ${errorData.error || 'Unknown error'}`);
+          }
+        } catch (error) {
+          console.error('[ERROR] Failed to update request:', error);
+          alert('Failed to update request. Please try again.');
+        }
+      }
+
+      function closeServiceRequestDetail() {
+        document.getElementById('service-request-detail-modal').style.display = 'none';
+      }
+
+      // Financial Reports Functions
+      async function loadFinancialReport() {
+        const from = document.getElementById('financial-report-from')?.value || '';
+        const to = document.getElementById('financial-report-to')?.value || '';
+        
+        let url = `${API_BASE_URL}/api/admin/financial-report`;
+        const params = [];
+        if (from) params.push(`from=${from}`);
+        if (to) params.push(`to=${to}`);
+        if (params.length) url += '?' + params.join('&');
+        
+        try {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error('Failed to fetch financial report');
+          const report = await response.json();
+          displayFinancialReport(report);
+        } catch (error) {
+          console.error('[ERROR] Failed to load financial report:', error);
+          const content = document.getElementById('financial-report-content');
+          if (content) {
+            content.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 2rem;">Error loading financial report. Please try again.</p>';
+          }
+        }
+      }
+
+      function displayFinancialReport(report) {
+        const content = document.getElementById('financial-report-content');
+        if (!content) return;
+        
+        const categoryBreakdown = report.category_breakdown ? Object.entries(report.category_breakdown).map(([cat, data]) => `
+          <tr style="border-bottom: 1px solid #e5e7eb;">
+            <td style="padding: 0.75rem;">${cat}</td>
+            <td style="padding: 0.75rem;">${data.count || 0}</td>
+            <td style="padding: 0.75rem; color: #22c55e; font-weight: 600;">R${(data.commission || 0).toFixed(2)}</td>
+          </tr>
+        `).join('') : '<tr><td colspan="3" style="text-align: center; padding: 1rem; color: #6b7280;">No category data available</td></tr>';
+        
+        content.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 2rem;">
+            <div>
+              <h3 style="font-weight: 700; margin-bottom: 1rem; color: #111; font-size: 1.3rem;">Summary</h3>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e5e7eb;">
+                  <p style="color: #6b7280; margin-bottom: 0.5rem; font-size: 0.9rem;">Total Customer Payments</p>
+                  <p style="font-size: 1.8rem; font-weight: 700; color: #111;">R${(report.total_customer_payments || 0).toFixed(2)}</p>
+                </div>
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e5e7eb;">
+                  <p style="color: #6b7280; margin-bottom: 0.5rem; font-size: 0.9rem;">Total Provider Payouts</p>
+                  <p style="font-size: 1.8rem; font-weight: 700; color: #111;">R${(report.total_provider_payouts || 0).toFixed(2)}</p>
+                </div>
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e5e7eb;">
+                  <p style="color: #6b7280; margin-bottom: 0.5rem; font-size: 0.9rem;">Total Commission Earned</p>
+                  <p style="font-size: 1.8rem; font-weight: 700; color: #22c55e;">R${(report.total_commission || 0).toFixed(2)}</p>
+                </div>
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e5e7eb;">
+                  <p style="color: #6b7280; margin-bottom: 0.5rem; font-size: 0.9rem;">Average Commission per Job</p>
+                  <p style="font-size: 1.8rem; font-weight: 700; color: #111;">R${(report.avg_commission || 0).toFixed(2)}</p>
+                </div>
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e5e7eb;">
+                  <p style="color: #6b7280; margin-bottom: 0.5rem; font-size: 0.9rem;">Number of Jobs</p>
+                  <p style="font-size: 1.8rem; font-weight: 700; color: #111;">${report.number_of_jobs || 0}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 style="font-weight: 700; margin-bottom: 1rem; color: #111; font-size: 1.3rem;">Breakdown by Service Category</h3>
+              <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+                  <thead style="background: #f3f4f6;">
+                    <tr>
+                      <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Category</th>
+                      <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Jobs</th>
+                      <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Commission</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${categoryBreakdown}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+>>>>>>> 1e533b4361dde9579df50821049cbdd042dcef04
           </div>
         `;
       }
 
+<<<<<<< HEAD
+=======
+      function exportFinancialReport() {
+        alert('CSV export functionality will be implemented here. This would generate a downloadable CSV file with the financial report data.');
+      }
+
+      // Event listeners for service requests
+      document.addEventListener('DOMContentLoaded', function() {
+        const requestStatusFilter = document.getElementById('request-status-filter');
+        const requestSearchInput = document.getElementById('request-search-input');
+        
+        if (requestStatusFilter) {
+          requestStatusFilter.addEventListener('change', loadServiceRequests);
+        }
+        
+        if (requestSearchInput) {
+          let searchTimeout;
+          requestSearchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(loadServiceRequests, 500);
+          });
+        }
+      });
+
+      // Update loadDashboard to use service requests API
+      async function loadServiceRequestsDashboard() {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/admin/stats`);
+          if (response.ok) {
+            const stats = await response.json();
+            // Update dashboard widgets if they exist
+            const totalBookingsEl = document.getElementById('total-bookings');
+            if (totalBookingsEl) totalBookingsEl.textContent = stats.total_bookings || 0;
+            
+            const totalEarningsEl = document.getElementById('total-earnings');
+            if (totalEarningsEl) {
+              const revenue = stats.this_month_revenue || 0;
+              totalEarningsEl.textContent = `R${revenue.toFixed(2)}`;
+            }
+          }
+        } catch (error) {
+          console.error('[ERROR] Failed to load dashboard stats:', error);
+        }
+      }
+
+>>>>>>> 1e533b4361dde9579df50821049cbdd042dcef04
       // Dark mode functionality
       document.addEventListener("DOMContentLoaded", () => {
         const toggleBtn = document.getElementById("toggle-dark");
@@ -4712,6 +5242,7 @@
         }
       });
     </script>
+<<<<<<< HEAD
 
     <!-- Assign Provider Modal -->
     <div id="assign-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.45); z-index:10000; align-items:center; justify-content:center;">
@@ -4759,5 +5290,7 @@
     </script>
     <script src="/js/config.js"></script>
     <script src="/js/script.js"></script>
+=======
+>>>>>>> 1e533b4361dde9579df50821049cbdd042dcef04
   </body>
 </html>

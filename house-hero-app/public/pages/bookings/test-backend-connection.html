@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backend Connection Test</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../../js/config.js"></script>
+</head>
+<body class="bg-gray-50 p-8">
+  <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
+    <h1 class="text-2xl font-bold mb-4">Backend Connection Test</h1>
+    
+    <div class="space-y-4">
+      <div>
+        <p class="font-semibold">Current API Base URL:</p>
+        <p class="text-blue-600" id="api-url"></p>
+      </div>
+      
+      <button onclick="testConnection()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Test Connection
+      </button>
+      
+      <div id="results" class="mt-4"></div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('api-url').textContent = API_BASE_URL;
+    
+    async function testConnection() {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '<p class="text-gray-600">Testing...</p>';
+      
+      const tests = [
+        { name: 'Health Check', url: `${API_BASE_URL}/api/health` },
+        { name: 'Pricing Categories', url: `${API_BASE_URL}/api/pricing/categories` },
+        { name: 'Service Requests', url: `${API_BASE_URL}/api/service-requests` }
+      ];
+      
+      let html = '<div class="space-y-2">';
+      
+      for (const test of tests) {
+        try {
+          const response = await fetch(test.url);
+          const data = await response.json();
+          
+          if (response.ok) {
+            html += `
+              <div class="bg-green-50 border border-green-200 rounded p-3">
+                <p class="font-semibold text-green-800">✅ ${test.name}</p>
+                <p class="text-sm text-green-600">Status: ${response.status}</p>
+                <p class="text-xs text-gray-600">Response: ${JSON.stringify(data).substring(0, 100)}...</p>
+              </div>
+            `;
+          } else {
+            html += `
+              <div class="bg-yellow-50 border border-yellow-200 rounded p-3">
+                <p class="font-semibold text-yellow-800">⚠️ ${test.name}</p>
+                <p class="text-sm text-yellow-600">Status: ${response.status}</p>
+                <p class="text-xs text-gray-600">Error: ${JSON.stringify(data)}</p>
+              </div>
+            `;
+          }
+        } catch (error) {
+          html += `
+            <div class="bg-red-50 border border-red-200 rounded p-3">
+              <p class="font-semibold text-red-800">❌ ${test.name}</p>
+              <p class="text-sm text-red-600">Error: ${error.message}</p>
+              <p class="text-xs text-gray-600">URL: ${test.url}</p>
+            </div>
+          `;
+        }
+      }
+      
+      html += '</div>';
+      resultsDiv.innerHTML = html;
+    }
+    
+    // Auto-test on load
+    testConnection();
+  </script>
+</body>
+</html>
+

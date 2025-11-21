@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>HomeSwift | Request a Service</title>
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#3b82f6",
+              secondary: "#64748b",
+              accent: "#f59e0b",
+              success: "#10b981",
+              danger: "#ef4444",
+              warning: "#f59e0b",
+              info: "#3b82f6",
+              light: "#f8fafc",
+              dark: "#1e293b",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .sticky-summary {
+        position: sticky;
+        top: 20px;
+      }
+      @media (max-width: 768px) {
+        .sticky-summary {
+          position: relative;
+          top: 0;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 text-gray-900 min-h-screen">
+    <!-- Back Button -->
+    <a href="../../index.html" class="fixed top-4 left-4 z-50 bg-white hover:bg-gray-100 text-gray-700 font-bold py-2 px-3 rounded-full shadow-lg transition-colors duration-200">
+      &lt;
+    </a>
+
+    <!-- Header -->
+    <header class="bg-blue-900 text-white py-8 px-4 shadow-lg">
+      <div class="max-w-6xl mx-auto text-center">
+        <h1 class="text-3xl md:text-4xl font-bold mb-2">Request a Service</h1>
+        <p class="text-lg text-blue-100">Book your cleaning service with transparent pricing</p>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Form Section -->
+        <div class="lg:col-span-2">
+          <form id="booking-form" class="space-y-8">
+            <!-- SECTION 1: Service Selection -->
+            <section class="bg-white rounded-lg shadow-md p-6">
+              <h2 class="text-2xl font-bold mb-6 text-gray-800">Select Your Services</h2>
+              
+              <!-- Category Selection -->
+              <div id="category-selection" class="mb-8">
+                <h3 class="text-lg font-semibold mb-4 text-gray-700">Choose a Service Category</h3>
+                <div id="category-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Couch Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Couch Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Couch Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Carpet Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Carpet Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Carpet Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Fitted Carpet Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Fitted Carpet Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Fitted Carpet Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Mattress Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Mattress Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Mattress Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Headboard Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Headboard Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Headboard Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Sleigh Bed Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Sleigh Bed Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Sleigh Bed Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Standard Apartment Cleaning" onclick="if(window.selectCategory) window.selectCategory('Standard Apartment Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Standard Apartment Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Apartment Spring Cleaning" onclick="if(window.selectCategory) window.selectCategory('Apartment Spring Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Apartment Spring Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Apartment Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Apartment Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Apartment Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Empty Apartment Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Empty Apartment Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Empty Apartment Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="House Spring Cleaning" onclick="if(window.selectCategory) window.selectCategory('House Spring Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">House Spring Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="House Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('House Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">House Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                  <div class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all" data-category="Empty House Deep Cleaning" onclick="if(window.selectCategory) window.selectCategory('Empty House Deep Cleaning'); else alert('Please wait for page to load');">
+                    <h4 class="font-semibold text-gray-800 mb-2">Empty House Deep Cleaning</h4>
+                    <p class="text-sm text-gray-600">Click to view options</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Service Type Selection (shown when category is selected) -->
+              <div id="service-type-selection" class="mb-8 hidden">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-lg font-semibold text-gray-700">
+                    Select Service Type: <span id="selected-category-name" class="text-blue-600"></span>
+                  </h3>
+                  <button type="button" id="back-to-categories" class="text-blue-600 hover:text-blue-800 font-medium text-sm">
+                    ← Back to Categories
+                  </button>
+                </div>
+                <div id="service-type-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <!-- Service types will be populated here -->
+                </div>
+              </div>
+              
+              <!-- Selected Items Cart -->
+              <div id="selected-items" class="mt-8">
+                <h3 class="text-lg font-semibold mb-4 text-gray-700">Your Selected Services</h3>
+                <div id="cart-items-list" class="space-y-3">
+                  <p class="text-gray-500 text-sm">No services selected yet. Choose a category above to get started.</p>
+                </div>
+              </div>
+            </section>
+
+            <!-- SECTION 2: Schedule Details -->
+            <section class="bg-white rounded-lg shadow-md p-6">
+              <h2 class="text-2xl font-bold mb-6 text-gray-800">Schedule Details</h2>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Date *</label>
+                  <input type="date" name="preferred_date" id="preferred_date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Time *</label>
+                  <select name="preferred_time" id="preferred_time" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    <option value="">Select Time</option>
+                  </select>
+                </div>
+              </div>
+            </section>
+
+            <!-- SECTION 3: Location Details -->
+            <section class="bg-white rounded-lg shadow-md p-6">
+              <h2 class="text-2xl font-bold mb-6 text-gray-800">Location Details</h2>
+              
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Full Address *</label>
+                  <textarea name="customer_address" rows="3" placeholder="Street address, suburb, city, postal code" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required></textarea>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Unit/Apartment Number</label>
+                    <input type="text" name="unit_number" placeholder="e.g., Unit 5B" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Complex/Building Name</label>
+                    <input type="text" name="complex_name" placeholder="e.g., Sandton Heights" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Access Instructions</label>
+                  <textarea name="access_instructions" rows="2" placeholder="Gate code, parking info, special instructions" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                </div>
+              </div>
+            </section>
+
+            <!-- SECTION 4: Contact Details -->
+            <section class="bg-white rounded-lg shadow-md p-6">
+              <h2 class="text-2xl font-bold mb-6 text-gray-800">Contact Details</h2>
+              
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                  <input type="text" name="customer_name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                    <input type="tel" name="customer_phone" placeholder="0#########" maxlength="10" pattern="[0-9]{10}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    <p class="text-xs text-gray-500 mt-1">10 digits (South African format)</p>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                    <input type="email" name="customer_email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Additional Notes</label>
+                  <textarea name="additional_notes" rows="3" placeholder="Any special requests or details we should know?" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                </div>
+              </div>
+            </section>
+
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg text-lg transition-colors shadow-lg">
+              Confirm Booking
+            </button>
+          </form>
+        </div>
+
+        <!-- Booking Summary (Sticky) -->
+        <div class="lg:col-span-1">
+          <div class="sticky-summary bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">YOUR BOOKING</h2>
+            <div class="border-t border-b border-gray-200 py-4 mb-4">
+              <div id="booking-items-list" class="space-y-2 text-sm">
+                <p class="text-gray-500">Add items to see your booking summary</p>
+              </div>
+            </div>
+            <div class="border-t border-gray-200 pt-4">
+              <div id="subtotal-section" class="mb-2" style="display: none;">
+                <div class="flex justify-between items-center text-sm text-gray-600 mb-1">
+                  <span>Subtotal:</span>
+                  <span id="subtotal-price">R0.00</span>
+                </div>
+                <div class="flex justify-between items-center text-sm text-gray-600 mb-2">
+                  <span>Callout Fee:</span>
+                  <span>R100.00</span>
+                </div>
+              </div>
+              <div class="flex justify-between items-center mb-2 border-t border-gray-200 pt-2">
+                <span class="text-lg font-bold text-gray-800">TOTAL:</span>
+                <span id="total-price" class="text-2xl font-bold text-green-600">R0.00</span>
+              </div>
+              <p class="text-xs text-gray-500 mb-4">All prices include service fees</p>
+              <p class="text-xs text-gray-500 italic">Final price confirmed after assessment. You'll receive confirmation within 2 hours.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <div class="bg-white rounded-lg p-6 text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p class="text-gray-700">Processing your booking...</p>
+      </div>
+    </div>
+
+    <script src="../../js/config.js"></script>
+    <script>
+      // Use window.API_BASE_URL from config.js (already set by config.js)
+      // Don't redeclare API_BASE_URL - config.js already declared it
+      // Fallback if config.js didn't load
+      if (!window.API_BASE_URL) {
+        const isProd = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        window.API_BASE_URL = isProd ? 'https://house-hero-backend.onrender.com' : 'http://127.0.0.1:5001';
+      }
+      console.log('[INFO] Using API_BASE_URL:', window.API_BASE_URL);
+      
+      // Global state
+      let cartItems = [];
+      let selectedCategory = null;
+      const CALLOUT_FEE = 100; // R100 callout fee for all bookings
+      
+      // Declare selectCategory early so inline onclick can use it
+      let selectCategory = null;
+
+      // Initialize
+      function init() {
+        console.log('Initializing booking form...');
+        try {
+          initializeTimeSlots();
+          setMinDate();
+          attachCategoryHandlers(); // Cards are already in HTML, just attach handlers
+          setupFormHandlers();
+          console.log('Booking form initialized successfully');
+          console.log('Test: selectCategory function available:', typeof selectCategory);
+          console.log('Test: HARDCODED_PRICING available:', typeof HARDCODED_PRICING);
+        } catch (error) {
+          console.error('Error initializing form:', error);
+        }
+      }
+      
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        // DOM already loaded
+        init();
+      }
+      
+      // Also try attaching handlers after a delay as backup
+      setTimeout(() => {
+        const cards = document.querySelectorAll('.category-card');
+        if (cards.length > 0) {
+          console.log('Backup: Re-attaching handlers to', cards.length, 'cards');
+          attachCategoryHandlers();
+        }
+      }, 500);
+
+      // Set minimum date to today
+      function setMinDate() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('preferred_date').setAttribute('min', today);
+      }
+
+      // Initialize time slots (8:00 AM to 6:00 PM, 30-minute intervals)
+      function initializeTimeSlots() {
+        const timeSelect = document.getElementById('preferred_time');
+        const times = [];
+        for (let hour = 8; hour <= 18; hour++) {
+          for (let minute = 0; minute < 60; minute += 30) {
+            const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+            const displayTime = formatTime(hour, minute);
+            times.push({ value: timeStr, display: displayTime });
+          }
+        }
+        times.forEach(time => {
+          const option = document.createElement('option');
+          option.value = time.value;
+          option.textContent = time.display;
+          timeSelect.appendChild(option);
+        });
+      }
+
+      function formatTime(hour, minute) {
+        const period = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour);
+        return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`;
+      }
+
+      // Service categories from price list
+      const SERVICE_CATEGORIES = [
+        'Couch Deep Cleaning',
+        'Carpet Deep Cleaning',
+        'Fitted Carpet Deep Cleaning',
+        'Mattress Deep Cleaning',
+        'Headboard Deep Cleaning',
+        'Sleigh Bed Deep Cleaning',
+        'Standard Apartment Cleaning',
+        'Apartment Spring Cleaning',
+        'Apartment Deep Cleaning',
+        'Empty Apartment Deep Cleaning',
+        'House Spring Cleaning',
+        'House Deep Cleaning',
+        'Empty House Deep Cleaning'
+      ];
+
+      // Hardcoded pricing data as fallback
+      const HARDCODED_PRICING = {
+        'Couch Deep Cleaning': [
+          { service_type: '1 Seater Couch', customer_display_price: 220, is_white_applicable: true, color_surcharge_customer: 220 },
+          { service_type: '2 Seater Couch', customer_display_price: 440, is_white_applicable: true, color_surcharge_customer: 220 },
+          { service_type: '3 Seater Couch', customer_display_price: 550, is_white_applicable: true, color_surcharge_customer: 220 },
+          { service_type: '4 Seater Couch', customer_display_price: 660, is_white_applicable: true, color_surcharge_customer: 220 },
+          { service_type: '5 Seater Couch', customer_display_price: 770, is_white_applicable: true, color_surcharge_customer: 220 },
+          { service_type: '6 Seater Couch', customer_display_price: 880, is_white_applicable: true, color_surcharge_customer: 220 },
+          { service_type: '3 Seater L Couch', customer_display_price: 660, is_white_applicable: true, color_surcharge_customer: 220 },
+          { service_type: '4 Seater L Couch', customer_display_price: 770, is_white_applicable: true, color_surcharge_customer: 220 },
+          { service_type: '5 Seater L Couch', customer_display_price: 880, is_white_applicable: true, color_surcharge_customer: 220 },
+          { service_type: '6 Seater L Couch', customer_display_price: 990, is_white_applicable: true, color_surcharge_customer: 220 }
+        ],
+        'Carpet Deep Cleaning': [
+          { service_type: 'Extra-Small', customer_display_price: 275, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: 'Small', customer_display_price: 330, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: 'Medium', customer_display_price: 385, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: 'Large', customer_display_price: 440, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: 'X-Large', customer_display_price: 495, is_white_applicable: false, color_surcharge_customer: 0 }
+        ],
+        'Fitted Carpet Deep Cleaning': [
+          { service_type: 'Standard Room', customer_display_price: 495, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: 'Master Bedroom', customer_display_price: 660, is_white_applicable: false, color_surcharge_customer: 0 }
+        ],
+        'Mattress Deep Cleaning': [
+          { service_type: 'Single', customer_display_price: 385, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: 'Double', customer_display_price: 495, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: 'Queen', customer_display_price: 550, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: 'King', customer_display_price: 605, is_white_applicable: false, color_surcharge_customer: 0 }
+        ],
+        'Headboard Deep Cleaning': [
+          { service_type: 'Single', customer_display_price: 220, is_white_applicable: true, color_surcharge_customer: 110 },
+          { service_type: 'Double', customer_display_price: 275, is_white_applicable: true, color_surcharge_customer: 110 },
+          { service_type: 'Queen', customer_display_price: 330, is_white_applicable: true, color_surcharge_customer: 110 },
+          { service_type: 'King', customer_display_price: 385, is_white_applicable: true, color_surcharge_customer: 110 }
+        ],
+        'Sleigh Bed Deep Cleaning': [
+          { service_type: 'Single', customer_display_price: 330, is_white_applicable: true, color_surcharge_customer: 165 },
+          { service_type: 'Double', customer_display_price: 385, is_white_applicable: true, color_surcharge_customer: 165 },
+          { service_type: 'Queen', customer_display_price: 418, is_white_applicable: true, color_surcharge_customer: 165 },
+          { service_type: 'King', customer_display_price: 440, is_white_applicable: true, color_surcharge_customer: 165 }
+        ],
+        'Standard Apartment Cleaning': [
+          { service_type: 'Bachelor Apartment', customer_display_price: 330, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '1 Bedroom Apartment', customer_display_price: 385, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '2 Bedroom Apartment', customer_display_price: 440, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '3 Bedroom Apartment', customer_display_price: 495, is_white_applicable: false, color_surcharge_customer: 0 }
+        ],
+        'Apartment Spring Cleaning': [
+          { service_type: 'Bachelor Apartment', customer_display_price: 660, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '1 Bedroom Apartment', customer_display_price: 770, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '2 Bedroom Apartment', customer_display_price: 880, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '3 Bedroom Apartment', customer_display_price: 1100, is_white_applicable: false, color_surcharge_customer: 0 }
+        ],
+        'Apartment Deep Cleaning': [
+          { service_type: 'Bachelor Apartment', customer_display_price: 1980, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '1 Bedroom Apartment', customer_display_price: 2200, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '2 Bedroom Apartment', customer_display_price: 2750, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '3 Bedroom Apartment', customer_display_price: 3300, is_white_applicable: false, color_surcharge_customer: 0 }
+        ],
+        'Empty Apartment Deep Cleaning': [
+          { service_type: 'Bachelor Apartment', customer_display_price: 1320, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '1 Bedroom Apartment', customer_display_price: 1430, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '2 Bedroom Apartment', customer_display_price: 1650, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '3 Bedroom Apartment', customer_display_price: 1980, is_white_applicable: false, color_surcharge_customer: 0 }
+        ],
+        'House Spring Cleaning': [
+          { service_type: '2 Bedroom House', customer_display_price: 1980, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '3 Bedroom House', customer_display_price: 2310, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '4 Bedroom House', customer_display_price: 2750, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '5 Bedroom House', customer_display_price: 3300, is_white_applicable: false, color_surcharge_customer: 0 }
+        ],
+        'House Deep Cleaning': [
+          { service_type: '2 Bedroom House', customer_display_price: 3960, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '3 Bedroom House', customer_display_price: 4950, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '4 Bedroom House', customer_display_price: 5940, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '5 Bedroom House', customer_display_price: 7150, is_white_applicable: false, color_surcharge_customer: 0 }
+        ],
+        'Empty House Deep Cleaning': [
+          { service_type: '2 Bedroom House', customer_display_price: 2750, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '3 Bedroom House', customer_display_price: 3850, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '4 Bedroom House', customer_display_price: 4950, is_white_applicable: false, color_surcharge_customer: 0 },
+          { service_type: '5 Bedroom House', customer_display_price: 6050, is_white_applicable: false, color_surcharge_customer: 0 }
+        ]
+      };
+
+      // Attach click handlers to existing category cards (they're already in HTML)
+      // Note: Cards now have inline onclick handlers, but we'll keep this as backup
+      function attachCategoryHandlers() {
+        console.log('Attaching click handlers to category cards...');
+        const cards = document.querySelectorAll('.category-card');
+        console.log('Found', cards.length, 'category cards');
+        
+        if (cards.length === 0) {
+          console.error('No category cards found!');
+          return;
+        }
+        
+        // Cards already have inline onclick, but we can verify they work
+        console.log('Category cards have inline onclick handlers. selectCategory available:', typeof window.selectCategory);
+        console.log('All category card handlers ready');
+      }
+
+      // Select a category and show service types
+      selectCategory = function(category) {
+        console.log('selectCategory called with:', category);
+        selectedCategory = category;
+        const items = HARDCODED_PRICING[category] || [];
+        console.log('Found items for category:', items.length);
+        
+        if (items.length === 0) {
+          alert(`No service types found for "${category}". Please check the console.`);
+          return;
+        }
+        
+        // Hide category selection, show service type selection
+        const categorySelection = document.getElementById('category-selection');
+        const serviceTypeSelection = document.getElementById('service-type-selection');
+        const selectedCategoryName = document.getElementById('selected-category-name');
+        
+        if (!categorySelection || !serviceTypeSelection || !selectedCategoryName) {
+          console.error('Required elements not found:', {
+            categorySelection: !!categorySelection,
+            serviceTypeSelection: !!serviceTypeSelection,
+            selectedCategoryName: !!selectedCategoryName
+          });
+          alert('Error: Could not find required elements. Check console.');
+          return;
+        }
+        
+        categorySelection.classList.add('hidden');
+        serviceTypeSelection.classList.remove('hidden');
+        selectedCategoryName.textContent = category;
+        console.log('UI updated - category hidden, service types shown');
+        
+        // Render service type cards
+        const container = document.getElementById('service-type-cards');
+        if (!container) {
+          console.error('Service type cards container not found!');
+          return;
+        }
+        
+        container.innerHTML = '';
+        console.log('Rendering', items.length, 'service type cards');
+        
+        items.forEach((item, index) => {
+          const card = document.createElement('div');
+          card.className = 'service-type-card bg-white border-2 border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:shadow-md transition-all';
+          card.innerHTML = `
+            <div class="flex justify-between items-start mb-3">
+              <h4 class="font-semibold text-gray-800">${item.service_type}</h4>
+              <span class="text-lg font-bold text-blue-600">R${item.customer_display_price.toFixed(2)}</span>
+            </div>
+            ${item.is_white_applicable ? `<p class="text-xs text-gray-500 mb-2">+R${item.color_surcharge_customer.toFixed(2)} if white</p>` : ''}
+            <button type="button" class="add-service-btn w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium" 
+              data-category="${category}" 
+              data-type="${item.service_type}" 
+              data-price="${item.customer_display_price}"
+              data-white-applicable="${item.is_white_applicable}"
+              data-white-surcharge="${item.color_surcharge_customer}">
+              Add to Cart
+            </button>
+          `;
+          container.appendChild(card);
+          console.log(`Card ${index + 1} added: ${item.service_type} - R${item.customer_display_price.toFixed(2)}`);
+        });
+        console.log('Service type cards rendered successfully. Total:', container.children.length);
+      };
+      
+      // Make selectCategory globally accessible immediately
+      window.selectCategory = selectCategory;
+
+      // Setup form handlers
+      function setupFormHandlers() {
+        // Back to categories button
+        document.getElementById('back-to-categories').addEventListener('click', () => {
+          document.getElementById('category-selection').classList.remove('hidden');
+          document.getElementById('service-type-selection').classList.add('hidden');
+          selectedCategory = null;
+        });
+
+        // Add service button (event delegation)
+        document.addEventListener('click', (e) => {
+          if (e.target.classList.contains('add-service-btn')) {
+            const btn = e.target;
+            const category = btn.dataset.category;
+            const type = btn.dataset.type;
+            const price = parseFloat(btn.dataset.price);
+            const isWhiteApplicable = btn.dataset.whiteApplicable === 'true';
+            const whiteSurcharge = parseFloat(btn.dataset.whiteSurcharge);
+            
+            // Show quantity/white selection modal or add directly
+            showAddToCartModal(category, type, price, isWhiteApplicable, whiteSurcharge);
+          }
+          
+          // Remove item from cart
+          if (e.target.classList.contains('remove-cart-item')) {
+            const index = parseInt(e.target.dataset.index);
+            cartItems.splice(index, 1);
+            renderCart();
+            updateSummary();
+          }
+          
+          // Update quantity
+          if (e.target.classList.contains('update-quantity')) {
+            const index = parseInt(e.target.dataset.index);
+            const newQuantity = parseInt(e.target.value) || 1;
+            if (newQuantity > 0 && newQuantity <= 10) {
+              cartItems[index].quantity = newQuantity;
+              renderCart();
+              updateSummary();
+            }
+          }
+          
+          // Toggle white surcharge
+          if (e.target.classList.contains('toggle-white')) {
+            const index = parseInt(e.target.dataset.index);
+            cartItems[index].isWhite = e.target.checked;
+            renderCart();
+            updateSummary();
+          }
+        });
+
+        // Form submission
+        document.getElementById('booking-form').addEventListener('submit', handleSubmit);
+      }
+
+      // Show modal to add item to cart with quantity and white option
+      function showAddToCartModal(category, type, price, isWhiteApplicable, whiteSurcharge) {
+        let quantity = 1;
+        let isWhite = false;
+        
+        // Simple prompt for quantity
+        const qtyInput = prompt(`How many "${type}" would you like?\n\nBase Price: R${price.toFixed(2)}${isWhiteApplicable ? `\nWhite Surcharge: +R${whiteSurcharge.toFixed(2)}` : ''}\n\nEnter quantity (1-10):`, '1');
+        
+        if (!qtyInput) return; // User cancelled
+        
+        quantity = parseInt(qtyInput) || 1;
+        if (quantity < 1) quantity = 1;
+        if (quantity > 10) quantity = 10;
+        
+        // Ask about white if applicable
+        if (isWhiteApplicable) {
+          isWhite = confirm(`Is this item white?\n\nThis will add R${whiteSurcharge.toFixed(2)} per item.\n\nClick OK if white, Cancel if not.`);
+        }
+        
+        // Add to cart
+        const pricing = {
+          customer_display_price: price,
+          is_white_applicable: isWhiteApplicable,
+          color_surcharge_customer: whiteSurcharge,
+          provider_base_price: price * 0.9,
+          color_surcharge_provider: whiteSurcharge * 0.9
+        };
+        
+        cartItems.push({ category, type, quantity, isWhite, pricing });
+        renderCart();
+        updateSummary();
+      }
+
+      // Render cart items
+      function renderCart() {
+        const container = document.getElementById('cart-items-list');
+        
+        if (cartItems.length === 0) {
+          container.innerHTML = '<p class="text-gray-500 text-sm">No services selected yet. Choose a category above to get started.</p>';
+          updateSummary();
+          return;
+        }
+        
+        container.innerHTML = '';
+        cartItems.forEach((item, index) => {
+          let price = item.pricing.customer_display_price;
+          if (item.isWhite && item.pricing.is_white_applicable) {
+            price += item.pricing.color_surcharge_customer;
+          }
+          const lineTotal = price * item.quantity;
+          
+          const cartItem = document.createElement('div');
+          cartItem.className = 'bg-gray-50 border border-gray-200 rounded-lg p-4';
+          cartItem.innerHTML = `
+            <div class="flex justify-between items-start mb-2">
+              <div class="flex-1">
+                <h4 class="font-semibold text-gray-800">${item.type}</h4>
+                <p class="text-sm text-gray-600">${item.category}</p>
+                ${item.isWhite ? `<p class="text-xs text-blue-600 mt-1">✓ White (+R${item.pricing.color_surcharge_customer.toFixed(2)})</p>` : ''}
+              </div>
+              <button type="button" class="remove-cart-item text-red-600 hover:text-red-800 font-medium text-sm" data-index="${index}">
+                Remove
+              </button>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <label class="text-sm text-gray-700">Qty:</label>
+                <input type="number" min="1" max="10" value="${item.quantity}" 
+                  class="update-quantity w-16 px-2 py-1 border border-gray-300 rounded text-center" 
+                  data-index="${index}">
+              </div>
+              <div class="text-right">
+                <p class="text-sm text-gray-600">R${price.toFixed(2)} each</p>
+                <p class="text-lg font-bold text-blue-600">R${lineTotal.toFixed(2)}</p>
+              </div>
+            </div>
+            ${item.pricing.is_white_applicable ? `
+              <div class="mt-2">
+                <label class="flex items-center space-x-2 cursor-pointer">
+                  <input type="checkbox" ${item.isWhite ? 'checked' : ''} 
+                    class="toggle-white w-4 h-4 text-blue-600 border-gray-300 rounded" 
+                    data-index="${index}">
+                  <span class="text-sm text-gray-700">Is this item white? (+R${item.pricing.color_surcharge_customer.toFixed(2)})</span>
+                </label>
+              </div>
+            ` : ''}
+          `;
+          container.appendChild(cartItem);
+        });
+        updateSummary();
+      }
+
+      // Update summary display
+      function updateSummary() {
+        const itemsList = document.getElementById('booking-items-list');
+        const totalPriceEl = document.getElementById('total-price');
+        const subtotalPriceEl = document.getElementById('subtotal-price');
+        const subtotalSection = document.getElementById('subtotal-section');
+        
+        if (cartItems.length === 0) {
+          if (itemsList) itemsList.innerHTML = '<p class="text-gray-500">Add items to see your booking summary</p>';
+          if (totalPriceEl) totalPriceEl.textContent = 'R0.00';
+          if (subtotalSection) subtotalSection.style.display = 'none';
+          return;
+        }
+
+        let subtotal = 0;
+        if (itemsList) {
+          itemsList.innerHTML = '';
+          cartItems.forEach(item => {
+            let price = item.pricing.customer_display_price;
+            if (item.isWhite && item.pricing.is_white_applicable) {
+              price += item.pricing.color_surcharge_customer;
+            }
+            const lineTotal = price * item.quantity;
+            subtotal += lineTotal;
+            
+            const itemEl = document.createElement('div');
+            const whiteText = item.isWhite ? ' (White)' : '';
+            itemEl.className = 'flex justify-between text-sm';
+            itemEl.innerHTML = `
+              <span>• ${item.type}${whiteText} × ${item.quantity}</span>
+              <span class="font-semibold">R${lineTotal.toFixed(2)}</span>
+            `;
+            itemsList.appendChild(itemEl);
+          });
+        }
+        
+        // Add callout fee to total
+        const total = subtotal + CALLOUT_FEE;
+        
+        if (subtotalPriceEl) subtotalPriceEl.textContent = `R${subtotal.toFixed(2)}`;
+        if (totalPriceEl) totalPriceEl.textContent = `R${total.toFixed(2)}`;
+        if (subtotalSection) subtotalSection.style.display = 'block';
+      }
+
+      // Handle form submission
+      async function handleSubmit(e) {
+        e.preventDefault();
+        
+        if (cartItems.length === 0) {
+          alert('Please add at least one service item to your cart');
+          return;
+        }
+
+        const formData = new FormData(e.target);
+        const bookingData = {
+          customer_name: formData.get('customer_name'),
+          customer_email: formData.get('customer_email'),
+          customer_phone: formData.get('customer_phone'),
+          customer_address: formData.get('customer_address'),
+          unit_number: formData.get('unit_number'),
+          complex_name: formData.get('complex_name'),
+          access_instructions: formData.get('access_instructions'),
+          preferred_date: formData.get('preferred_date'),
+          preferred_time: formData.get('preferred_time'),
+          additional_notes: formData.get('additional_notes'),
+          items: cartItems.map(item => ({
+            category: item.category,
+            type: item.type,
+            quantity: item.quantity,
+            is_white: item.isWhite
+          }))
+        };
+
+        // Show loading
+        document.getElementById('loading-overlay').classList.remove('hidden');
+
+        try {
+          const response = await fetch(`${window.API_BASE_URL}/api/service-requests`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bookingData)
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            window.location.href = `booking-success.html?request_id=${result.request_id}&total=${result.total_customer_paid}`;
+          } else {
+            alert(result.error || 'Error creating booking');
+            document.getElementById('loading-overlay').classList.add('hidden');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          console.error('API_BASE_URL:', window.API_BASE_URL);
+          console.error('Full error details:', error.message);
+          alert(`Network error: ${error.message}. Please check if the backend is running on ${window.API_BASE_URL}`);
+          document.getElementById('loading-overlay').classList.add('hidden');
+        }
+      }
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Service Requests Admin | HomeSwift</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../../js/config.js"></script>
+  <style>
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-blue-900 text-white p-6">
+      <h2 class="text-2xl font-bold mb-6">HomeSwift Admin</h2>
+      <nav class="space-y-2">
+        <a href="#" data-view="dashboard" class="nav-link block px-4 py-2 rounded hover:bg-blue-800 active">📊 Dashboard</a>
+        <a href="#" data-view="requests" class="nav-link block px-4 py-2 rounded hover:bg-blue-800">📋 All Requests</a>
+        <a href="#" data-view="providers" class="nav-link block px-4 py-2 rounded hover:bg-blue-800">👥 Providers</a>
+        <a href="#" data-view="financial" class="nav-link block px-4 py-2 rounded hover:bg-blue-800">💰 Financial Reports</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8">
+      <!-- Dashboard View -->
+      <div id="dashboard-view" class="view-section active">
+        <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" id="stats-cards">
+          <!-- Stats will be loaded here -->
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-bold mb-4">Recent Requests</h2>
+          <div id="recent-requests" class="overflow-x-auto">
+            <!-- Recent requests table -->
+          </div>
+        </div>
+      </div>
+
+      <!-- All Requests View -->
+      <div id="requests-view" class="view-section">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-3xl font-bold">All Requests</h1>
+          <div class="flex gap-4">
+            <input type="text" id="search-input" placeholder="Search..." class="px-4 py-2 border rounded">
+            <select id="status-filter" class="px-4 py-2 border rounded">
+              <option value="">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+          <table class="w-full">
+            <thead class="bg-blue-600 text-white">
+              <tr>
+                <th class="px-6 py-3 text-left">Request ID</th>
+                <th class="px-6 py-3 text-left">Customer</th>
+                <th class="px-6 py-3 text-left">Service</th>
+                <th class="px-6 py-3 text-left">Date</th>
+                <th class="px-6 py-3 text-left">Status</th>
+                <th class="px-6 py-3 text-left">Customer Paid</th>
+                <th class="px-6 py-3 text-left">Provider Gets</th>
+                <th class="px-6 py-3 text-left">Commission</th>
+                <th class="px-6 py-3 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="requests-table-body">
+              <!-- Requests will be loaded here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Request Detail Modal -->
+      <div id="request-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Request Details</h2>
+            <button onclick="closeRequestDetail()" class="text-gray-500 hover:text-gray-700">✕</button>
+          </div>
+          <div id="request-detail-content">
+            <!-- Request details will be loaded here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Providers View -->
+      <div id="providers-view" class="view-section">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-3xl font-bold">Provider Management</h1>
+          <button onclick="showAddProviderForm()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">+ Add Provider</button>
+        </div>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+          <table class="w-full">
+            <thead class="bg-blue-600 text-white">
+              <tr>
+                <th class="px-6 py-3 text-left">Name</th>
+                <th class="px-6 py-3 text-left">Phone</th>
+                <th class="px-6 py-3 text-left">Email</th>
+                <th class="px-6 py-3 text-left">Services</th>
+                <th class="px-6 py-3 text-left">Status</th>
+                <th class="px-6 py-3 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="providers-table-body">
+              <!-- Providers will be loaded here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Financial Reports View -->
+      <div id="financial-view" class="view-section">
+        <h1 class="text-3xl font-bold mb-6">Financial Reports</h1>
+        <div class="mb-6 flex gap-4">
+          <input type="date" id="report-from" class="px-4 py-2 border rounded">
+          <input type="date" id="report-to" class="px-4 py-2 border rounded">
+          <button onclick="loadFinancialReport()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Apply</button>
+          <button onclick="exportReport()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Export CSV</button>
+        </div>
+        <div id="financial-report-content" class="bg-white rounded-lg shadow p-6">
+          <!-- Financial report will be loaded here -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const view = link.dataset.view;
+        showView(view);
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+      });
+    });
+
+    function showView(viewName) {
+      document.querySelectorAll('.view-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(`${viewName}-view`).classList.add('active');
+      
+      if (viewName === 'dashboard') loadDashboard();
+      if (viewName === 'requests') loadRequests();
+      if (viewName === 'providers') loadProviders();
+      if (viewName === 'financial') loadFinancialReport();
+    }
+
+    // Load Dashboard Stats
+    async function loadDashboard() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/admin/stats`);
+        const stats = await response.json();
+        
+        document.getElementById('stats-cards').innerHTML = `
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-gray-600 mb-2">Total Bookings</h3>
+            <p class="text-3xl font-bold">${stats.total_bookings}</p>
+          </div>
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-gray-600 mb-2">This Month Revenue</h3>
+            <p class="text-3xl font-bold text-green-600">R${stats.this_month_revenue.toFixed(2)}</p>
+          </div>
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-gray-600 mb-2">Pending</h3>
+            <p class="text-3xl font-bold text-orange-600">${stats.pending}</p>
+          </div>
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-gray-600 mb-2">Commission</h3>
+            <p class="text-3xl font-bold text-blue-600">R${stats.total_commission.toFixed(2)}</p>
+          </div>
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-gray-600 mb-2">Avg Commission</h3>
+            <p class="text-3xl font-bold">R${stats.avg_commission.toFixed(2)}</p>
+          </div>
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-gray-600 mb-2">Completed</h3>
+            <p class="text-3xl font-bold text-green-600">${stats.completed}</p>
+          </div>
+        `;
+        
+        // Load recent requests
+        const requestsResponse = await fetch(`${API_BASE_URL}/api/service-requests?limit=5`);
+        const requests = await requestsResponse.json();
+        displayRecentRequests(requests.slice(0, 5));
+      } catch (error) {
+        console.error('Error loading dashboard:', error);
+      }
+    }
+
+    function displayRecentRequests(requests) {
+      const tbody = document.getElementById('recent-requests');
+      if (requests.length === 0) {
+        tbody.innerHTML = '<p class="text-gray-500">No recent requests</p>';
+        return;
+      }
+      tbody.innerHTML = `
+        <table class="w-full">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left">ID</th>
+              <th class="px-4 py-2 text-left">Customer</th>
+              <th class="px-4 py-2 text-left">Date</th>
+              <th class="px-4 py-2 text-left">Status</th>
+              <th class="px-4 py-2 text-left">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${requests.map(req => `
+              <tr class="hover:bg-gray-50 cursor-pointer" onclick="viewRequestDetail(${req.request_id})">
+                <td class="px-4 py-2">#${req.request_id}</td>
+                <td class="px-4 py-2">${req.customer_name}</td>
+                <td class="px-4 py-2">${req.preferred_date}</td>
+                <td class="px-4 py-2"><span class="px-2 py-1 rounded text-xs ${getStatusClass(req.status)}">${req.status}</span></td>
+                <td class="px-4 py-2">R${req.total_customer_paid.toFixed(2)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    // Load All Requests
+    async function loadRequests() {
+      const status = document.getElementById('status-filter').value;
+      const search = document.getElementById('search-input').value;
+      
+      let url = `${API_BASE_URL}/api/service-requests`;
+      const params = [];
+      if (status) params.push(`status=${status}`);
+      if (search) params.push(`search=${search}`);
+      if (params.length) url += '?' + params.join('&');
+      
+      try {
+        const response = await fetch(url);
+        const requests = await response.json();
+        displayRequests(requests);
+      } catch (error) {
+        console.error('Error loading requests:', error);
+      }
+    }
+
+    function displayRequests(requests) {
+      const tbody = document.getElementById('requests-table-body');
+      if (requests.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-4 text-center text-gray-500">No requests found</td></tr>';
+        return;
+      }
+      tbody.innerHTML = requests.map(req => `
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4">#${req.request_id}</td>
+          <td class="px-6 py-4">${req.customer_name}</td>
+          <td class="px-6 py-4">${req.selected_items[0]?.category || 'N/A'}</td>
+          <td class="px-6 py-4">${req.preferred_date}</td>
+          <td class="px-6 py-4"><span class="px-2 py-1 rounded text-xs ${getStatusClass(req.status)}">${req.status}</span></td>
+          <td class="px-6 py-4">R${req.total_customer_paid.toFixed(2)}</td>
+          <td class="px-6 py-4">R${req.total_provider_payout.toFixed(2)}</td>
+          <td class="px-6 py-4">R${req.total_commission_earned.toFixed(2)}</td>
+          <td class="px-6 py-4">
+            <button onclick="viewRequestDetail(${req.request_id})" class="text-blue-600 hover:text-blue-800">View</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function getStatusClass(status) {
+      const classes = {
+        pending: 'bg-yellow-100 text-yellow-800',
+        confirmed: 'bg-blue-100 text-blue-800',
+        in_progress: 'bg-purple-100 text-purple-800',
+        completed: 'bg-green-100 text-green-800',
+        cancelled: 'bg-red-100 text-red-800'
+      };
+      return classes[status] || 'bg-gray-100 text-gray-800';
+    }
+
+    // View Request Detail
+    async function viewRequestDetail(requestId) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/service-requests/${requestId}`);
+        const request = await response.json();
+        
+        const itemsHtml = request.selected_items.map(item => `
+          <tr>
+            <td class="px-4 py-2">${item.type}${item.is_white ? ' (White)' : ''}</td>
+            <td class="px-4 py-2">${item.quantity}</td>
+            <td class="px-4 py-2">R${item.customer_price.toFixed(2)}</td>
+            <td class="px-4 py-2">R${item.provider_price.toFixed(2)}</td>
+            <td class="px-4 py-2">R${item.commission.toFixed(2)}</td>
+          </tr>
+        `).join('');
+        
+        document.getElementById('request-detail-content').innerHTML = `
+          <div class="space-y-6">
+            <div>
+              <h3 class="font-bold mb-2">Request ID: #${request.request_id}</h3>
+              <div class="flex gap-4 mb-4">
+                <select id="detail-status" class="px-4 py-2 border rounded">
+                  <option value="pending" ${request.status === 'pending' ? 'selected' : ''}>Pending</option>
+                  <option value="confirmed" ${request.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                  <option value="in_progress" ${request.status === 'in_progress' ? 'selected' : ''}>In Progress</option>
+                  <option value="completed" ${request.status === 'completed' ? 'selected' : ''}>Completed</option>
+                  <option value="cancelled" ${request.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                </select>
+                <select id="detail-priority" class="px-4 py-2 border rounded">
+                  <option value="low" ${request.priority === 'low' ? 'selected' : ''}>Low</option>
+                  <option value="medium" ${request.priority === 'medium' ? 'selected' : ''}>Medium</option>
+                  <option value="high" ${request.priority === 'high' ? 'selected' : ''}>High</option>
+                </select>
+              </div>
+            </div>
+            
+            <div>
+              <h4 class="font-bold mb-2">Customer Information</h4>
+              <p>Name: ${request.customer_name}</p>
+              <p>Phone: <a href="tel:${request.customer_phone}" class="text-blue-600">${request.customer_phone}</a></p>
+              <p>Email: <a href="mailto:${request.customer_email}" class="text-blue-600">${request.customer_email}</a></p>
+              <p>Address: ${request.customer_address}</p>
+            </div>
+            
+            <div>
+              <h4 class="font-bold mb-2">Schedule</h4>
+              <p>Date: ${request.preferred_date}</p>
+              <p>Time: ${request.preferred_time}</p>
+            </div>
+            
+            <div>
+              <h4 class="font-bold mb-2">Services Requested</h4>
+              <table class="w-full border">
+                <thead class="bg-gray-100">
+                  <tr>
+                    <th class="px-4 py-2 text-left">Item</th>
+                    <th class="px-4 py-2 text-left">Quantity</th>
+                    <th class="px-4 py-2 text-left">Customer Pays</th>
+                    <th class="px-4 py-2 text-left">Provider Gets</th>
+                    <th class="px-4 py-2 text-left">Commission</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${itemsHtml}
+                  <tr class="font-bold bg-gray-50">
+                    <td class="px-4 py-2" colspan="2">TOTALS</td>
+                    <td class="px-4 py-2">R${request.total_customer_paid.toFixed(2)}</td>
+                    <td class="px-4 py-2">R${request.total_provider_payout.toFixed(2)}</td>
+                    <td class="px-4 py-2">R${request.total_commission_earned.toFixed(2)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <div>
+              <h4 class="font-bold mb-2">Provider Assignment</h4>
+              <select id="detail-provider" class="w-full px-4 py-2 border rounded mb-2">
+                <option value="">Select Provider</option>
+              </select>
+              ${request.provider_name ? `<p>Assigned: ${request.provider_name} (${request.provider_phone})</p>` : ''}
+            </div>
+            
+            <div class="flex gap-4">
+              <button onclick="saveRequestDetail(${request.request_id})" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save Changes</button>
+              <button onclick="closeRequestDetail()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Close</button>
+            </div>
+          </div>
+        `;
+        
+        // Load providers for dropdown
+        loadProvidersForSelect();
+        
+        document.getElementById('request-detail-modal').classList.remove('hidden');
+      } catch (error) {
+        console.error('Error loading request detail:', error);
+      }
+    }
+
+    async function loadProvidersForSelect() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/providers`);
+        const providers = await response.json();
+        const select = document.getElementById('detail-provider');
+        select.innerHTML = '<option value="">Select Provider</option>';
+        providers.forEach(provider => {
+          const option = document.createElement('option');
+          option.value = provider.id;
+          option.textContent = `${provider.name} - ${provider.phone}`;
+          select.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error loading providers:', error);
+      }
+    }
+
+    async function saveRequestDetail(requestId) {
+      const status = document.getElementById('detail-status').value;
+      const priority = document.getElementById('detail-priority').value;
+      const providerId = document.getElementById('detail-provider').value;
+      
+      try {
+        const updateData = { status, priority };
+        if (providerId) {
+          updateData.assigned_provider_id = parseInt(providerId);
+          // Get provider details
+          const providerResponse = await fetch(`${API_BASE_URL}/api/providers/${providerId}`);
+          const provider = await providerResponse.json();
+          updateData.provider_name = provider.name;
+          updateData.provider_phone = provider.phone;
+          updateData.provider_email = provider.email;
+        }
+        
+        const response = await fetch(`${API_BASE_URL}/api/service-requests/${requestId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updateData)
+        });
+        
+        if (response.ok) {
+          alert('Request updated successfully');
+          closeRequestDetail();
+          loadRequests();
+        }
+      } catch (error) {
+        console.error('Error updating request:', error);
+        alert('Error updating request');
+      }
+    }
+
+    function closeRequestDetail() {
+      document.getElementById('request-detail-modal').classList.add('hidden');
+    }
+
+    // Load Providers
+    async function loadProviders() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/providers`);
+        const providers = await response.json();
+        displayProviders(providers);
+      } catch (error) {
+        console.error('Error loading providers:', error);
+      }
+    }
+
+    function displayProviders(providers) {
+      const tbody = document.getElementById('providers-table-body');
+      if (providers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No providers found</td></tr>';
+        return;
+      }
+      tbody.innerHTML = providers.map(provider => `
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4">${provider.name}</td>
+          <td class="px-6 py-4">${provider.phone}</td>
+          <td class="px-6 py-4">${provider.email}</td>
+          <td class="px-6 py-4">${provider.service_type}</td>
+          <td class="px-6 py-4"><span class="px-2 py-1 rounded text-xs ${provider.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${provider.status}</span></td>
+          <td class="px-6 py-4">
+            <button onclick="editProvider(${provider.id})" class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Load Financial Report
+    async function loadFinancialReport() {
+      const from = document.getElementById('report-from').value;
+      const to = document.getElementById('report-to').value;
+      
+      let url = `${API_BASE_URL}/api/admin/financial-report`;
+      if (from) url += `?from=${from}`;
+      if (to) url += (from ? '&' : '?') + `to=${to}`;
+      
+      try {
+        const response = await fetch(url);
+        const report = await response.json();
+        displayFinancialReport(report);
+      } catch (error) {
+        console.error('Error loading financial report:', error);
+      }
+    }
+
+    function displayFinancialReport(report) {
+      const categoryBreakdown = Object.entries(report.category_breakdown).map(([cat, data]) => `
+        <tr>
+          <td class="px-4 py-2">${cat}</td>
+          <td class="px-4 py-2">${data.count}</td>
+          <td class="px-4 py-2">R${data.commission.toFixed(2)}</td>
+        </tr>
+      `).join('');
+      
+      document.getElementById('financial-report-content').innerHTML = `
+        <div class="space-y-6">
+          <div>
+            <h3 class="font-bold mb-4">Summary</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-gray-600">Total Customer Payments</p>
+                <p class="text-2xl font-bold">R${report.total_customer_payments.toFixed(2)}</p>
+              </div>
+              <div>
+                <p class="text-gray-600">Total Provider Payouts</p>
+                <p class="text-2xl font-bold">R${report.total_provider_payouts.toFixed(2)}</p>
+              </div>
+              <div>
+                <p class="text-gray-600">Total Commission Earned</p>
+                <p class="text-2xl font-bold text-green-600">R${report.total_commission.toFixed(2)}</p>
+              </div>
+              <div>
+                <p class="text-gray-600">Average Commission per Job</p>
+                <p class="text-2xl font-bold">R${report.avg_commission.toFixed(2)}</p>
+              </div>
+              <div>
+                <p class="text-gray-600">Number of Jobs</p>
+                <p class="text-2xl font-bold">${report.number_of_jobs}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h3 class="font-bold mb-4">Breakdown by Service Category</h3>
+            <table class="w-full border">
+              <thead class="bg-gray-100">
+                <tr>
+                  <th class="px-4 py-2 text-left">Category</th>
+                  <th class="px-4 py-2 text-left">Jobs</th>
+                  <th class="px-4 py-2 text-left">Commission</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${categoryBreakdown}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function exportReport() {
+      // CSV export functionality
+      alert('CSV export functionality would be implemented here');
+    }
+
+    // Event listeners
+    document.getElementById('status-filter').addEventListener('change', loadRequests);
+    document.getElementById('search-input').addEventListener('input', loadRequests);
+
+    // Initialize
+    loadDashboard();
+  </script>
+</body>
+</html>
+
