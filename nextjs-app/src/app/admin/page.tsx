@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { serviceRequestApi, providerApi } from '@/lib/api'
 import { formatCurrency } from '@/lib/utils'
@@ -244,6 +244,17 @@ function StatCard({
   icon: string
   gradient: string
 }) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Format currency only on client to avoid hydration mismatch
+  const displayValue = typeof value === 'string' && value.includes('R') 
+    ? (mounted ? value : 'R 0.00') 
+    : value
+
   return (
     <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 transform hover:scale-105 transition-all">
       <div className="flex items-center justify-between mb-4">
@@ -252,7 +263,9 @@ function StatCard({
         </div>
       </div>
       <h3 className="text-gray-600 text-sm font-semibold mb-2">{title}</h3>
-      <p className="text-3xl font-extrabold text-gray-900">{value}</p>
+      <p className="text-3xl font-extrabold text-gray-900" suppressHydrationWarning>
+        {displayValue}
+      </p>
     </div>
   )
 }
@@ -273,10 +286,17 @@ function BookingsView({
   providers: any[]
 }) {
   const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [searchQuery, setSearchQuery] = useState<string>('')
 
-  const filteredRequests = requests.filter((r: any) =>
-    statusFilter === 'all' ? true : r.status === statusFilter
-  )
+  const filteredRequests = requests.filter((r: any) => {
+    const matchesStatus = statusFilter === 'all' ? true : r.status === statusFilter
+    const matchesSearch = searchQuery === '' || 
+      r.customerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      r.customerEmail?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      r.requestId?.toString().includes(searchQuery) ||
+      r.customerPhone?.includes(searchQuery)
+    return matchesStatus && matchesSearch
+  })
 
   if (isLoading) {
     return (
@@ -288,22 +308,37 @@ function BookingsView({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Service Requests</h1>
           <p className="text-gray-600">Manage all service bookings</p>
         </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="all">All Status</option>
-          <option value="pending">Pending</option>
-          <option value="confirmed">Confirmed</option>
-          <option value="completed">Completed</option>
-        </select>
+        <div className="flex gap-4">
+          <input
+            type="text"
+            placeholder="Search by name, email, ID, or phone..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all min-w-[300px]"
+          />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          >
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
       </div>
+      
+      {filteredRequests.length === 0 && requests.length > 0 && (
+        <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 mb-4">
+          <p className="text-yellow-800 font-semibold">No requests found matching your search criteria.</p>
+        </div>
+      )}
 
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
         <div className="overflow-x-auto">
@@ -379,6 +414,9 @@ function BookingsView({
 }
 
 function ProvidersView({ providers }: { providers: any[] }) {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [editingProvider, setEditingProvider] = useState<any>(null)
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -386,7 +424,10 @@ function ProvidersView({ providers }: { providers: any[] }) {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Service Providers</h1>
           <p className="text-gray-600">Manage your service providers</p>
         </div>
-        <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-bold hover:shadow-lg transform hover:scale-105 transition-all">
+        <button
+          onClick={() => setIsAddModalOpen(true)}
+          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-bold hover:shadow-lg transform hover:scale-105 transition-all"
+        >
           + Add Provider
         </button>
       </div>

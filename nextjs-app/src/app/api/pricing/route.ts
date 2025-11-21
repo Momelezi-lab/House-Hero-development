@@ -17,7 +17,21 @@ export async function GET(request: NextRequest) {
         },
       })
 
-      return NextResponse.json(pricing)
+      console.log(`Found ${pricing.length} pricing items for category: ${category}`)
+      
+      // Return with consistent field names
+      return NextResponse.json(pricing.map(item => ({
+        id: item.id,
+        serviceCategory: item.serviceCategory,
+        serviceType: item.serviceType,
+        itemDescription: item.itemDescription,
+        providerBasePrice: item.providerBasePrice,
+        customerDisplayPrice: item.customerDisplayPrice,
+        colorSurchargeProvider: item.colorSurchargeProvider,
+        colorSurchargeCustomer: item.colorSurchargeCustomer,
+        isWhiteApplicable: item.isWhiteApplicable,
+        commissionPercentage: item.commissionPercentage,
+      })))
     }
 
     // Get all categories

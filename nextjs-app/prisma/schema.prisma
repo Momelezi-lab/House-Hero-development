@@ -5,6 +5,8 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Seed configuration
+
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")

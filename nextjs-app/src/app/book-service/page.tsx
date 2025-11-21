@@ -50,9 +50,13 @@ export default function BookServicePage() {
   }, [])
 
   // Fetch pricing for selected category
-  const { data: pricingData } = useQuery({
+  const { data: pricingData, isLoading: isLoadingPricing, error: pricingError } = useQuery({
     queryKey: ['pricing', selectedCategory],
-    queryFn: () => pricingApi.getPricingByCategory(selectedCategory!),
+    queryFn: async () => {
+      const data = await pricingApi.getPricingByCategory(selectedCategory!)
+      console.log('Pricing data received:', data)
+      return data
+    },
     enabled: !!selectedCategory,
   })
 
@@ -290,8 +294,39 @@ export default function BookServicePage() {
                         ← Back to Categories
                       </button>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {pricingData?.map((item: any, index: number) => (
+                    
+                    {/* Loading State */}
+                    {isLoadingPricing && (
+                      <div className="text-center py-8">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                        <p className="text-gray-600">Loading service options...</p>
+                      </div>
+                    )}
+
+                    {/* Error State */}
+                    {pricingError && (
+                      <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-4">
+                        <p className="text-red-800 font-semibold">Error loading services</p>
+                        <p className="text-red-600 text-sm mt-1">
+                          {(pricingError as any)?.response?.data?.error || (pricingError as any)?.message || 'Failed to load service options'}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* No Data State */}
+                    {!isLoadingPricing && !pricingError && (!pricingData || pricingData.length === 0) && (
+                      <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 text-center">
+                        <p className="text-yellow-800 font-semibold mb-2">No service options available</p>
+                        <p className="text-yellow-600 text-sm">
+                          No pricing data found for "{selectedCategory}". Please check the database or contact support.
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Service Options */}
+                    {!isLoadingPricing && !pricingError && pricingData && pricingData.length > 0 && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {pricingData.map((item: any, index: number) => (
                         <div
                           key={item.id}
                           className="group service-type-card bg-white border-2 border-gray-200 rounded-xl p-5 hover:border-blue-400 hover:shadow-xl transform hover:scale-105 transition-all duration-300"
@@ -327,8 +362,9 @@ export default function BookServicePage() {
                             ➕ Add to Cart
                           </button>
                         </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </section>
@@ -523,7 +559,7 @@ export default function BookServicePage() {
                       }
                       const lineTotal = price * item.quantity
                       return (
-                        <div key={index} className="bg-gradient-to-br from-white to-blue-50 border-2 border-blue-200 rounded-xl p-4 shadow-md hover:shadow-lg transition-all">
+                        <div key={`cart-item-${item.category}-${item.type}-${index}`} className="bg-gradient-to-br from-white to-blue-50 border-2 border-blue-200 rounded-xl p-4 shadow-md hover:shadow-lg transition-all">
                           <div className="flex justify-between items-start mb-3">
                             <div className="flex-1">
                               <h4 className="font-bold text-gray-900 text-lg">{item.type}</h4>

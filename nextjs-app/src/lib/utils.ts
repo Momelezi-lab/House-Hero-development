@@ -6,10 +6,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-ZA', {
-    style: 'currency',
-    currency: 'ZAR',
-  }).format(amount)
+  // Use a consistent format to avoid hydration mismatches
+  // Always format as: R 1,234.56 (period for decimals, comma for thousands)
+  const parts = amount.toFixed(2).split('.')
+  const integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return `R ${integerPart}.${parts[1]}`
 }
 
 export function formatDate(date: Date | string): string {

@@ -2,15 +2,25 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export function Navigation() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  // Prevent hydration mismatch - only check pathname after mount
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  
+  // Use a default pathname during SSR to avoid mismatch
+  const currentPath = mounted ? pathname : '/'
 
   const navItems = [
     { href: '/', label: 'Home', icon: '🏠' },
-    { href: '/book-service', label: 'Book Service', icon: '📋' },
+    { href: '/services/cleaning', label: 'Services', icon: '🧹' },
+    { href: '/book-service', label: 'Book Now', icon: '📋' },
     { href: '/faq', label: 'FAQ', icon: '❓' },
     { href: '/contact', label: 'Contact', icon: '📞' },
   ]
@@ -36,7 +46,7 @@ export function Navigation() {
                 key={item.href}
                 href={item.href}
                 className={`px-4 py-2 rounded-xl font-semibold transition-all ${
-                  pathname === item.href
+                  currentPath === item.href
                     ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
@@ -71,7 +81,7 @@ export function Navigation() {
                 href={item.href}
                 onClick={() => setIsOpen(false)}
                 className={`block px-4 py-3 rounded-xl font-semibold transition-all ${
-                  pathname === item.href
+                  currentPath === item.href
                     ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}

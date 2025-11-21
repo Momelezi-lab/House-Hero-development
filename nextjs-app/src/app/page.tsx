@@ -4,7 +4,7 @@ const services = [
   {
     title: 'Cleaning Services',
     description: 'Professional deep cleaning for your home',
-    href: '/book-service',
+    href: '/services/cleaning',
     icon: '🧹',
     available: true,
     gradient: 'from-blue-500 to-cyan-500',
@@ -73,14 +73,21 @@ export default function Home() {
             </p>
           </div>
 
-          {/* CTA Button */}
-          <div className="text-center mb-16">
+          {/* CTA Buttons */}
+          <div className="text-center mb-16 space-x-4">
+            <Link
+              href="/services/cleaning"
+              className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-blue-500/50 transform hover:scale-105 transition-all duration-300 hover:from-blue-700 hover:to-cyan-700"
+            >
+              <span>ℹ️</span>
+              <span>Learn More</span>
+            </Link>
             <Link
               href="/book-service"
-              className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-blue-500/50 transform hover:scale-105 transition-all duration-300 hover:from-blue-700 hover:to-cyan-700"
+              className="inline-flex items-center gap-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-10 py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-green-500/50 transform hover:scale-105 transition-all duration-300 hover:from-green-700 hover:to-emerald-700"
             >
               <span>🚀</span>
-              <span>Book Cleaning Service Now</span>
+              <span>Book Now</span>
               <span>→</span>
             </Link>
           </div>
