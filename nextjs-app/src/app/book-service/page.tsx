@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { pricingApi, serviceRequestApi } from '@/lib/api'
 import Link from 'next/link'
@@ -39,6 +39,7 @@ const SERVICE_CATEGORIES = [
 
 export default function BookServicePage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -48,6 +49,14 @@ export default function BookServicePage() {
   useEffect(() => {
     setToday(new Date().toISOString().split('T')[0])
   }, [])
+
+  // Handle category from query parameter
+  useEffect(() => {
+    const categoryParam = searchParams.get('category')
+    if (categoryParam && SERVICE_CATEGORIES.includes(categoryParam)) {
+      setSelectedCategory(categoryParam)
+    }
+  }, [searchParams])
 
   // Fetch pricing for selected category
   const { data: pricingData, isLoading: isLoadingPricing, error: pricingError } = useQuery({
@@ -272,7 +281,14 @@ export default function BookServicePage() {
                               →
                             </span>
                           </div>
-                          <p className="text-sm text-gray-600">Click to view options</p>
+                          <p className="text-sm text-gray-600 mb-2">Click to view options</p>
+                          <Link
+                            href={`/services/details?category=${encodeURIComponent(category)}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-xs text-blue-600 hover:text-blue-800 font-semibold inline-flex items-center gap-1"
+                          >
+                            View what's included →
+                          </Link>
                         </div>
                       ))}
                     </div>

@@ -43,34 +43,64 @@ export default function CleaningServicePage() {
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Cleaning Services</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ServiceTypeCard
-              title="Deep Cleaning"
-              description="Thorough cleaning of all surfaces, corners, and hard-to-reach areas"
-              icon="🔍"
+              title="Standard Apartment Cleaning"
+              description="Comprehensive standard cleaning package for apartments"
+              icon="🏢"
+              category="Standard Apartment Cleaning"
             />
             <ServiceTypeCard
-              title="Spring Cleaning"
-              description="Comprehensive seasonal cleaning to refresh your home"
+              title="Apartment Spring Cleaning"
+              description="Deep spring cleaning to refresh your apartment"
               icon="🌸"
+              category="Apartment Spring Cleaning"
             />
             <ServiceTypeCard
-              title="Couch Cleaning"
+              title="Apartment Deep Cleaning"
+              description="Comprehensive deep cleaning for your entire apartment"
+              icon="🔍"
+              category="Apartment Deep Cleaning"
+            />
+            <ServiceTypeCard
+              title="Empty Apartment Deep Cleaning"
+              description="Complete deep cleaning for empty apartments"
+              icon="📦"
+              category="Empty Apartment Deep Cleaning"
+            />
+            <ServiceTypeCard
+              title="House Spring Cleaning"
+              description="Comprehensive spring cleaning for your entire house"
+              icon="🏠"
+              category="House Spring Cleaning"
+            />
+            <ServiceTypeCard
+              title="House Deep Cleaning"
+              description="Comprehensive deep cleaning for your entire house"
+              icon="🏡"
+              category="House Deep Cleaning"
+            />
+            <ServiceTypeCard
+              title="Empty House Deep Cleaning"
+              description="Complete deep cleaning for empty houses"
+              icon="🏘️"
+              category="Empty House Deep Cleaning"
+            />
+            <ServiceTypeCard
+              title="Couch Deep Cleaning"
               description="Professional deep cleaning for all types of couches and upholstery"
               icon="🛋️"
+              category="Couch Deep Cleaning"
             />
             <ServiceTypeCard
-              title="Carpet Cleaning"
+              title="Carpet Deep Cleaning"
               description="Deep steam cleaning for carpets and rugs"
               icon="🧸"
+              category="Carpet Deep Cleaning"
             />
             <ServiceTypeCard
-              title="Mattress Cleaning"
+              title="Mattress Deep Cleaning"
               description="Sanitize and refresh your mattresses"
               icon="🛏️"
-            />
-            <ServiceTypeCard
-              title="Apartment Cleaning"
-              description="Complete cleaning solutions for apartments of all sizes"
-              icon="🏢"
+              category="Mattress Deep Cleaning"
             />
           </div>
         </section>
@@ -106,18 +136,39 @@ function ServiceTypeCard({
   title,
   description,
   icon,
+  category,
 }: {
   title: string
   description: string
   icon: string
+  category?: string
 }) {
-  return (
+  const content = (
     <div className="p-6 bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 rounded-xl hover:border-blue-400 hover:shadow-lg transition-all">
       <div className="text-4xl mb-3">{icon}</div>
       <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+      <p className="text-gray-600 mb-3">{description}</p>
+      {category && (
+        <Link
+          href={`/services/details?category=${encodeURIComponent(category)}`}
+          className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-semibold text-sm"
+          onClick={(e) => e.stopPropagation()}
+        >
+          View Details →
+        </Link>
+      )}
     </div>
   )
+
+  if (category) {
+    return (
+      <Link href={`/services/details?category=${encodeURIComponent(category)}`}>
+        {content}
+      </Link>
+    )
+  }
+
+  return content
 }
 
 function ProcessStep({
