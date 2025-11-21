@@ -42,6 +42,12 @@ export default function BookServicePage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [today, setToday] = useState<string>('')
+
+  // Set today's date on client side only to avoid hydration mismatch
+  useEffect(() => {
+    setToday(new Date().toISOString().split('T')[0])
+  }, [])
 
   // Fetch pricing for selected category
   const { data: pricingData } = useQuery({
@@ -177,7 +183,7 @@ export default function BookServicePage() {
     createRequestMutation.mutate(bookingData)
   }
 
-  // Generate time slots
+  // Generate time slots (static, no hydration issues)
   const timeSlots = []
   for (let hour = 8; hour <= 18; hour++) {
     for (let minute = 0; minute < 60; minute += 30) {
@@ -189,9 +195,6 @@ export default function BookServicePage() {
     }
   }
 
-  // Set minimum date to today
-  const today = new Date().toISOString().split('T')[0]
-
   const subtotal = calculateSubtotal()
   const total = calculateTotal()
 
@@ -200,16 +203,24 @@ export default function BookServicePage() {
       {/* Back Button */}
       <Link
         href="/"
-        className="fixed top-4 left-4 z-50 bg-white hover:bg-gray-100 text-gray-700 font-bold py-2 px-3 rounded-full shadow-lg transition-colors"
+        className="fixed top-4 left-4 z-50 bg-white hover:bg-blue-50 text-gray-700 font-bold py-3 px-4 rounded-full shadow-xl hover:shadow-2xl transition-all transform hover:scale-110 border-2 border-blue-200"
       >
-        &lt;
+        ← Back
       </Link>
 
       {/* Header */}
-      <header className="bg-blue-900 text-white py-8 px-4 shadow-lg">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">Request a Service</h1>
-          <p className="text-lg text-blue-100">Book your cleaning service with transparent pricing</p>
+      <header className="relative bg-gradient-to-r from-blue-600 via-blue-700 to-cyan-600 text-white py-12 px-4 shadow-2xl overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-500/20 rounded-full -ml-24 -mb-24"></div>
+        <div className="max-w-6xl mx-auto text-center relative z-10">
+          <div className="inline-block mb-4 text-5xl">🧹</div>
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-3 drop-shadow-lg">
+            Request a Service
+          </h1>
+          <p className="text-xl text-blue-100 font-medium">
+            Book your cleaning service with transparent pricing
+          </p>
         </div>
       </header>
 
@@ -220,23 +231,43 @@ export default function BookServicePage() {
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Service Selection */}
-              <section className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-2xl font-bold mb-6 text-gray-800">Select Your Services</h2>
+              <section className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center text-2xl">
+                    ✨
+                  </div>
+                  <h2 className="text-3xl font-bold text-gray-900">Select Your Services</h2>
+                </div>
 
-                {/* Category Selection */}
+                {/* Category Selection - Always show when no category selected */}
                 {!selectedCategory && (
-                  <div id="category-selection">
-                    <h3 className="text-lg font-semibold mb-4 text-gray-700">
+                  <div id="category-selection" className="w-full">
+                    <h3 className="text-lg font-semibold mb-6 text-gray-700">
                       Choose a Service Category
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {SERVICE_CATEGORIES.map((category) => (
+                      {SERVICE_CATEGORIES.map((category, index) => (
                         <div
-                          key={category}
+                          key={`category-${category}-${index}`}
                           onClick={() => handleCategorySelect(category)}
-                          className="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-4 cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all"
+                          className="group category-card bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-xl p-5 cursor-pointer hover:bg-gradient-to-br hover:from-blue-100 hover:to-cyan-100 hover:border-blue-400 hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault()
+                              handleCategorySelect(category)
+                            }
+                          }}
                         >
-                          <h4 className="font-semibold text-gray-800 mb-2">{category}</h4>
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-bold text-gray-900 group-hover:text-blue-700 transition-colors text-base">
+                              {category}
+                            </h4>
+                            <span className="text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity text-xl">
+                              →
+                            </span>
+                          </div>
                           <p className="text-sm text-gray-600">Click to view options</p>
                         </div>
                       ))}
@@ -260,22 +291,25 @@ export default function BookServicePage() {
                       </button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {pricingData?.map((item: any) => (
+                      {pricingData?.map((item: any, index: number) => (
                         <div
                           key={item.id}
-                          className="service-type-card bg-white border-2 border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:shadow-md transition-all"
+                          className="group service-type-card bg-white border-2 border-gray-200 rounded-xl p-5 hover:border-blue-400 hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                          style={{ animationDelay: `${index * 100}ms` }}
                         >
                           <div className="flex justify-between items-start mb-3">
-                            <h4 className="font-semibold text-gray-800">{item.serviceType}</h4>
-                            <span className="text-lg font-bold text-blue-600">
+                            <h4 className="font-bold text-gray-900 text-lg">{item.serviceType}</h4>
+                            <span className="text-xl font-extrabold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
                               {formatCurrency(parseFloat(item.customerDisplayPrice.toString()))}
                             </span>
                           </div>
                           {item.isWhiteApplicable && (
-                            <p className="text-xs text-gray-500 mb-2">
-                              +{formatCurrency(parseFloat(item.colorSurchargeCustomer.toString()))}{' '}
-                              if white
-                            </p>
+                            <div className="mb-3 p-2 bg-amber-50 border border-amber-200 rounded-lg">
+                              <p className="text-xs text-amber-800 font-medium">
+                                ⚪ +{formatCurrency(parseFloat(item.colorSurchargeCustomer.toString()))}{' '}
+                                if white
+                              </p>
+                            </div>
                           )}
                           <button
                             type="button"
@@ -288,9 +322,9 @@ export default function BookServicePage() {
                                 parseFloat(item.colorSurchargeCustomer.toString())
                               )
                             }
-                            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                            className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 px-4 rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
                           >
-                            Add to Cart
+                            ➕ Add to Cart
                           </button>
                         </div>
                       ))}
@@ -300,8 +334,13 @@ export default function BookServicePage() {
               </section>
 
               {/* Schedule & Location */}
-              <section className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-2xl font-bold mb-6 text-gray-800">Schedule & Location</h2>
+              <section className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-2xl">
+                    📅
+                  </div>
+                  <h2 className="text-3xl font-bold text-gray-900">Schedule & Location</h2>
+                </div>
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -311,9 +350,9 @@ export default function BookServicePage() {
                       <input
                         type="date"
                         name="preferred_date"
-                        min={today}
+                        min={today || undefined}
                         required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white"
                       />
                     </div>
                     <div>
@@ -323,7 +362,7 @@ export default function BookServicePage() {
                       <select
                         name="preferred_time"
                         required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white"
                       >
                         {timeSlots.map((slot) => (
                           <option key={slot.value} value={slot.value}>
@@ -341,7 +380,7 @@ export default function BookServicePage() {
                       type="text"
                       name="customer_address"
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -352,7 +391,7 @@ export default function BookServicePage() {
                       <input
                         type="text"
                         name="unit_number"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                       />
                     </div>
                     <div>
@@ -362,7 +401,7 @@ export default function BookServicePage() {
                       <input
                         type="text"
                         name="complex_name"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                       />
                     </div>
                   </div>
@@ -374,15 +413,20 @@ export default function BookServicePage() {
                       name="access_instructions"
                       rows={3}
                       placeholder="Gate code, building access, etc."
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
                     />
                   </div>
                 </div>
               </section>
 
               {/* Contact Information */}
-              <section className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-2xl font-bold mb-6 text-gray-800">Contact Information</h2>
+              <section className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-2xl">
+                    📞
+                  </div>
+                  <h2 className="text-3xl font-bold text-gray-900">Contact Information</h2>
+                </div>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -392,7 +436,7 @@ export default function BookServicePage() {
                       type="text"
                       name="customer_name"
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -407,7 +451,7 @@ export default function BookServicePage() {
                         maxLength={10}
                         pattern="[0-9]{10}"
                         required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                       />
                       <p className="text-xs text-gray-500 mt-1">10 digits (South African format)</p>
                     </div>
@@ -419,7 +463,7 @@ export default function BookServicePage() {
                         type="email"
                         name="customer_email"
                         required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                       />
                     </div>
                   </div>
@@ -431,7 +475,7 @@ export default function BookServicePage() {
                       name="additional_notes"
                       rows={3}
                       placeholder="Any special requests or details we should know?"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
                     />
                   </div>
                 </div>
@@ -440,17 +484,33 @@ export default function BookServicePage() {
               <button
                 type="submit"
                 disabled={isSubmitting || cartItems.length === 0}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg text-lg transition-colors shadow-lg"
+                className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white font-bold py-5 px-6 rounded-2xl text-xl transition-all shadow-2xl hover:shadow-blue-500/50 transform hover:scale-[1.02] disabled:transform-none disabled:hover:scale-100 flex items-center justify-center gap-3"
               >
-                {isSubmitting ? 'Processing...' : 'Confirm Booking'}
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    <span>Processing...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>✅</span>
+                    <span>Confirm Booking</span>
+                    <span>→</span>
+                  </>
+                )}
               </button>
             </form>
           </div>
 
           {/* Booking Summary */}
           <div className="lg:col-span-1">
-            <div className="sticky top-4 bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-2xl font-bold mb-4 text-gray-800">YOUR BOOKING</h2>
+            <div className="sticky top-4 bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-2xl p-6 border-2 border-blue-200">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-lg flex items-center justify-center text-white font-bold">
+                  🛒
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">YOUR BOOKING</h2>
+              </div>
               <div className="border-t border-b border-gray-200 py-4 mb-4">
                 <div className="space-y-2 text-sm">
                   {cartItems.length === 0 ? (
@@ -463,28 +523,30 @@ export default function BookServicePage() {
                       }
                       const lineTotal = price * item.quantity
                       return (
-                        <div key={index} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                          <div className="flex justify-between items-start mb-2">
+                        <div key={index} className="bg-gradient-to-br from-white to-blue-50 border-2 border-blue-200 rounded-xl p-4 shadow-md hover:shadow-lg transition-all">
+                          <div className="flex justify-between items-start mb-3">
                             <div className="flex-1">
-                              <h4 className="font-semibold text-gray-800">{item.type}</h4>
-                              <p className="text-sm text-gray-600">{item.category}</p>
+                              <h4 className="font-bold text-gray-900 text-lg">{item.type}</h4>
+                              <p className="text-sm text-gray-600 mb-1">{item.category}</p>
                               {item.isWhite && (
-                                <p className="text-xs text-blue-600 mt-1">
-                                  ✓ White (+{formatCurrency(item.pricing.color_surcharge_customer)})
-                                </p>
+                                <div className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-lg text-xs font-semibold mt-1">
+                                  <span>⚪</span>
+                                  <span>White (+{formatCurrency(item.pricing.color_surcharge_customer)})</span>
+                                </div>
                               )}
                             </div>
                             <button
                               type="button"
                               onClick={() => handleRemoveItem(index)}
-                              className="text-red-600 hover:text-red-800 font-medium text-sm"
+                              className="text-red-600 hover:text-red-800 font-bold text-lg hover:scale-110 transition-transform"
+                              title="Remove item"
                             >
-                              Remove
+                              ×
                             </button>
                           </div>
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
-                              <label className="text-sm text-gray-700">Qty:</label>
+                              <label className="text-sm font-semibold text-gray-700">Qty:</label>
                               <input
                                 type="number"
                                 min={1}
@@ -493,28 +555,31 @@ export default function BookServicePage() {
                                 onChange={(e) =>
                                   handleUpdateQuantity(index, parseInt(e.target.value) || 1)
                                 }
-                                className="w-16 px-2 py-1 border border-gray-300 rounded text-center"
+                                className="w-20 px-3 py-2 border-2 border-gray-300 rounded-lg text-center font-semibold focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                               />
                             </div>
                             <div className="text-right">
-                              <p className="text-sm text-gray-600">{formatCurrency(price)} each</p>
-                              <p className="text-lg font-bold text-blue-600">
-                                {formatCurrency(lineTotal)}
-                              </p>
+                              <p className="text-xs text-gray-600 mb-1">Unit Price</p>
+                              <p className="text-sm font-semibold text-gray-700">{formatCurrency(price)}</p>
                             </div>
                           </div>
+                          <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                            <span className="text-sm font-semibold text-gray-700">Line Total:</span>
+                            <span className="text-xl font-extrabold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                              {formatCurrency(lineTotal)}
+                            </span>
+                          </div>
                           {item.pricing.is_white_applicable && (
-                            <div className="mt-2">
-                              <label className="flex items-center space-x-2 cursor-pointer">
+                            <div className="mt-3 pt-3 border-t border-gray-200">
+                              <label className="flex items-center space-x-2 cursor-pointer group">
                                 <input
                                   type="checkbox"
                                   checked={item.isWhite}
                                   onChange={(e) => handleToggleWhite(index, e.target.checked)}
-                                  className="w-4 h-4 text-blue-600 border-gray-300 rounded"
+                                  className="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
                                 />
-                                <span className="text-sm text-gray-700">
-                                  Is this item white? (+
-                                  {formatCurrency(item.pricing.color_surcharge_customer)})
+                                <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                                  Is this item white? (+{formatCurrency(item.pricing.color_surcharge_customer)})
                                 </span>
                               </label>
                             </div>
@@ -538,9 +603,9 @@ export default function BookServicePage() {
                     </div>
                   </div>
                 )}
-                <div className="flex justify-between items-center mb-2 border-t border-gray-200 pt-2">
-                  <span className="text-lg font-bold text-gray-800">TOTAL:</span>
-                  <span className="text-2xl font-bold text-green-600">
+                <div className="flex justify-between items-center mb-2 border-t-2 border-gray-300 pt-4">
+                  <span className="text-xl font-bold text-gray-900">TOTAL:</span>
+                  <span className="text-3xl font-extrabold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                     {formatCurrency(total)}
                   </span>
                 </div>
@@ -556,10 +621,16 @@ export default function BookServicePage() {
 
       {/* Loading Overlay */}
       {isSubmitting && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-6 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-700">Processing your booking...</p>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-white rounded-3xl shadow-2xl p-10 text-center max-w-md mx-4 border-2 border-blue-200">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto mb-6"></div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Processing Your Booking</h3>
+            <p className="text-gray-600">Please wait while we confirm your service request...</p>
+            <div className="mt-6 flex justify-center gap-2">
+              <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+              <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+              <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            </div>
           </div>
         </div>
       )}
