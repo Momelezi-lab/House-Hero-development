@@ -1,88 +1,92 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { pricingApi, serviceRequestApi } from '@/lib/api'
-import Link from 'next/link'
-import { formatCurrency } from '@/lib/utils'
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { pricingApi, serviceRequestApi } from "@/lib/api";
+import Link from "next/link";
+import { formatCurrency } from "@/lib/utils";
 
-const CALLOUT_FEE = 100
+const CALLOUT_FEE = 100;
 
 interface CartItem {
-  category: string
-  type: string
-  quantity: number
-  isWhite: boolean
+  category: string;
+  type: string;
+  quantity: number;
+  isWhite: boolean;
   pricing: {
-    customer_display_price: number
-    is_white_applicable: boolean
-    color_surcharge_customer: number
-  }
+    customer_display_price: number;
+    is_white_applicable: boolean;
+    color_surcharge_customer: number;
+  };
 }
 
 const SERVICE_CATEGORIES = [
-  'Couch Deep Cleaning',
-  'Carpet Deep Cleaning',
-  'Fitted Carpet Deep Cleaning',
-  'Mattress Deep Cleaning',
-  'Headboard Deep Cleaning',
-  'Sleigh Bed Deep Cleaning',
-  'Standard Apartment Cleaning',
-  'Apartment Spring Cleaning',
-  'Apartment Deep Cleaning',
-  'Empty Apartment Deep Cleaning',
-  'House Spring Cleaning',
-  'House Deep Cleaning',
-  'Empty House Deep Cleaning',
-]
+  "Couch Deep Cleaning",
+  "Carpet Deep Cleaning",
+  "Fitted Carpet Deep Cleaning",
+  "Mattress Deep Cleaning",
+  "Headboard Deep Cleaning",
+  "Sleigh Bed Deep Cleaning",
+  "Standard Apartment Cleaning",
+  "Apartment Spring Cleaning",
+  "Apartment Deep Cleaning",
+  "Empty Apartment Deep Cleaning",
+  "House Spring Cleaning",
+  "House Deep Cleaning",
+  "Empty House Deep Cleaning",
+];
 
 export default function BookServicePage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [today, setToday] = useState<string>('')
-  const [userEmail, setUserEmail] = useState<string>('')
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [today, setToday] = useState<string>("");
+  const [userEmail, setUserEmail] = useState<string>("");
 
   // Set today's date on client side only to avoid hydration mismatch
   useEffect(() => {
-    setToday(new Date().toISOString().split('T')[0])
+    setToday(new Date().toISOString().split("T")[0]);
     // Get logged-in user's email
-    if (typeof window !== 'undefined') {
-      const userData = localStorage.getItem('user')
+    if (typeof window !== "undefined") {
+      const userData = localStorage.getItem("user");
       if (userData) {
         try {
-          const user = JSON.parse(userData)
+          const user = JSON.parse(userData);
           if (user?.email) {
-            setUserEmail(user.email)
+            setUserEmail(user.email);
           }
         } catch (e) {
-          console.error('Error parsing user data:', e)
+          console.error("Error parsing user data:", e);
         }
       }
     }
-  }, [])
+  }, []);
 
   // Handle category from query parameter
   useEffect(() => {
-    const categoryParam = searchParams.get('category')
+    const categoryParam = searchParams.get("category");
     if (categoryParam && SERVICE_CATEGORIES.includes(categoryParam)) {
-      setSelectedCategory(categoryParam)
+      setSelectedCategory(categoryParam);
     }
-  }, [searchParams])
+  }, [searchParams]);
 
   // Fetch pricing for selected category
-  const { data: pricingData, isLoading: isLoadingPricing, error: pricingError } = useQuery({
-    queryKey: ['pricing', selectedCategory],
+  const {
+    data: pricingData,
+    isLoading: isLoadingPricing,
+    error: pricingError,
+  } = useQuery({
+    queryKey: ["pricing", selectedCategory],
     queryFn: async () => {
-      const data = await pricingApi.getPricingByCategory(selectedCategory!)
-      console.log('Pricing data received:', data)
-      return data
+      const data = await pricingApi.getPricingByCategory(selectedCategory!);
+      console.log("Pricing data received:", data);
+      return data;
     },
     enabled: !!selectedCategory,
-  })
+  });
 
   // Create service request mutation
   const createRequestMutation = useMutation({
@@ -90,21 +94,21 @@ export default function BookServicePage() {
     onSuccess: (data) => {
       router.push(
         `/booking-success?request_id=${data.request_id}&total=${data.total_customer_paid}`
-      )
+      );
     },
     onError: (error: any) => {
-      alert(error.response?.data?.error || 'Error creating booking')
-      setIsSubmitting(false)
+      alert(error.response?.data?.error || "Error creating booking");
+      setIsSubmitting(false);
     },
-  })
+  });
 
   const handleCategorySelect = (category: string) => {
-    setSelectedCategory(category)
-  }
+    setSelectedCategory(category);
+  };
 
   const handleBackToCategories = () => {
-    setSelectedCategory(null)
-  }
+    setSelectedCategory(null);
+  };
 
   const handleAddToCart = (
     category: string,
@@ -115,22 +119,26 @@ export default function BookServicePage() {
   ) => {
     const quantityStr = prompt(
       `How many "${type}" would you like?\n\nBase Price: R${price.toFixed(2)}${
-        isWhiteApplicable ? `\nWhite Surcharge: +R${whiteSurcharge.toFixed(2)}` : ''
+        isWhiteApplicable
+          ? `\nWhite Surcharge: +R${whiteSurcharge.toFixed(2)}`
+          : ""
       }\n\nEnter quantity (1-10):`,
-      '1'
-    )
+      "1"
+    );
 
-    if (!quantityStr) return
+    if (!quantityStr) return;
 
-    let quantity = parseInt(quantityStr) || 1
-    if (quantity < 1) quantity = 1
-    if (quantity > 10) quantity = 10
+    let quantity = parseInt(quantityStr) || 1;
+    if (quantity < 1) quantity = 1;
+    if (quantity > 10) quantity = 10;
 
-    let isWhite = false
+    let isWhite = false;
     if (isWhiteApplicable) {
       isWhite = confirm(
-        `Is this item white?\n\nThis will add R${whiteSurcharge.toFixed(2)} per item.\n\nClick OK if white, Cancel if not.`
-      )
+        `Is this item white?\n\nThis will add R${whiteSurcharge.toFixed(
+          2
+        )} per item.\n\nClick OK if white, Cancel if not.`
+      );
     }
 
     const newItem: CartItem = {
@@ -143,101 +151,105 @@ export default function BookServicePage() {
         is_white_applicable: isWhiteApplicable,
         color_surcharge_customer: whiteSurcharge,
       },
-    }
+    };
 
-    setCartItems([...cartItems, newItem])
-  }
+    setCartItems([...cartItems, newItem]);
+  };
 
   const handleRemoveItem = (index: number) => {
-    setCartItems(cartItems.filter((_, i) => i !== index))
-  }
+    setCartItems(cartItems.filter((_, i) => i !== index));
+  };
 
   const handleUpdateQuantity = (index: number, quantity: number) => {
-    if (quantity < 1 || quantity > 10) return
-    const updated = [...cartItems]
-    updated[index].quantity = quantity
-    setCartItems(updated)
-  }
+    if (quantity < 1 || quantity > 10) return;
+    const updated = [...cartItems];
+    updated[index].quantity = quantity;
+    setCartItems(updated);
+  };
 
   const handleToggleWhite = (index: number, checked: boolean) => {
-    const updated = [...cartItems]
-    updated[index].isWhite = checked
-    setCartItems(updated)
-  }
+    const updated = [...cartItems];
+    updated[index].isWhite = checked;
+    setCartItems(updated);
+  };
 
   const calculateSubtotal = () => {
     return cartItems.reduce((sum, item) => {
-      let price = item.pricing.customer_display_price
+      let price = item.pricing.customer_display_price;
       if (item.isWhite && item.pricing.is_white_applicable) {
-        price += item.pricing.color_surcharge_customer
+        price += item.pricing.color_surcharge_customer;
       }
-      return sum + price * item.quantity
-    }, 0)
-  }
+      return sum + price * item.quantity;
+    }, 0);
+  };
 
   const calculateTotal = () => {
-    return calculateSubtotal() + CALLOUT_FEE
-  }
+    return calculateSubtotal() + CALLOUT_FEE;
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     if (cartItems.length === 0) {
-      alert('Please add at least one service item to your cart')
-      return
+      alert("Please add at least one service item to your cart");
+      return;
     }
 
-    setIsSubmitting(true)
-    const formData = new FormData(e.currentTarget)
+    setIsSubmitting(true);
+    const formData = new FormData(e.currentTarget);
 
     const bookingData = {
-      customer_name: formData.get('customer_name') as string,
-      customer_email: formData.get('customer_email') as string,
-      customer_phone: formData.get('customer_phone') as string,
-      customer_address: formData.get('customer_address') as string,
-      unit_number: formData.get('unit_number') as string,
-      complex_name: formData.get('complex_name') as string,
-      access_instructions: formData.get('access_instructions') as string,
-      preferred_date: formData.get('preferred_date') as string,
-      preferred_time: formData.get('preferred_time') as string,
-      additional_notes: formData.get('additional_notes') as string,
+      customer_name: formData.get("customer_name") as string,
+      customer_email: formData.get("customer_email") as string,
+      customer_phone: formData.get("customer_phone") as string,
+      customer_address: formData.get("customer_address") as string,
+      unit_number: formData.get("unit_number") as string,
+      complex_name: formData.get("complex_name") as string,
+      access_instructions: formData.get("access_instructions") as string,
+      preferred_date: formData.get("preferred_date") as string,
+      preferred_time: formData.get("preferred_time") as string,
+      additional_notes: formData.get("additional_notes") as string,
       items: cartItems.map((item) => ({
         category: item.category,
         type: item.type,
         quantity: item.quantity,
         is_white: item.isWhite,
       })),
-    }
+    };
 
-    createRequestMutation.mutate(bookingData)
-  }
+    createRequestMutation.mutate(bookingData);
+  };
 
   // Generate time slots (static, no hydration issues)
-  const timeSlots = []
+  const timeSlots = [];
   for (let hour = 8; hour <= 18; hour++) {
     for (let minute = 0; minute < 60; minute += 30) {
-      const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
-      const period = hour >= 12 ? 'PM' : 'AM'
-      const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour
-      const displayTime = `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`
-      timeSlots.push({ value: timeStr, display: displayTime })
+      const timeStr = `${hour.toString().padStart(2, "0")}:${minute
+        .toString()
+        .padStart(2, "0")}`;
+      const period = hour >= 12 ? "PM" : "AM";
+      const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+      const displayTime = `${displayHour}:${minute
+        .toString()
+        .padStart(2, "0")} ${period}`;
+      timeSlots.push({ value: timeStr, display: displayTime });
     }
   }
 
-  const subtotal = calculateSubtotal()
-  const total = calculateTotal()
+  const subtotal = calculateSubtotal();
+  const total = calculateTotal();
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Back Button */}
       <Link
         href="/"
-        className="fixed top-4 left-4 z-50 bg-white hover:bg-blue-50 text-gray-700 font-bold py-3 px-4 rounded-full shadow-xl hover:shadow-2xl transition-all transform hover:scale-110 border-2 border-blue-200"
+        className="fixed top-4 left-4 z-50 bg-white hover:bg-blue-50 text-[#6B7280] font-bold py-3 px-4 rounded-full shadow-xl hover:shadow-2xl transition-all transform hover:scale-110 border-2 border-blue-200"
       >
         ← Back
       </Link>
 
       {/* Header */}
-      <header className="relative bg-[#1A531A] text-white py-12 px-4 shadow-2xl">
+      <header className="relative bg-[#2563EB] text-white py-12 px-4 shadow-2xl">
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <div className="inline-block mb-4 text-5xl">🧹</div>
           <h1 className="text-4xl md:text-5xl font-extrabold mb-3">
@@ -256,18 +268,20 @@ export default function BookServicePage() {
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Service Selection */}
-              <section className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+              <section className="bg-white rounded-xl shadow-xl p-8 border border-gray-100">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 bg-[#1A531A] rounded-xl flex items-center justify-center text-2xl text-white">
+                  <div className="w-12 h-12 bg-[#2563EB] rounded-xl flex items-center justify-center text-2xl text-white">
                     ✨
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-900">Select Your Services</h2>
+                  <h2 className="text-3xl font-bold text-[#111827]">
+                    Select Your Services
+                  </h2>
                 </div>
 
                 {/* Category Selection - Always show when no category selected */}
                 {!selectedCategory && (
                   <div id="category-selection" className="w-full">
-                    <h3 className="text-lg font-semibold mb-6 text-gray-700">
+                    <h3 className="text-lg font-semibold mb-6 text-[#6B7280]">
                       Choose a Service Category
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -275,29 +289,33 @@ export default function BookServicePage() {
                         <div
                           key={`category-${category}-${index}`}
                           onClick={() => handleCategorySelect(category)}
-                          className="group category-card bg-[#90B890]/10 border-2 border-[#90B890] rounded-xl p-5 cursor-pointer hover:bg-[#90B890]/20 hover:border-[#1A531A] hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                          className="group category-card bg-[#2563EB]/10 border-2 border-[#D1D5DB] rounded-xl p-5 cursor-pointer hover:bg-[#2563EB]/20 hover:border-[#2563EB] hover:shadow-lg transform hover:scale-105 transition-all duration-300"
                           role="button"
                           tabIndex={0}
                           onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault()
-                              handleCategorySelect(category)
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              handleCategorySelect(category);
                             }
                           }}
                         >
                           <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-bold text-gray-900 group-hover:text-[#1A531A] transition-colors text-base">
+                            <h4 className="font-bold text-[#111827] group-hover:text-[#2563EB] transition-colors text-base">
                               {category}
                             </h4>
-                            <span className="text-[#1A531A] opacity-0 group-hover:opacity-100 transition-opacity text-xl">
+                            <span className="text-[#2563EB] opacity-0 group-hover:opacity-100 transition-opacity text-xl">
                               →
                             </span>
                           </div>
-                          <p className="text-sm text-gray-600 mb-2">Click to view options</p>
+                          <p className="text-sm text-gray-600 mb-2">
+                            Click to view options
+                          </p>
                           <Link
-                            href={`/services/details?category=${encodeURIComponent(category)}`}
+                            href={`/services/details?category=${encodeURIComponent(
+                              category
+                            )}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="text-xs text-[#1A531A] hover:text-[#1A531A]/80 font-semibold inline-flex items-center gap-1"
+                            className="text-xs text-[#2563EB] hover:text-[#2563EB]/80 font-semibold inline-flex items-center gap-1"
                           >
                             View what's included →
                           </Link>
@@ -311,104 +329,135 @@ export default function BookServicePage() {
                 {selectedCategory && (
                   <div id="service-type-selection">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-gray-700">
+                      <h3 className="text-lg font-semibold text-[#6B7280]">
                         {selectedCategory}
                       </h3>
                       <button
                         type="button"
                         onClick={handleBackToCategories}
-                        className="text-[#1A531A] hover:text-[#1A531A]/80 font-medium"
+                        className="text-[#2563EB] hover:text-[#2563EB]/80 font-medium"
                       >
                         ← Back to Categories
                       </button>
                     </div>
-                    
+
                     {/* Loading State */}
                     {isLoadingPricing && (
                       <div className="text-center py-8">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1A531A] mx-auto mb-4"></div>
-                        <p className="text-gray-600">Loading service options...</p>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2563EB] mx-auto mb-4"></div>
+                        <p className="text-gray-600">
+                          Loading service options...
+                        </p>
                       </div>
                     )}
 
                     {/* Error State */}
                     {pricingError && (
                       <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-4">
-                        <p className="text-red-800 font-semibold">Error loading services</p>
+                        <p className="text-red-800 font-semibold">
+                          Error loading services
+                        </p>
                         <p className="text-red-600 text-sm mt-1">
-                          {(pricingError as any)?.response?.data?.error || (pricingError as any)?.message || 'Failed to load service options'}
+                          {(pricingError as any)?.response?.data?.error ||
+                            (pricingError as any)?.message ||
+                            "Failed to load service options"}
                         </p>
                       </div>
                     )}
 
                     {/* No Data State */}
-                    {!isLoadingPricing && !pricingError && (!pricingData || pricingData.length === 0) && (
-                      <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 text-center">
-                        <p className="text-yellow-800 font-semibold mb-2">No service options available</p>
-                        <p className="text-yellow-600 text-sm">
-                          No pricing data found for "{selectedCategory}". Please check the database or contact support.
-                        </p>
-                      </div>
-                    )}
+                    {!isLoadingPricing &&
+                      !pricingError &&
+                      (!pricingData || pricingData.length === 0) && (
+                        <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 text-center">
+                          <p className="text-yellow-800 font-semibold mb-2">
+                            No service options available
+                          </p>
+                          <p className="text-yellow-600 text-sm">
+                            No pricing data found for "{selectedCategory}".
+                            Please check the database or contact support.
+                          </p>
+                        </div>
+                      )}
 
                     {/* Service Options */}
-                    {!isLoadingPricing && !pricingError && pricingData && pricingData.length > 0 && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {pricingData.map((item: any, index: number) => (
-                        <div
-                          key={item.id}
-                          className="group service-type-card bg-white border-2 border-gray-200 rounded-xl p-5 hover:border-[#1A531A] hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-                          style={{ animationDelay: `${index * 100}ms` }}
-                        >
-                          <div className="flex justify-between items-start mb-3">
-                            <h4 className="font-bold text-gray-900 text-lg">{item.serviceType}</h4>
-                            <span className="text-xl font-extrabold text-[#1A531A]">
-                              {formatCurrency(parseFloat(item.customerDisplayPrice.toString()))}
-                            </span>
-                          </div>
-                          {item.isWhiteApplicable && (
-                            <div className="mb-3 p-2 bg-amber-50 border border-amber-200 rounded-lg">
-                              <p className="text-xs text-amber-800 font-medium">
-                                ⚪ +{formatCurrency(parseFloat(item.colorSurchargeCustomer.toString()))}{' '}
-                                if white
-                              </p>
+                    {!isLoadingPricing &&
+                      !pricingError &&
+                      pricingData &&
+                      pricingData.length > 0 && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {pricingData.map((item: any, index: number) => (
+                            <div
+                              key={item.id}
+                              className="group service-type-card bg-white border border-[#D1D5DB] rounded-xl p-5 hover:border-[#2563EB] hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                              style={{ animationDelay: `${index * 100}ms` }}
+                            >
+                              <div className="flex justify-between items-start mb-3">
+                                <h4 className="font-bold text-[#111827] text-lg">
+                                  {item.serviceType}
+                                </h4>
+                                <span className="text-xl font-extrabold text-[#2563EB]">
+                                  {formatCurrency(
+                                    parseFloat(
+                                      item.customerDisplayPrice.toString()
+                                    )
+                                  )}
+                                </span>
+                              </div>
+                              {item.isWhiteApplicable && (
+                                <div className="mb-3 p-2 bg-amber-50 border border-amber-200 rounded-lg">
+                                  <p className="text-xs text-amber-800 font-medium">
+                                    ⚪ +
+                                    {formatCurrency(
+                                      parseFloat(
+                                        item.colorSurchargeCustomer.toString()
+                                      )
+                                    )}{" "}
+                                    if white
+                                  </p>
+                                </div>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleAddToCart(
+                                    item.serviceCategory,
+                                    item.serviceType,
+                                    parseFloat(
+                                      item.customerDisplayPrice.toString()
+                                    ),
+                                    item.isWhiteApplicable,
+                                    parseFloat(
+                                      item.colorSurchargeCustomer.toString()
+                                    )
+                                  )
+                                }
+                                className="w-full bg-[#2563EB] text-white py-3 px-4 rounded-xl hover:bg-[#2563EB]/90 transition-all font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
+                              >
+                                ➕ Add to Cart
+                              </button>
                             </div>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleAddToCart(
-                                item.serviceCategory,
-                                item.serviceType,
-                                parseFloat(item.customerDisplayPrice.toString()),
-                                item.isWhiteApplicable,
-                                parseFloat(item.colorSurchargeCustomer.toString())
-                              )
-                            }
-                            className="w-full bg-[#1A531A] text-white py-3 px-4 rounded-xl hover:bg-[#1A531A]/90 transition-all font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
-                          >
-                            ➕ Add to Cart
-                          </button>
+                          ))}
                         </div>
-                        ))}
-                      </div>
-                    )}
+                      )}
                   </div>
                 )}
               </section>
 
               {/* Schedule & Location */}
-              <section className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+              <section className="bg-white rounded-xl shadow-xl p-8 border border-gray-100">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 bg-[#90B890] rounded-xl flex items-center justify-center text-2xl">
+                  <div className="w-12 h-12 bg-[#2563EB] rounded-xl flex items-center justify-center text-2xl">
                     📅
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-900">Schedule & Location</h2>
+                  <h2 className="text-3xl font-bold text-[#111827]">
+                    Schedule & Location
+                  </h2>
                 </div>
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-[#6B7280] mb-2">
                         Preferred Date *
                       </label>
                       <input
@@ -416,17 +465,17 @@ export default function BookServicePage() {
                         name="preferred_date"
                         min={today || undefined}
                         required
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] transition-all bg-white text-gray-900"
+                        className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition-all bg-white text-[#111827]"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-[#6B7280] mb-2">
                         Preferred Time *
                       </label>
                       <select
                         name="preferred_time"
                         required
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] transition-all bg-white text-gray-900"
+                        className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition-all bg-white text-[#111827]"
                       >
                         {timeSlots.map((slot) => (
                           <option key={slot.value} value={slot.value}>
@@ -437,75 +486,77 @@ export default function BookServicePage() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-[#6B7280] mb-2">
                       Full Address *
                     </label>
                     <input
                       type="text"
                       name="customer_address"
                       required
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] transition-all text-gray-900"
+                      className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition-all text-[#111827]"
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-[#6B7280] mb-2">
                         Unit Number
                       </label>
                       <input
                         type="text"
                         name="unit_number"
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] transition-all text-gray-900"
+                        className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition-all text-[#111827]"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-[#6B7280] mb-2">
                         Complex Name
                       </label>
                       <input
                         type="text"
                         name="complex_name"
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] transition-all text-gray-900"
+                        className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition-all text-[#111827]"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-[#6B7280] mb-2">
                       Access Instructions
                     </label>
                     <textarea
                       name="access_instructions"
                       rows={3}
                       placeholder="Gate code, building access, etc."
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none text-gray-900"
+                      className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none text-[#111827]"
                     />
                   </div>
                 </div>
               </section>
 
               {/* Contact Information */}
-              <section className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+              <section className="bg-white rounded-xl shadow-xl p-8 border border-gray-100">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 bg-[#90B890] rounded-xl flex items-center justify-center text-2xl">
+                  <div className="w-12 h-12 bg-[#2563EB] rounded-xl flex items-center justify-center text-2xl">
                     📞
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-900">Contact Information</h2>
+                  <h2 className="text-3xl font-bold text-[#111827]">
+                    Contact Information
+                  </h2>
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-[#6B7280] mb-2">
                       Full Name *
                     </label>
                     <input
                       type="text"
                       name="customer_name"
                       required
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] transition-all text-gray-900"
+                      className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition-all text-[#111827]"
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-[#6B7280] mb-2">
                         Phone Number *
                       </label>
                       <input
@@ -515,12 +566,14 @@ export default function BookServicePage() {
                         maxLength={10}
                         pattern="[0-9]{10}"
                         required
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] transition-all text-gray-900"
+                        className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition-all text-[#111827]"
                       />
-                      <p className="text-xs text-gray-500 mt-1">10 digits (South African format)</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        10 digits (South African format)
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-[#6B7280] mb-2">
                         Email Address *
                       </label>
                       <input
@@ -529,22 +582,24 @@ export default function BookServicePage() {
                         value={userEmail}
                         onChange={(e) => setUserEmail(e.target.value)}
                         required
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] transition-all text-gray-900"
+                        className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition-all text-[#111827]"
                       />
                       {userEmail && (
-                        <p className="text-xs text-gray-500 mt-1">Using your account email</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Using your account email
+                        </p>
                       )}
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-[#6B7280] mb-2">
                       Additional Notes
                     </label>
                     <textarea
                       name="additional_notes"
                       rows={3}
                       placeholder="Any special requests or details we should know?"
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none text-gray-900"
+                      className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none text-[#111827]"
                     />
                   </div>
                 </div>
@@ -553,7 +608,7 @@ export default function BookServicePage() {
               <button
                 type="submit"
                 disabled={isSubmitting || cartItems.length === 0}
-                className="w-full bg-[#1A531A] hover:bg-[#1A531A]/90 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-5 px-6 rounded-2xl text-xl transition-all shadow-2xl hover:shadow-lg transform hover:scale-[1.02] disabled:transform-none disabled:hover:scale-100 flex items-center justify-center gap-3"
+                className="w-full bg-[#2563EB] hover:bg-[#2563EB]/90 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-5 px-6 rounded-xl text-xl transition-all shadow-2xl hover:shadow-lg transform hover:scale-[1.02] disabled:transform-none disabled:hover:scale-100 flex items-center justify-center gap-3"
               >
                 {isSubmitting ? (
                   <>
@@ -573,34 +628,51 @@ export default function BookServicePage() {
 
           {/* Booking Summary */}
           <div className="lg:col-span-1">
-            <div className="sticky top-4 bg-white rounded-2xl shadow-2xl p-6 border-2 border-[#90B890]">
+            <div className="sticky top-4 bg-white rounded-xl shadow-2xl p-6 border-2 border-[#D1D5DB]">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-[#1A531A] rounded-lg flex items-center justify-center text-white font-bold">
+                <div className="w-10 h-10 bg-[#2563EB] rounded-lg flex items-center justify-center text-white font-bold">
                   🛒
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">YOUR BOOKING</h2>
+                <h2 className="text-2xl font-bold text-[#111827]">
+                  YOUR BOOKING
+                </h2>
               </div>
               <div className="border-t border-b border-gray-200 py-4 mb-4">
                 <div className="space-y-2 text-sm">
                   {cartItems.length === 0 ? (
-                    <p className="text-gray-500">Add items to see your booking summary</p>
+                    <p className="text-gray-500">
+                      Add items to see your booking summary
+                    </p>
                   ) : (
                     cartItems.map((item, index) => {
-                      let price = item.pricing.customer_display_price
+                      let price = item.pricing.customer_display_price;
                       if (item.isWhite && item.pricing.is_white_applicable) {
-                        price += item.pricing.color_surcharge_customer
+                        price += item.pricing.color_surcharge_customer;
                       }
-                      const lineTotal = price * item.quantity
+                      const lineTotal = price * item.quantity;
                       return (
-                        <div key={`cart-item-${item.category}-${item.type}-${index}`} className="bg-white border-2 border-[#90B890] rounded-xl p-4 shadow-md hover:shadow-lg transition-all">
+                        <div
+                          key={`cart-item-${item.category}-${item.type}-${index}`}
+                          className="bg-white border-2 border-[#D1D5DB] rounded-xl p-4 shadow-md hover:shadow-lg transition-all"
+                        >
                           <div className="flex justify-between items-start mb-3">
                             <div className="flex-1">
-                              <h4 className="font-bold text-gray-900 text-lg">{item.type}</h4>
-                              <p className="text-sm text-gray-600 mb-1">{item.category}</p>
+                              <h4 className="font-bold text-[#111827] text-lg">
+                                {item.type}
+                              </h4>
+                              <p className="text-sm text-gray-600 mb-1">
+                                {item.category}
+                              </p>
                               {item.isWhite && (
-                                <div className="inline-flex items-center gap-1 px-2 py-1 bg-[#90B890]/20 text-[#1A531A] rounded-lg text-xs font-semibold mt-1">
+                                <div className="inline-flex items-center gap-1 px-2 py-1 bg-[#2563EB]/20 text-[#2563EB] rounded-lg text-xs font-semibold mt-1">
                                   <span>⚪</span>
-                                  <span>White (+{formatCurrency(item.pricing.color_surcharge_customer)})</span>
+                                  <span>
+                                    White (+
+                                    {formatCurrency(
+                                      item.pricing.color_surcharge_customer
+                                    )}
+                                    )
+                                  </span>
                                 </div>
                               )}
                             </div>
@@ -615,26 +687,37 @@ export default function BookServicePage() {
                           </div>
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
-                              <label className="text-sm font-semibold text-gray-700">Qty:</label>
+                              <label className="text-sm font-semibold text-[#6B7280]">
+                                Qty:
+                              </label>
                               <input
                                 type="number"
                                 min={1}
                                 max={10}
                                 value={item.quantity}
                                 onChange={(e) =>
-                                  handleUpdateQuantity(index, parseInt(e.target.value) || 1)
+                                  handleUpdateQuantity(
+                                    index,
+                                    parseInt(e.target.value) || 1
+                                  )
                                 }
-                                className="w-20 px-3 py-2 border-2 border-gray-300 rounded-lg text-center font-semibold focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A]"
+                                className="w-20 px-3 py-2 border border-[#D1D5DB] rounded-lg text-center font-semibold focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB]"
                               />
                             </div>
                             <div className="text-right">
-                              <p className="text-xs text-gray-600 mb-1">Unit Price</p>
-                              <p className="text-sm font-semibold text-gray-700">{formatCurrency(price)}</p>
+                              <p className="text-xs text-gray-600 mb-1">
+                                Unit Price
+                              </p>
+                              <p className="text-sm font-semibold text-[#6B7280]">
+                                {formatCurrency(price)}
+                              </p>
                             </div>
                           </div>
                           <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-                            <span className="text-sm font-semibold text-gray-700">Line Total:</span>
-                            <span className="text-xl font-extrabold text-[#1A531A]">
+                            <span className="text-sm font-semibold text-[#6B7280]">
+                              Line Total:
+                            </span>
+                            <span className="text-xl font-extrabold text-[#2563EB]">
                               {formatCurrency(lineTotal)}
                             </span>
                           </div>
@@ -644,17 +727,23 @@ export default function BookServicePage() {
                                 <input
                                   type="checkbox"
                                   checked={item.isWhite}
-                                  onChange={(e) => handleToggleWhite(index, e.target.checked)}
-                                  className="w-5 h-5 text-[#1A531A] border-2 border-gray-300 rounded focus:ring-2 focus:ring-[#1A531A] cursor-pointer"
+                                  onChange={(e) =>
+                                    handleToggleWhite(index, e.target.checked)
+                                  }
+                                  className="w-5 h-5 text-[#2563EB] border border-[#D1D5DB] rounded focus:ring-2 focus:ring-[#2563EB] cursor-pointer"
                                 />
-                                <span className="text-sm font-medium text-gray-700 group-hover:text-[#1A531A] transition-colors">
-                                  Is this item white? (+{formatCurrency(item.pricing.color_surcharge_customer)})
+                                <span className="text-sm font-medium text-[#6B7280] group-hover:text-[#2563EB] transition-colors">
+                                  Is this item white? (+
+                                  {formatCurrency(
+                                    item.pricing.color_surcharge_customer
+                                  )}
+                                  )
                                 </span>
                               </label>
                             </div>
                           )}
                         </div>
-                      )
+                      );
                     })
                   )}
                 </div>
@@ -673,14 +762,19 @@ export default function BookServicePage() {
                   </div>
                 )}
                 <div className="flex justify-between items-center mb-2 border-t-2 border-gray-300 pt-4">
-                  <span className="text-xl font-bold text-gray-900">TOTAL:</span>
-                  <span className="text-3xl font-extrabold text-[#1A531A]">
+                  <span className="text-xl font-bold text-[#111827]">
+                    TOTAL:
+                  </span>
+                  <span className="text-3xl font-extrabold text-[#2563EB]">
                     {formatCurrency(total)}
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 mb-4">All prices include service fees</p>
+                <p className="text-xs text-gray-500 mb-4">
+                  All prices include service fees
+                </p>
                 <p className="text-xs text-gray-500 italic">
-                  Final price confirmed after assessment. You'll receive confirmation within 2 hours.
+                  Final price confirmed after assessment. You'll receive
+                  confirmation within 2 hours.
                 </p>
               </div>
             </div>
@@ -691,19 +785,31 @@ export default function BookServicePage() {
       {/* Loading Overlay */}
       {isSubmitting && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="bg-white rounded-3xl shadow-2xl p-10 text-center max-w-md mx-4 border-2 border-[#90B890]">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#90B890] border-t-[#1A531A] mx-auto mb-6"></div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Processing Your Booking</h3>
-            <p className="text-gray-600">Please wait while we confirm your service request...</p>
+          <div className="bg-white rounded-3xl shadow-2xl p-10 text-center max-w-md mx-4 border-2 border-[#D1D5DB]">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#D1D5DB] border-t-[#1A531A] mx-auto mb-6"></div>
+            <h3 className="text-2xl font-bold text-[#111827] mb-2">
+              Processing Your Booking
+            </h3>
+            <p className="text-gray-600">
+              Please wait while we confirm your service request...
+            </p>
             <div className="mt-6 flex justify-center gap-2">
-              <div className="w-2 h-2 bg-[#1A531A] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-              <div className="w-2 h-2 bg-[#1A531A] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-              <div className="w-2 h-2 bg-[#1A531A] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              <div
+                className="w-2 h-2 bg-[#2563EB] rounded-full animate-bounce"
+                style={{ animationDelay: "0ms" }}
+              ></div>
+              <div
+                className="w-2 h-2 bg-[#2563EB] rounded-full animate-bounce"
+                style={{ animationDelay: "150ms" }}
+              ></div>
+              <div
+                className="w-2 h-2 bg-[#2563EB] rounded-full animate-bounce"
+                style={{ animationDelay: "300ms" }}
+              ></div>
             </div>
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }
-

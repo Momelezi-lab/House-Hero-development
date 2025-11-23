@@ -48,7 +48,7 @@ const services = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F3F4F6]">
       {/* Hero Section with Blurred Background */}
       <div className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         {/* Background Image with Blur */}
@@ -63,8 +63,8 @@ export default function Home() {
           }}
         />
         
-        {/* Dark Green Overlay with Gradient - Reduced opacity */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-br from-[#1A531A]/60 via-[#1A531A]/55 to-[#0d3a0d]/65" />
+        {/* Primary Blue Overlay with Gradient - Reduced opacity */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-br from-[#2563EB]/60 via-[#2563EB]/55 to-[#1E40AF]/65" />
         
         {/* Content */}
         <div className="relative z-20 container mx-auto px-4 py-20 text-center">
@@ -86,7 +86,7 @@ export default function Home() {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight animate-fade-in" style={{ animationDelay: '100ms' }}>
             Swift Services,
             <br />
-            <span className="text-[#90B890]">Reliable Results</span>
+            <span className="text-[#EFF6FF]">Reliable Results</span>
           </h1>
 
           {/* Sub-heading */}
@@ -98,7 +98,7 @@ export default function Home() {
           <div className="mt-12 animate-fade-in" style={{ animationDelay: '300ms' }}>
             <Link
               href="/book-service"
-              className="inline-flex items-center gap-3 bg-white text-[#1A531A] px-10 py-5 rounded-2xl font-bold text-lg md:text-xl shadow-2xl hover:bg-[#90B890] hover:text-white transform hover:scale-105 transition-all duration-300 border-2 border-transparent hover:border-white/20"
+              className="inline-flex items-center gap-3 bg-white text-[#2563EB] px-10 py-5 rounded-xl font-bold text-lg md:text-xl shadow-2xl hover:bg-[#2563EB] hover:text-white transform hover:scale-105 transition-all duration-300 border-2 border-transparent hover:border-white/20"
             >
               <span>Request a Service</span>
               <span className="text-2xl">→</span>
@@ -124,10 +124,10 @@ export default function Home() {
       {/* Services Grid */}
       <div className="container mx-auto px-4 py-20 -mt-16 relative z-30">
         <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-center text-[#111827] mb-4">
             Our Services
           </h2>
-          <p className="text-center text-gray-600 mb-12 text-lg max-w-2xl mx-auto">
+          <p className="text-center text-[#6B7280] mb-12 text-lg max-w-2xl mx-auto">
             Choose from our range of professional home services
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -139,12 +139,12 @@ export default function Home() {
       </div>
 
       {/* Features Section */}
-      <div className="bg-gradient-to-b from-white to-[#90B890]/10 py-20">
+      <div className="bg-gradient-to-b from-white to-[#F3F4F6] py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-center text-[#111827] mb-4">
             Why Choose HomeSwift?
           </h2>
-          <p className="text-center text-gray-600 mb-12 text-lg max-w-2xl mx-auto">
+          <p className="text-center text-[#6B7280] mb-12 text-lg max-w-2xl mx-auto">
             Experience the difference with our trusted service platform
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -179,13 +179,13 @@ function ServiceCard({
 }) {
   if (!service.available) {
     return (
-      <div className="group relative p-8 rounded-2xl bg-gray-100 border-2 border-gray-300 opacity-75 cursor-not-allowed transform transition-all duration-300">
-        <div className="absolute top-4 right-4 bg-gray-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+        <div className="group relative p-8 rounded-xl bg-[#F3F4F6] border border-[#D1D5DB] opacity-75 cursor-not-allowed transform transition-all duration-300">
+        <div className="absolute top-4 right-4 bg-[#6B7280] text-white text-xs font-bold px-3 py-1 rounded-full">
           Coming Soon
         </div>
         <div className="text-5xl mb-4">{service.icon}</div>
-        <h3 className="text-2xl font-bold text-gray-700 mb-3">{service.title}</h3>
-        <p className="text-gray-600">{service.description}</p>
+        <h3 className="text-2xl font-bold text-[#111827] mb-3">{service.title}</h3>
+        <p className="text-[#6B7280]">{service.description}</p>
       </div>
     )
   }
@@ -193,7 +193,7 @@ function ServiceCard({
   return (
     <Link
       href={service.href}
-      className="group relative p-8 rounded-2xl bg-white border-2 border-[#90B890] hover:border-[#1A531A] shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
+      className="group relative p-8 rounded-xl bg-white border border-[#D1D5DB] hover:border-[#2563EB] shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden"
       style={{ animationDelay: `${index * 100}ms` }}
     >
       {/* Content */}
@@ -201,11 +201,11 @@ function ServiceCard({
         <div className="text-5xl mb-4 transform group-hover:scale-110 transition-transform duration-300">
           {service.icon}
         </div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-[#1A531A] transition-colors">
+        <h3 className="text-2xl font-bold text-[#111827] mb-3 group-hover:text-[#2563EB] transition-colors">
           {service.title}
         </h3>
-        <p className="text-gray-600 mb-4">{service.description}</p>
-        <div className="flex items-center text-[#1A531A] font-semibold group-hover:translate-x-2 transition-transform">
+        <p className="text-[#6B7280] mb-4">{service.description}</p>
+        <div className="flex items-center text-[#2563EB] font-semibold group-hover:translate-x-2 transition-transform">
           <span>Book Now</span>
           <span className="ml-2">→</span>
         </div>
@@ -224,10 +224,10 @@ function FeatureCard({
   description: string
 }) {
   return (
-    <div className="text-center p-8 rounded-2xl bg-white border-2 border-[#90B890]/30 hover:border-[#1A531A] hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+    <div className="text-center p-8 rounded-xl bg-white border border-[#D1D5DB] hover:border-[#2563EB] hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
       <div className="text-5xl mb-4 transform hover:scale-110 transition-transform duration-300">{icon}</div>
-      <h3 className="text-2xl font-bold text-[#1A531A] mb-3">{title}</h3>
-      <p className="text-gray-600 leading-relaxed">{description}</p>
+      <h3 className="text-2xl font-bold text-[#111827] mb-3">{title}</h3>
+      <p className="text-[#6B7280] leading-relaxed">{description}</p>
     </div>
   )
 }

@@ -29,8 +29,8 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="bg-[#1A531A] text-white py-12 px-4 shadow-2xl">
+    <div className="min-h-screen bg-[#F3F4F6]">
+      <header className="bg-[#2563EB] text-white py-12 px-4 shadow-2xl">
         <div className="max-w-4xl mx-auto">
           <Link
             href="/"
@@ -48,33 +48,33 @@ export default function ContactPage() {
           {/* Contact Info */}
           <div className="space-y-6">
             <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Contact Information</h2>
+              <h2 className="text-2xl font-bold text-[#111827] mb-4">Contact Information</h2>
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-[#1A531A] rounded-xl flex items-center justify-center text-2xl text-white">
+                  <div className="w-12 h-12 bg-[#2563EB] rounded-xl flex items-center justify-center text-2xl text-white">
                     📧
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Email</p>
-                    <p className="font-semibold text-gray-900">support@homeswift.com</p>
+                    <p className="font-semibold text-[#111827]">support@homeswift.com</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-[#90B890] rounded-xl flex items-center justify-center text-2xl text-white">
+                  <div className="w-12 h-12 bg-[#2563EB] rounded-xl flex items-center justify-center text-2xl text-white">
                     📞
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Phone</p>
-                    <p className="font-semibold text-gray-900">+27 11 123 4567</p>
+                    <p className="font-semibold text-[#111827]">+27 11 123 4567</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-[#1A531A] rounded-xl flex items-center justify-center text-2xl text-white">
+                  <div className="w-12 h-12 bg-[#2563EB] rounded-xl flex items-center justify-center text-2xl text-white">
                     🕒
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Business Hours</p>
-                    <p className="font-semibold text-gray-900">Mon - Sat: 8:00 AM - 6:00 PM</p>
+                    <p className="font-semibold text-[#111827]">Mon - Sat: 8:00 AM - 6:00 PM</p>
                   </div>
                 </div>
               </div>
@@ -83,17 +83,17 @@ export default function ContactPage() {
 
           {/* Contact Form */}
           <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h2>
+            <h2 className="text-2xl font-bold text-[#111827] mb-6">Send us a Message</h2>
             {submitted ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-[#10B981]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-3xl">✅</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Message Sent!</h3>
+                <h3 className="text-xl font-bold text-[#111827] mb-2">Message Sent!</h3>
                 <p className="text-gray-600 mb-4">We'll get back to you soon.</p>
                 <button
                   onClick={() => setSubmitted(false)}
-                  className="text-[#1A531A] hover:text-[#1A531A]/80 font-semibold"
+                  className="text-[#2563EB] hover:text-[#2563EB]/80 font-semibold"
                 >
                   Send Another Message
                 </button>
@@ -108,7 +108,7 @@ export default function ContactPage() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] transition-all text-gray-900"
+                    className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition-all text-[#111827]"
                   />
                 </div>
                 <div>
@@ -119,7 +119,7 @@ export default function ContactPage() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] transition-all text-gray-900"
+                    className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition-all text-[#111827]"
                   />
                 </div>
                 <div>
@@ -130,7 +130,7 @@ export default function ContactPage() {
                     value={formData.subject}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] transition-all text-gray-900"
+                    className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition-all text-[#111827]"
                   />
                 </div>
                 <div>
@@ -141,13 +141,13 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     rows={5}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none text-gray-900"
+                    className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none text-[#111827]"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#1A531A] text-white py-4 rounded-xl font-bold text-lg shadow-xl hover:bg-[#1A531A]/90 hover:shadow-2xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:transform-none"
+                  className="w-full bg-[#2563EB] text-white py-4 rounded-xl font-bold text-lg shadow-xl hover:bg-[#2563EB]/90 hover:shadow-2xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:transform-none"
                 >
                   {isSubmitting ? 'Sending...' : 'Send Message'}
                 </button>

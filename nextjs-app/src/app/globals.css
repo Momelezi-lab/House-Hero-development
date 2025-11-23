@@ -27,7 +27,7 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: white;
+  background: #F3F4F6;
 }
 
 /* CRITICAL: Force input text to be black - must be after body to override */
@@ -111,10 +111,10 @@ html input:-webkit-autofill:active {
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(26, 83, 26, 0.3);
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
   }
   50% {
-    box-shadow: 0 0 30px rgba(26, 83, 26, 0.6);
+    box-shadow: 0 0 30px rgba(37, 99, 235, 0.6);
   }
 }
 
@@ -270,11 +270,11 @@ textarea:-webkit-autofill:active {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1A531A;
+  background: #2563EB;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #90B890;
+  background: #1E40AF;
 }
 

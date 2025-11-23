@@ -80,7 +80,7 @@ export default function ProfilePage() {
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'completed':
-        return 'bg-green-100 text-green-800 border-green-200'
+        return 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]'
       case 'confirmed':
         return 'bg-blue-100 text-blue-800 border-blue-200'
       case 'pending':
@@ -88,7 +88,7 @@ export default function ProfilePage() {
       case 'cancelled':
         return 'bg-red-100 text-red-800 border-red-200'
       case 'resolved':
-        return 'bg-green-100 text-green-800 border-green-200'
+        return 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]'
       case 'in_progress':
         return 'bg-purple-100 text-purple-800 border-purple-200'
       default:
@@ -109,7 +109,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-[#1A531A] text-white py-12 px-4 shadow-2xl">
+      <header className="bg-[#2563EB] text-white py-12 px-4 shadow-2xl">
         <div className="max-w-4xl mx-auto">
           <Link
             href="/"
@@ -128,7 +128,7 @@ export default function ProfilePage() {
           {user ? (
             <div className="space-y-6">
               <div className="flex items-center gap-6 pb-6 border-b border-gray-200">
-                <div className="w-24 h-24 bg-[#1A531A] rounded-full flex items-center justify-center text-4xl text-white font-bold shadow-xl">
+                <div className="w-24 h-24 bg-[#2563EB] rounded-full flex items-center justify-center text-4xl text-white font-bold shadow-xl">
                   {user.name?.charAt(0) || 'U'}
                 </div>
                 <div>
@@ -139,13 +139,13 @@ export default function ProfilePage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div className="p-6 bg-[#90B890]/10 rounded-xl border border-[#90B890]">
-                  <h3 className="font-bold text-[#1A531A] mb-2">Member Since</h3>
+                <div className="p-6 bg-[#EFF6FF] rounded-xl border border-[#D1D5DB]">
+                  <h3 className="font-bold text-[#2563EB] mb-2">Member Since</h3>
                   <p className="text-gray-600">{user.registered || 'N/A'}</p>
                 </div>
-                <div className="p-6 bg-[#90B890]/10 rounded-xl border border-[#90B890]">
-                  <h3 className="font-bold text-[#1A531A] mb-2">Account Status</h3>
-                  <p className="text-[#1A531A] font-semibold">Active</p>
+                <div className="p-6 bg-[#EFF6FF] rounded-xl border border-[#D1D5DB]">
+                  <h3 className="font-bold text-[#2563EB] mb-2">Account Status</h3>
+                  <p className="text-[#2563EB] font-semibold">Active</p>
                 </div>
               </div>
 
@@ -157,7 +157,7 @@ export default function ProfilePage() {
                     onClick={() => setActiveTab('bookings')}
                     className={`pb-4 px-2 font-semibold transition-colors ${
                       activeTab === 'bookings'
-                        ? 'text-[#1A531A] border-b-2 border-[#1A531A]'
+                        ? 'text-[#2563EB] border-b border-[#2563EB]'
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
@@ -167,7 +167,7 @@ export default function ProfilePage() {
                     onClick={() => setActiveTab('complaints')}
                     className={`pb-4 px-2 font-semibold transition-colors ${
                       activeTab === 'complaints'
-                        ? 'text-[#1A531A] border-b-2 border-[#1A531A]'
+                        ? 'text-[#2563EB] border-b border-[#2563EB]'
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
@@ -181,7 +181,7 @@ export default function ProfilePage() {
                 <div>
                   {isLoadingBookings ? (
                     <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1A531A] mx-auto mb-4"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b border-[#2563EB] mx-auto mb-4"></div>
                       <p className="text-gray-600">Loading bookings...</p>
                     </div>
                   ) : bookings && bookings.length > 0 ? (
@@ -219,7 +219,7 @@ export default function ProfilePage() {
                             </div>
                             <div>
                               <p className="text-sm text-gray-600 mb-1">Total Amount</p>
-                              <p className="text-2xl font-bold text-[#1A531A]">
+                              <p className="text-2xl font-bold text-[#2563EB]">
                                 {formatCurrency(booking.totalCustomerPaid || 0)}
                               </p>
                             </div>
@@ -252,7 +252,7 @@ export default function ProfilePage() {
                       </p>
                       <Link
                         href="/book-service"
-                        className="inline-block bg-[#1A531A] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#1A531A]/90 transition-all"
+                        className="inline-block bg-[#2563EB] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#2563EB]/90 transition-all"
                       >
                         Book a Service
                       </Link>
@@ -266,7 +266,7 @@ export default function ProfilePage() {
                 <div>
                   {isLoadingComplaints ? (
                     <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1A531A] mx-auto mb-4"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b border-[#2563EB] mx-auto mb-4"></div>
                       <p className="text-gray-600">Loading complaints...</p>
                     </div>
                   ) : complaints && complaints.length > 0 ? (
@@ -325,7 +325,7 @@ export default function ProfilePage() {
                       </p>
                       <Link
                         href="/complaints"
-                        className="inline-block bg-[#1A531A] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#1A531A]/90 transition-all"
+                        className="inline-block bg-[#2563EB] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#2563EB]/90 transition-all"
                       >
                         Submit a Complaint
                       </Link>
@@ -339,7 +339,7 @@ export default function ProfilePage() {
               <p className="text-gray-600 mb-4">Please log in to view your profile</p>
               <Link
                 href="/login"
-                className="inline-block bg-[#1A531A] text-white px-8 py-3 rounded-xl font-bold hover:bg-[#1A531A]/90 hover:shadow-lg transform hover:scale-105 transition-all"
+                className="inline-block bg-[#2563EB] text-white px-8 py-3 rounded-xl font-bold hover:bg-[#2563EB]/90 hover:shadow-lg transform hover:scale-105 transition-all"
               >
                 Sign In
               </Link>

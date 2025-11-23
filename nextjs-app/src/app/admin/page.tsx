@@ -86,7 +86,7 @@ export default function AdminDashboard() {
   // Show loading while checking auth
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-[#F3F4F6] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1A531A] mx-auto mb-4"></div>
           <p className="text-gray-600">Checking authorization...</p>
@@ -132,10 +132,10 @@ export default function AdminDashboard() {
   ]
 
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="min-h-screen bg-[#F3F4F6] flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-[#1A531A] text-white shadow-2xl">
-        <div className="p-6 border-b border-[#90B890]">
+      <aside className="w-64 bg-[#2563EB] text-white shadow-2xl">
+        <div className="p-6 border-b border-[#D1D5DB]">
           <div className="flex items-center justify-center mb-2">
             <Logo size="md" showText={true} variant="white" />
           </div>
@@ -148,8 +148,8 @@ export default function AdminDashboard() {
               onClick={() => setActiveSection(item.id)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 activeSection === item.id
-                  ? 'bg-white text-[#1A531A] shadow-lg transform scale-105'
-                  : 'text-white/90 hover:bg-[#90B890]/20'
+                  ? 'bg-white text-[#2563EB] shadow-lg transform scale-105'
+                  : 'text-white/90 hover:bg-white/10'
               }`}
             >
               <span className="text-xl">{item.icon}</span>
@@ -226,7 +226,7 @@ function DashboardView({ stats, requests }: { stats: any; requests: any[] }) {
           title="Total Bookings"
           value={stats.total}
           icon="📋"
-          color="bg-[#1A531A]"
+          color="bg-[#2563EB]"
         />
         <StatCard
           title="Pending"
@@ -238,13 +238,13 @@ function DashboardView({ stats, requests }: { stats: any; requests: any[] }) {
           title="Completed"
           value={stats.completed}
           icon="✅"
-          color="bg-[#90B890]"
+          color="bg-[#2563EB]"
         />
         <StatCard
           title="Revenue"
           value={formatCurrency(stats.revenue)}
           icon="💰"
-          color="bg-[#1A531A]"
+          color="bg-[#2563EB]"
         />
       </div>
 
@@ -253,7 +253,7 @@ function DashboardView({ stats, requests }: { stats: any; requests: any[] }) {
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Recent Bookings</h2>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-[#1A531A] text-white">
+            <thead className="bg-[#2563EB] text-white">
               <tr>
                 <th className="px-4 py-3 text-left rounded-tl-lg">ID</th>
                 <th className="px-4 py-3 text-left">Customer</th>
@@ -271,14 +271,14 @@ function DashboardView({ stats, requests }: { stats: any; requests: any[] }) {
                   <td className="px-4 py-3">
                     {new Date(request.preferredDate).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-3 font-bold text-green-600">
+                  <td className="px-4 py-3 font-bold text-[#10B981]">
                     {formatCurrency(parseFloat(request.totalCustomerPaid?.toString() || '0'))}
                   </td>
                   <td className="px-4 py-3">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-bold ${
                         request.status === 'completed'
-                          ? 'bg-green-100 text-green-800'
+                          ? 'bg-[#10B981]/10 text-[#10B981]'
                           : request.status === 'confirmed'
                           ? 'bg-blue-100 text-blue-800'
                           : 'bg-amber-100 text-amber-800'
@@ -388,12 +388,12 @@ function BookingsView({
             placeholder="Search by name, email, ID, or phone..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] transition-all min-w-[300px]"
+            className="px-4 py-2 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition-all min-w-[300px]"
           />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] transition-all"
+            className="px-4 py-2 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition-all"
           >
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
@@ -412,7 +412,7 @@ function BookingsView({
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-[#1A531A] text-white">
+            <thead className="bg-[#2563EB] text-white">
               <tr>
                 <th className="px-6 py-4 text-left">ID</th>
                 <th className="px-6 py-4 text-left">Customer</th>
@@ -427,7 +427,7 @@ function BookingsView({
               {filteredRequests.map((request: any) => (
                 <tr
                   key={request.requestId}
-                  className="border-b hover:bg-[#90B890]/10 transition-colors cursor-pointer"
+                  className="border-b hover:bg-[#2563EB]/10 transition-colors cursor-pointer"
                   onClick={() => onSelectRequest(request)}
                 >
                   <td className="px-6 py-4 font-bold text-blue-600">
@@ -445,14 +445,14 @@ function BookingsView({
                   <td className="px-6 py-4">
                     {new Date(request.preferredDate).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 font-bold text-green-600">
+                  <td className="px-6 py-4 font-bold text-[#10B981]">
                     {formatCurrency(parseFloat(request.totalCustomerPaid?.toString() || '0'))}
                   </td>
                   <td className="px-6 py-4">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-bold ${
                         request.status === 'completed'
-                          ? 'bg-green-100 text-green-800'
+                          ? 'bg-[#10B981]/10 text-[#10B981]'
                           : request.status === 'confirmed'
                           ? 'bg-blue-100 text-blue-800'
                           : 'bg-amber-100 text-amber-800'
@@ -467,7 +467,7 @@ function BookingsView({
                         e.stopPropagation()
                         onSelectRequest(request)
                       }}
-                      className="px-4 py-2 bg-[#1A531A] text-white rounded-lg hover:bg-[#1A531A]/90 transition-colors font-semibold"
+                      className="px-4 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#2563EB]/90 transition-colors font-semibold"
                     >
                       View Details
                     </button>
@@ -498,7 +498,7 @@ function ProvidersView({ providers }: { providers: any[] }) {
             console.log('ProvidersView: Navigating to /admin/providers')
             router.push('/admin/providers')
           }}
-          className="px-6 py-3 bg-[#1A531A] text-white rounded-xl font-bold hover:bg-[#1A531A]/90 hover:shadow-lg transform hover:scale-105 transition-all"
+          className="px-6 py-3 bg-[#2563EB] text-white rounded-xl font-bold hover:bg-[#2563EB]/90 hover:shadow-lg transform hover:scale-105 transition-all"
         >
           + Add Provider
         </button>
@@ -511,7 +511,7 @@ function ProvidersView({ providers }: { providers: any[] }) {
             className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 hover:shadow-2xl transform hover:scale-105 transition-all"
           >
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-16 h-16 bg-[#1A531A] rounded-full flex items-center justify-center text-2xl text-white font-bold">
+              <div className="w-16 h-16 bg-[#2563EB] rounded-full flex items-center justify-center text-2xl text-white font-bold">
                 {provider.name.charAt(0)}
               </div>
               <div>
@@ -534,7 +534,7 @@ function ProvidersView({ providers }: { providers: any[] }) {
               </div>
             </div>
             <div className="mt-4 flex gap-2">
-              <button className="flex-1 px-4 py-2 bg-[#1A531A] text-white rounded-lg hover:bg-[#1A531A]/90 font-semibold">
+              <button className="flex-1 px-4 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#2563EB]/90 font-semibold">
                 Edit
               </button>
               <button className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold">
@@ -559,17 +559,17 @@ function FinancialView({ stats, requests }: { stats: any; requests: any[] }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[#1A531A] rounded-2xl shadow-xl p-8 text-white">
+        <div className="bg-[#2563EB] rounded-2xl shadow-xl p-8 text-white">
           <div className="text-4xl mb-4">💰</div>
           <h3 className="text-lg font-semibold mb-2">Total Revenue</h3>
           <p className="text-4xl font-extrabold">{formatCurrency(stats.revenue)}</p>
         </div>
-        <div className="bg-[#90B890] rounded-2xl shadow-xl p-8 text-white">
+        <div className="bg-[#2563EB] rounded-2xl shadow-xl p-8 text-white">
           <div className="text-4xl mb-4">💵</div>
           <h3 className="text-lg font-semibold mb-2">Total Commission</h3>
           <p className="text-4xl font-extrabold">{formatCurrency(stats.commission)}</p>
         </div>
-        <div className="bg-[#1A531A] rounded-2xl shadow-xl p-8 text-white">
+        <div className="bg-[#2563EB] rounded-2xl shadow-xl p-8 text-white">
           <div className="text-4xl mb-4">📊</div>
           <h3 className="text-lg font-semibold mb-2">Completed Jobs</h3>
           <p className="text-4xl font-extrabold">{stats.completed}</p>
@@ -594,7 +594,7 @@ function FinancialView({ stats, requests }: { stats: any; requests: any[] }) {
                 <tr key={request.requestId} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-3 font-semibold">#{request.requestId}</td>
                   <td className="px-4 py-3">{request.customerName}</td>
-                  <td className="px-4 py-3 font-bold text-green-600">
+                  <td className="px-4 py-3 font-bold text-[#10B981]">
                     {formatCurrency(parseFloat(request.totalCustomerPaid?.toString() || '0'))}
                   </td>
                   <td className="px-4 py-3 font-bold text-purple-600">
@@ -640,7 +640,7 @@ function RequestDetailsModal({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-auto">
-        <div className="sticky top-0 bg-[#1A531A] text-white p-6 flex items-center justify-between">
+        <div className="sticky top-0 bg-[#2563EB] text-white p-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold">Request #{request.requestId}</h2>
           <button
             onClick={onClose}
@@ -677,7 +677,7 @@ function RequestDetailsModal({
               {JSON.parse(request.selectedItems || '[]').map((item: any, idx: number) => (
                 <div key={idx} className="mb-2">
                   • {item.type} × {item.quantity}
-                  {item.is_white && <span className="text-[#1A531A]"> (White)</span>}
+                  {item.is_white && <span className="text-[#2563EB]"> (White)</span>}
                 </div>
               ))}
             </div>
@@ -690,7 +690,7 @@ function RequestDetailsModal({
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1A531A]"
+                className="w-full px-4 py-2 border border-[#D1D5DB] rounded-lg focus:ring-2 focus:ring-[#2563EB]"
               >
                 <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
@@ -703,7 +703,7 @@ function RequestDetailsModal({
               <select
                 value={selectedProvider}
                 onChange={(e) => setSelectedProvider(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1A531A]"
+                className="w-full px-4 py-2 border border-[#D1D5DB] rounded-lg focus:ring-2 focus:ring-[#2563EB]"
               >
                 <option value="">Select Provider</option>
                 {providers.map((p: any) => (
@@ -716,23 +716,23 @@ function RequestDetailsModal({
           </div>
 
           {/* Pricing */}
-          <div className="bg-[#90B890]/10 rounded-lg p-4 border border-[#90B890]">
+          <div className="bg-[#2563EB]/10 rounded-lg p-4 border border-[#D1D5DB]">
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Customer Paid</label>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-2xl font-bold text-[#10B981]">
                   {formatCurrency(parseFloat(request.totalCustomerPaid?.toString() || '0'))}
                 </p>
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Provider Payout</label>
-                <p className="text-2xl font-bold text-[#1A531A]">
+                <p className="text-2xl font-bold text-[#2563EB]">
                   {formatCurrency(parseFloat(request.totalProviderPayout?.toString() || '0'))}
                 </p>
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Commission</label>
-                <p className="text-2xl font-bold text-[#90B890]">
+                <p className="text-2xl font-bold text-[#2563EB]">
                   {formatCurrency(parseFloat(request.totalCommissionEarned?.toString() || '0'))}
                 </p>
               </div>
@@ -743,7 +743,7 @@ function RequestDetailsModal({
           <div className="flex gap-4">
             <button
               onClick={handleSave}
-              className="flex-1 px-6 py-3 bg-[#1A531A] text-white rounded-xl font-bold hover:bg-[#1A531A]/90 hover:shadow-lg transform hover:scale-105 transition-all"
+              className="flex-1 px-6 py-3 bg-[#2563EB] text-white rounded-xl font-bold hover:bg-[#2563EB]/90 hover:shadow-lg transform hover:scale-105 transition-all"
             >
               💾 Save Changes
             </button>
@@ -780,7 +780,7 @@ function ComplaintsView({
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'resolved':
-        return 'bg-green-100 text-green-800 border-green-200'
+        return 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]'
       case 'in_progress':
         return 'bg-blue-100 text-blue-800 border-blue-200'
       case 'pending':
@@ -811,7 +811,7 @@ function ComplaintsView({
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A]"
+          className="px-4 py-2 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB]"
         >
           <option value="all">All Status</option>
           <option value="pending">Pending</option>
@@ -839,9 +839,9 @@ function ComplaintsView({
             {complaints.filter((c: any) => c.status === 'in_progress').length}
           </p>
         </div>
-        <div className="bg-white rounded-xl shadow-lg p-4 border border-green-200">
-          <p className="text-green-600 text-sm mb-1">Resolved</p>
-          <p className="text-2xl font-bold text-green-800">
+        <div className="bg-white rounded-xl shadow-lg p-4 border border-[#10B981]">
+          <p className="text-[#10B981] text-sm mb-1">Resolved</p>
+          <p className="text-2xl font-bold text-[#10B981]">
             {complaints.filter((c: any) => c.status === 'resolved').length}
           </p>
         </div>
@@ -851,7 +851,7 @@ function ComplaintsView({
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-[#1A531A] text-white">
+            <thead className="bg-[#2563EB] text-white">
               <tr>
                 <th className="px-4 py-3 text-left">ID</th>
                 <th className="px-4 py-3 text-left">Customer</th>
@@ -946,7 +946,7 @@ function ComplaintDetailsModal({
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'resolved':
-        return 'bg-green-100 text-green-800 border-green-200'
+        return 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]'
       case 'in_progress':
         return 'bg-blue-100 text-blue-800 border-blue-200'
       case 'pending':
@@ -961,7 +961,7 @@ function ComplaintDetailsModal({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-auto">
-        <div className="sticky top-0 bg-[#1A531A] text-white p-6 flex items-center justify-between">
+        <div className="sticky top-0 bg-[#2563EB] text-white p-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold">Complaint #{complaint.id}</h2>
           <button
             onClick={onClose}
@@ -1021,7 +1021,7 @@ function ComplaintDetailsModal({
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A]"
+                  className="w-full px-4 py-2 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB]"
                 >
                   <option value="pending">Pending</option>
                   <option value="in_progress">In Progress</option>
@@ -1035,7 +1035,7 @@ function ComplaintDetailsModal({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={4}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] resize-none"
+                  className="w-full px-4 py-2 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] resize-none"
                   placeholder="Add internal notes about this complaint..."
                 />
               </div>
@@ -1046,7 +1046,7 @@ function ComplaintDetailsModal({
           <div className="flex gap-4 pt-4 border-t">
             <button
               onClick={handleSave}
-              className="flex-1 px-6 py-3 bg-[#1A531A] text-white rounded-xl font-bold hover:bg-[#1A531A]/90 hover:shadow-lg transform hover:scale-105 transition-all"
+              className="flex-1 px-6 py-3 bg-[#2563EB] text-white rounded-xl font-bold hover:bg-[#2563EB]/90 hover:shadow-lg transform hover:scale-105 transition-all"
             >
               Save Changes
             </button>

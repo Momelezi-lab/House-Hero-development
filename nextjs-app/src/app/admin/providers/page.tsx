@@ -36,32 +36,32 @@ export default function ProvidersPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-[#F3F4F6] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1A531A]"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-white p-8">
+    <div className="min-h-screen bg-[#F3F4F6] p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <Link
             href="/admin"
-            className="inline-flex items-center gap-2 text-[#1A531A] hover:text-[#1A531A]/80 font-semibold mb-4"
+            className="inline-flex items-center gap-2 text-[#2563EB] hover:text-[#2563EB]/80 font-semibold mb-4"
           >
             ← Back to Admin Dashboard
           </Link>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">Service Providers</h1>
+              <h1 className="text-4xl font-bold text-[#111827] mb-2">Service Providers</h1>
               <p className="text-gray-600">Manage your service providers</p>
             </div>
             <button
               type="button"
               onClick={handleAddClick}
               style={{ zIndex: 1000, position: 'relative', pointerEvents: 'auto' }}
-              className="px-6 py-3 bg-[#1A531A] text-white rounded-xl font-bold hover:bg-[#1A531A]/90 hover:shadow-lg transform hover:scale-105 transition-all cursor-pointer"
+              className="px-6 py-3 bg-[#2563EB] text-white rounded-xl font-bold hover:bg-[#2563EB]/90 hover:shadow-lg transform hover:scale-105 transition-all cursor-pointer"
             >
               + Add Provider
             </button>
@@ -88,7 +88,7 @@ export default function ProvidersPage() {
             <p className="text-gray-600 mb-4">No providers found</p>
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="px-6 py-3 bg-[#1A531A] text-white rounded-xl font-bold hover:bg-[#1A531A]/90"
+              className="px-6 py-3 bg-[#2563EB] text-white rounded-xl font-bold hover:bg-[#2563EB]/90"
             >
               Add Your First Provider
             </button>
@@ -128,11 +128,11 @@ function ProviderCard({
   return (
     <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 hover:shadow-2xl transform hover:scale-105 transition-all">
       <div className="flex items-center gap-4 mb-4">
-        <div className="w-16 h-16 bg-[#1A531A] rounded-full flex items-center justify-center text-2xl text-white font-bold">
+        <div className="w-16 h-16 bg-[#2563EB] rounded-full flex items-center justify-center text-2xl text-white font-bold">
           {provider.name.charAt(0)}
         </div>
         <div>
-          <h3 className="text-xl font-bold text-gray-900">{provider.name}</h3>
+          <h3 className="text-xl font-bold text-[#111827]">{provider.name}</h3>
           <p className="text-gray-600">{provider.serviceType}</p>
         </div>
       </div>
@@ -159,7 +159,7 @@ function ProviderCard({
       <div className="flex gap-2">
         <button
           onClick={onEdit}
-          className="flex-1 px-4 py-2 bg-[#1A531A] text-white rounded-lg hover:bg-[#1A531A]/90 font-semibold transition-colors"
+          className="flex-1 px-4 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#2563EB]/90 font-semibold transition-colors"
         >
           Edit
         </button>
@@ -278,7 +278,7 @@ function ProviderModal({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4" style={{ zIndex: 9999, position: 'fixed' }}>
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-auto">
-        <div className="sticky top-0 bg-[#1A531A] text-white p-6 flex items-center justify-between">
+        <div className="sticky top-0 bg-[#2563EB] text-white p-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold">
             {provider ? 'Edit Provider' : 'Add New Provider'}
           </h2>
@@ -296,7 +296,7 @@ function ProviderModal({
             </div>
           )}
           {success && (
-            <div className="bg-green-50 border-2 border-green-200 text-green-800 px-4 py-3 rounded-xl">
+            <div className="bg-[#10B981]/10 border border-[#10B981] text-[#10B981] px-4 py-3 rounded-xl">
               {success}
             </div>
           )}
@@ -308,7 +308,7 @@ function ProviderModal({
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] text-gray-900"
+                className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] text-[#111827]"
               />
             </div>
             <div>
@@ -318,7 +318,7 @@ function ProviderModal({
                 value={formData.serviceType}
                 onChange={(e) => setFormData({ ...formData, serviceType: e.target.value })}
                 required
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] text-gray-900"
+                className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] text-[#111827]"
               />
             </div>
           </div>
@@ -330,7 +330,7 @@ function ProviderModal({
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 required
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] text-gray-900"
+                className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] text-[#111827]"
               />
             </div>
             <div>
@@ -340,7 +340,7 @@ function ProviderModal({
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] text-gray-900"
+                className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] text-[#111827]"
               />
             </div>
           </div>
@@ -350,7 +350,7 @@ function ProviderModal({
               type="text"
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] text-gray-900"
+              className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] text-[#111827]"
             />
           </div>
           <div className="grid grid-cols-3 gap-4">
@@ -362,7 +362,7 @@ function ProviderModal({
                 onChange={(e) =>
                   setFormData({ ...formData, experienceYears: parseInt(e.target.value) || 0 })
                 }
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] text-gray-900"
+                className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] text-[#111827]"
               />
             </div>
             <div>
@@ -374,7 +374,7 @@ function ProviderModal({
                 onChange={(e) =>
                   setFormData({ ...formData, hourlyRate: parseFloat(e.target.value) || 0 })
                 }
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] text-gray-900"
+                className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] text-[#111827]"
               />
             </div>
             <div>
@@ -388,7 +388,7 @@ function ProviderModal({
                 onChange={(e) =>
                   setFormData({ ...formData, rating: parseFloat(e.target.value) || 0 })
                 }
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] text-gray-900"
+                className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] text-[#111827]"
               />
             </div>
           </div>
@@ -396,7 +396,7 @@ function ProviderModal({
             <button
               type="submit"
               disabled={createMutation.isPending || updateMutation.isPending}
-              className="flex-1 px-6 py-3 bg-[#1A531A] text-white rounded-xl font-bold hover:bg-[#1A531A]/90 hover:shadow-lg transform hover:scale-105 transition-all disabled:opacity-50"
+              className="flex-1 px-6 py-3 bg-[#2563EB] text-white rounded-xl font-bold hover:bg-[#2563EB]/90 hover:shadow-lg transform hover:scale-105 transition-all disabled:opacity-50"
             >
               {createMutation.isPending || updateMutation.isPending
                 ? 'Saving...'

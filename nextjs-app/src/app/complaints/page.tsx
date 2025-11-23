@@ -146,8 +146,8 @@ export default function ComplaintsPage() {
       `,
         }}
       />
-      <div className="min-h-screen bg-white">
-        <header className="bg-[#1A531A] text-white py-12 px-4 shadow-2xl">
+      <div className="min-h-screen bg-[#F3F4F6]">
+        <header className="bg-[#2563EB] text-white py-12 px-4 shadow-2xl">
           <div className="max-w-4xl mx-auto">
             <Link
               href="/"
@@ -187,7 +187,7 @@ export default function ComplaintsPage() {
                         caretColor: "rgb(0, 0, 0)",
                       } as React.CSSProperties
                     }
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] transition-all text-gray-900"
+                    className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition-all text-[#111827]"
                   />
                 </div>
                 <div>
@@ -209,7 +209,7 @@ export default function ComplaintsPage() {
                         caretColor: "rgb(0, 0, 0)",
                       } as React.CSSProperties
                     }
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A531A] focus:border-[#1A531A] transition-all text-gray-900"
+                    className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] transition-all text-[#111827]"
                   />
                 </div>
               </div>
@@ -231,7 +231,7 @@ export default function ComplaintsPage() {
                       WebkitTextFillColor: "rgb(0, 0, 0)",
                     } as React.CSSProperties
                   }
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-900"
+                  className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-[#111827]"
                 >
                   <option value="">Select type</option>
                   <option value="service">Service Quality</option>
@@ -258,7 +258,7 @@ export default function ComplaintsPage() {
                     WebkitTextFillColor: "rgb(0, 0, 0)",
                     caretColor: "rgb(0, 0, 0)",
                   }}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-900"
+                  className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-[#111827]"
                 />
               </div>
 
@@ -279,7 +279,7 @@ export default function ComplaintsPage() {
                     WebkitTextFillColor: "rgb(0, 0, 0)",
                     caretColor: "rgb(0, 0, 0)",
                   }}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none text-gray-900"
+                  className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none text-[#111827]"
                 />
               </div>
 
@@ -300,14 +300,14 @@ export default function ComplaintsPage() {
                     WebkitTextFillColor: "rgb(0, 0, 0)",
                     caretColor: "rgb(0, 0, 0)",
                   }}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-900"
+                  className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-[#111827]"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={complaintMutation.isPending}
-                className="w-full bg-[#1A531A] text-white py-4 rounded-xl font-bold text-lg shadow-xl hover:bg-[#1A531A]/90 hover:shadow-2xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:transform-none"
+                className="w-full bg-[#2563EB] text-white py-4 rounded-xl font-bold text-lg shadow-xl hover:bg-[#2563EB]/90 hover:shadow-2xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:transform-none"
               >
                 {complaintMutation.isPending
                   ? "Submitting..."
