@@ -72,7 +72,7 @@ export default function Home() {
           <div className="mb-8 animate-fade-in">
             <div className="inline-block mb-6 animate-bounce">
               <Image
-                src="/Untitled design.png"
+                src="/Homeswift logo.png"
                 alt="HomeSwift Logo"
                 width={150}
                 height={150}

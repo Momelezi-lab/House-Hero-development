@@ -34,8 +34,8 @@ export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="bg-[#1A531A] text-white py-12 px-4 shadow-2xl">
+    <div className="min-h-screen bg-[#F3F4F6]">
+      <header className="bg-[#2563EB] text-white py-12 px-4 shadow-2xl">
         <div className="max-w-4xl mx-auto">
           <Link
             href="/"
@@ -53,20 +53,20 @@ export default function FAQPage() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden hover:shadow-2xl transition-all"
+              className="bg-white rounded-xl shadow-xl border border-[#D1D5DB] overflow-hidden hover:shadow-2xl transition-all"
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-[#90B890]/10 transition-colors"
+                className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-[#EFF6FF] transition-colors"
               >
-                <h3 className="text-lg font-bold text-gray-900 pr-4">{faq.question}</h3>
-                <span className="text-2xl text-[#1A531A] font-bold flex-shrink-0">
+                <h3 className="text-lg font-bold text-[#111827] pr-4">{faq.question}</h3>
+                <span className="text-2xl text-[#2563EB] font-bold flex-shrink-0">
                   {openIndex === index ? '−' : '+'}
                 </span>
               </button>
               {openIndex === index && (
                 <div className="px-6 pb-5 pt-0 animate-fade-in">
-                  <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
+                  <p className="text-[#6B7280] leading-relaxed">{faq.answer}</p>
                 </div>
               )}
             </div>

@@ -324,9 +324,9 @@ export default function ServiceDetailsPage() {
   const details = serviceDetails[category] || serviceDetails['Standard Apartment Cleaning']
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F3F4F6]">
       {/* Header */}
-      <header className="bg-[#1A531A] text-white py-12 px-4 shadow-2xl">
+      <header className="bg-[#2563EB] text-white py-12 px-4 shadow-2xl">
         <div className="max-w-6xl mx-auto">
           <Link
             href="/services/cleaning"
@@ -341,15 +341,15 @@ export default function ServiceDetailsPage() {
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-12">
-        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-gray-100">
+        <div className="bg-white rounded-xl shadow-xl p-8 md:p-12 border border-[#D1D5DB]">
           <div className="space-y-8">
             {details.sections.map((section, index) => (
               <div
                 key={index}
-                className="border-b border-gray-200 pb-8 last:border-b-0 last:pb-0"
+                className="border-b border-[#D1D5DB] pb-8 last:border-b-0 last:pb-0"
               >
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                  <span className="w-10 h-10 bg-[#1A531A] rounded-lg flex items-center justify-center text-white font-bold">
+                <h2 className="text-2xl md:text-3xl font-bold text-[#111827] mb-6 flex items-center gap-3">
+                  <span className="w-10 h-10 bg-[#2563EB] rounded-lg flex items-center justify-center text-white font-bold">
                     {index + 1}
                   </span>
                   {section.title}
@@ -358,9 +358,9 @@ export default function ServiceDetailsPage() {
                   {section.items.map((item, itemIndex) => (
                     <li
                       key={itemIndex}
-                      className="flex items-start gap-3 text-gray-700"
+                      className="flex items-start gap-3 text-[#6B7280]"
                     >
-                      <span className="text-[#1A531A] font-bold mt-1 flex-shrink-0">✓</span>
+                      <span className="text-[#2563EB] font-bold mt-1 flex-shrink-0">✓</span>
                       <span className="text-lg">{item}</span>
                     </li>
                   ))}
@@ -370,15 +370,15 @@ export default function ServiceDetailsPage() {
           </div>
 
           {/* CTA */}
-          <div className="mt-12 pt-8 border-t border-gray-200">
-            <div className="bg-[#90B890]/10 rounded-xl p-6 text-center border border-[#90B890]">
-              <h3 className="text-2xl font-bold text-[#1A531A] mb-4">Ready to Book?</h3>
-              <p className="text-gray-600 mb-6">
+            <div className="mt-12 pt-8 border-t border-[#D1D5DB]">
+            <div className="bg-[#EFF6FF] rounded-xl p-6 text-center border border-[#2563EB]">
+              <h3 className="text-2xl font-bold text-[#111827] mb-4">Ready to Book?</h3>
+              <p className="text-[#6B7280] mb-6">
                 Get started by selecting this service and booking your preferred date
               </p>
               <Link
                 href={`/book-service?category=${encodeURIComponent(category)}`}
-                className="inline-flex items-center gap-3 bg-[#1A531A] text-white px-10 py-4 rounded-xl font-bold text-lg shadow-xl hover:bg-[#1A531A]/90 hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                className="inline-flex items-center gap-3 bg-[#2563EB] text-white px-10 py-4 rounded-xl font-bold text-lg shadow-xl hover:bg-[#1E40AF] hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
               >
                 <span>🚀</span>
                 <span>Book This Service Now</span>
