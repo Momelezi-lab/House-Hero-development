@@ -28,15 +28,18 @@ export default function BookingSuccessPage() {
       return await serviceRequestApi.getById(parseInt(requestId))
     },
     enabled: !!requestId,
-    onSuccess: (data) => {
-      if (data?.customerPaymentReceived) {
+  })
+
+  useEffect(() => {
+    if (serviceRequest) {
+      if (serviceRequest?.customerPaymentReceived) {
         setPaymentSubmitted(true)
       }
-      if (data?.paymentMethod) {
-        setPaymentMethod(data.paymentMethod as 'eft' | 'credit_card')
+      if (serviceRequest?.paymentMethod) {
+        setPaymentMethod(serviceRequest.paymentMethod as 'eft' | 'credit_card')
       }
-    },
-  })
+    }
+  }, [serviceRequest])
 
   // Submit payment mutation
   const submitPaymentMutation = useMutation({
