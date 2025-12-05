@@ -23,10 +23,10 @@ export async function POST(request: NextRequest) {
     // Check for duplicates
     const existing = await prisma.booking.findFirst({
       where: {
-        name: { equals: data.name, mode: 'insensitive' },
+        name: data.name,
         date: data.date,
         time: data.time,
-        service: { equals: data.service, mode: 'insensitive' },
+        service: data.service,
       },
     })
 
