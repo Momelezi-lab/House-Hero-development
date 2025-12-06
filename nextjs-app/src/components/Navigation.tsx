@@ -116,9 +116,9 @@ export function Navigation() {
                     aria-label="Toggle navigation"
                     aria-expanded={isOpen}
                     aria-controls="mobile-menu"
-                    className="md:hidden p-2 rounded-lg hover:bg-gray-100"
+                    className="md:hidden p-2 rounded-lg bg-white text-[#2563EB] border border-transparent hover:bg-[#EFF6FF] hover:border-[#BFDBFE] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:ring-offset-2"
                   >
-                    <span className="text-2xl">{isOpen ? '✕' : '☰'}</span>
+                    <span className="text-3xl font-bold leading-none">{isOpen ? '✕' : '☰'}</span>
                   </button>
         </div>
 
