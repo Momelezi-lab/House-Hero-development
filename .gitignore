@@ -1,0 +1,12 @@
+.DS_Store
+/nextjs-app/*.png
+
+# Node / Next artifacts
+node_modules/
+.next/
+dist/
+
+# Env
+.env
+.env.local
+.env.*.local
