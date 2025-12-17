@@ -16,7 +16,7 @@ export async function OPTIONS() {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json()
-    const { name, email, password, phone, userType, serviceType, address, experienceYears } = data
+    const { name, businessName, email, password, phone, userType, serviceType, address, experienceYears } = data
 
     if (!name || !email || !password) {
       return NextResponse.json(
@@ -79,9 +79,11 @@ export async function POST(request: NextRequest) {
     // If provider, also create ServiceProvider record
     let provider = null
     if (isProvider) {
+      // Use business name if provided, otherwise use person's name
+      const providerName = businessName || name
       provider = await prisma.serviceProvider.create({
         data: {
-          name,
+          name: providerName,
           email,
           phone: phone || '',
           serviceType,

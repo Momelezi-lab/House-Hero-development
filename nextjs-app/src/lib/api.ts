@@ -68,6 +68,7 @@ export const providerApi = {
 export const authApi = {
   signup: async (data: { 
     name: string
+    businessName?: string
     email: string
     password: string
     phone?: string
