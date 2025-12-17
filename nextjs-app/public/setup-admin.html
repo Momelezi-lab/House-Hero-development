@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Setup - HomeSwift</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2563EB; }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border-left: 4px solid #2563EB;
+        }
+        button {
+            background: #2563EB;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover { background: #1E40AF; }
+        button.success { background: #10B981; }
+        button.danger { background: #EF4444; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .success { background: #D1FAE5; color: #065F46; }
+        .error { background: #FEE2E2; color: #991B1B; }
+        .info { background: #DBEAFE; color: #1E40AF; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Admin Setup Tool</h1>
+        <p>Use this tool to diagnose and fix admin login issues on Vercel.</p>
+
+        <div class="section">
+            <h2>Step 1: Check Database Connection</h2>
+            <button onclick="checkConnection()">Check Connection</button>
+            <div id="connectionResult"></div>
+        </div>
+
+        <div class="section">
+            <h2>Step 2: Check if Admin User Exists</h2>
+            <input type="email" id="checkEmail" placeholder="admin@homeswift.com" value="admin@homeswift.com">
+            <button onclick="checkAdmin()">Check Admin User</button>
+            <div id="checkResult"></div>
+        </div>
+
+        <div class="section">
+            <h2>Step 3: Create Admin User</h2>
+            <input type="email" id="createEmail" placeholder="Email" value="admin@homeswift.com">
+            <input type="password" id="createPassword" placeholder="Password" value="admin123">
+            <input type="text" id="createName" placeholder="Name (optional)" value="Admin User">
+            <button class="success" onclick="createAdmin()">Create Admin User</button>
+            <div id="createResult"></div>
+        </div>
+
+        <div class="section">
+            <h2>Step 4: Test Login</h2>
+            <input type="email" id="testEmail" placeholder="Email" value="admin@homeswift.com">
+            <input type="password" id="testPassword" placeholder="Password" value="admin123">
+            <button onclick="testLogin()">Test Login</button>
+            <div id="testResult"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        async function checkConnection() {
+            const resultDiv = document.getElementById('connectionResult');
+            resultDiv.innerHTML = '<div class="result info">Checking...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/health`);
+                const data = await response.json();
+                resultDiv.innerHTML = `<div class="result success">✅ API is working: ${JSON.stringify(data, null, 2)}</div>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        async function checkAdmin() {
+            const email = document.getElementById('checkEmail').value;
+            const resultDiv = document.getElementById('checkResult');
+            resultDiv.innerHTML = '<div class="result info">Checking...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/check-admin?email=${encodeURIComponent(email)}`);
+                const data = await response.json();
+                
+                if (data.connected) {
+                    if (data.userExists) {
+                        resultDiv.innerHTML = `<div class="result success">✅ User exists!\n${JSON.stringify(data, null, 2)}</div>`;
+                    } else {
+                        resultDiv.innerHTML = `<div class="result error">❌ User does NOT exist.\n${JSON.stringify(data, null, 2)}\n\nClick "Create Admin User" below to create one.</div>`;
+                    }
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Database connection failed!\n${JSON.stringify(data, null, 2)}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        async function createAdmin() {
+            const email = document.getElementById('createEmail').value;
+            const password = document.getElementById('createPassword').value;
+            const name = document.getElementById('createName').value;
+            const resultDiv = document.getElementById('createResult');
+            resultDiv.innerHTML = '<div class="result info">Creating...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/create-admin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, name }),
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="result success">✅ ${data.message}\n${JSON.stringify(data, null, 2)}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Error: ${data.error || 'Failed to create admin'}\n${JSON.stringify(data, null, 2)}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            const resultDiv = document.getElementById('testResult');
+            resultDiv.innerHTML = '<div class="result info">Testing login...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="result success">✅ Login successful!\nRole: ${data.user.role}\n${JSON.stringify(data, null, 2)}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Login failed: ${data.error}\n${JSON.stringify(data, null, 2)}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
+
