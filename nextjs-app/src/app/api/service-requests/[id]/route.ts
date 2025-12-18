@@ -83,76 +83,132 @@ export async function PATCH(
       }
     }
 
-    // Handle status changes
-    if (data.status === "confirmed" && !updateData.confirmedAt) {
-      updateData.confirmedAt = new Date();
-      // Send provider assignment emails
-      const serviceRequest = await prisma.serviceRequest.findUnique({
-        where: { requestId: id },
-      });
-      if (!serviceRequest) {
-        return NextResponse.json(
-          { error: "Service request not found" },
-          { status: 404 }
-        );
+    // Get current service request to compare status
+    const currentRequest = await prisma.serviceRequest.findUnique({
+      where: { requestId: id },
+    });
+
+    if (!currentRequest) {
+      return NextResponse.json(
+        { error: "Service request not found" },
+        { status: 404 }
+      );
+    }
+
+    const oldStatus = currentRequest.status;
+    const newStatus = data.status;
+
+    // Handle status changes and send appropriate emails
+    if (newStatus && newStatus !== oldStatus) {
+      // Set timestamps for specific statuses
+      if (newStatus === "confirmed" && !updateData.confirmedAt) {
+        updateData.confirmedAt = new Date();
       }
-      const providerId =
-        data.assignedProviderId !== undefined &&
-        data.assignedProviderId !== null &&
-        data.assignedProviderId !== ""
-          ? parseInt(data.assignedProviderId.toString())
-          : serviceRequest?.assignedProviderId;
-      if (providerId) {
-        const provider = await prisma.serviceProvider.findUnique({
-          where: { id: providerId },
-        });
-        if (provider) {
-          const templates = generateEmailTemplates();
-          const providerEmail = templates.providerAssignment({
-            providerName: provider.name,
+      if (newStatus === "completed" && !updateData.completedAt) {
+        updateData.completedAt = new Date();
+      }
+
+      const templates = generateEmailTemplates();
+
+      // Handle confirmed status with provider assignment
+      if (newStatus === "confirmed") {
+        const providerId =
+          data.assignedProviderId !== undefined &&
+          data.assignedProviderId !== null &&
+          data.assignedProviderId !== ""
+            ? parseInt(data.assignedProviderId.toString())
+            : currentRequest?.assignedProviderId;
+
+        if (providerId) {
+          const provider = await prisma.serviceProvider.findUnique({
+            where: { id: providerId },
+          });
+          if (provider) {
+            // Send provider assignment email
+            const providerEmail = templates.providerAssignment({
+              providerName: provider.name,
+              requestId: id,
+              customerName: currentRequest.customerName,
+              customerAddress: currentRequest.customerAddress,
+              preferredDate: currentRequest.preferredDate
+                .toISOString()
+                .split("T")[0],
+              preferredTime: currentRequest.preferredTime,
+            });
+            await sendEmail({
+              to: provider.email,
+              subject: providerEmail.subject,
+              html: providerEmail.html,
+            });
+
+            // Send customer notification with provider details
+            const customerEmail = templates.customerProviderDetails({
+              customerName: currentRequest.customerName,
+              providerName: provider.name,
+              providerPhone: provider.phone,
+              providerEmail: provider.email,
+              requestId: id,
+            });
+            await sendEmail({
+              to: currentRequest.customerEmail,
+              subject: customerEmail.subject,
+              html: customerEmail.html,
+            });
+          }
+        } else {
+          // No provider assigned yet, send general status update
+          const statusEmail = templates.statusUpdate({
+            customerName: currentRequest.customerName,
             requestId: id,
-            customerName: serviceRequest.customerName,
-            customerAddress: serviceRequest.customerAddress,
-            preferredDate: serviceRequest.preferredDate
+            oldStatus,
+            newStatus,
+            preferredDate: currentRequest.preferredDate
               .toISOString()
               .split("T")[0],
-            preferredTime: serviceRequest.preferredTime,
+            preferredTime: currentRequest.preferredTime,
           });
           await sendEmail({
-            to: provider.email,
-            subject: providerEmail.subject,
-            html: providerEmail.html,
-          });
-
-          const customerEmail = templates.customerProviderDetails({
-            customerName: serviceRequest.customerName,
-            providerName: provider.name,
-            providerPhone: provider.phone,
-            providerEmail: provider.email,
-            requestId: id,
-          });
-          await sendEmail({
-            to: serviceRequest.customerEmail,
-            subject: customerEmail.subject,
-            html: customerEmail.html,
+            to: currentRequest.customerEmail,
+            subject: statusEmail.subject,
+            html: statusEmail.html,
           });
         }
-      }
-    } else if (data.status === "completed") {
-      updateData.completedAt = new Date();
-      const request = await prisma.serviceRequest.findUnique({
-        where: { requestId: id },
-      });
-      if (request) {
-        const templates = generateEmailTemplates();
+      } else if (newStatus === "completed") {
+        // Send completion email
         const completionEmail = templates.serviceCompletion({
-          customerName: request.customerName,
+          customerName: currentRequest.customerName,
           requestId: id,
         });
         await sendEmail({
-          to: request.customerEmail,
+          to: currentRequest.customerEmail,
           subject: completionEmail.subject,
           html: completionEmail.html,
+        });
+      } else {
+        // Send status update email for all other status changes
+        const provider = currentRequest.assignedProviderId
+          ? await prisma.serviceProvider.findUnique({
+              where: { id: currentRequest.assignedProviderId },
+            })
+          : null;
+
+        const statusEmail = templates.statusUpdate({
+          customerName: currentRequest.customerName,
+          requestId: id,
+          oldStatus,
+          newStatus,
+          providerName: provider?.name,
+          providerPhone: provider?.phone,
+          providerEmail: provider?.email,
+          preferredDate: currentRequest.preferredDate
+            .toISOString()
+            .split("T")[0],
+          preferredTime: currentRequest.preferredTime,
+        });
+        await sendEmail({
+          to: currentRequest.customerEmail,
+          subject: statusEmail.subject,
+          html: statusEmail.html,
         });
       }
     }

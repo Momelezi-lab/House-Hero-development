@@ -36,31 +36,22 @@ export default function ProviderDashboardPage() {
     }
   }, [providerData]);
 
-  // Fetch available jobs (pending jobs that match provider's service type)
+  // Fetch available jobs (pending jobs that are not assigned to any provider)
+  // Show ALL pending jobs to ALL providers - they can choose which ones to accept
   const { data: availableJobs, isLoading: isLoadingAvailable } = useQuery({
-    queryKey: ["available-jobs", provider?.serviceType, provider?.id],
+    queryKey: ["available-jobs", provider?.id],
     queryFn: async () => {
-      if (!provider?.serviceType) return [];
+      if (!provider?.id) return [];
       const allRequests = await serviceRequestApi.getAll({ status: "pending" });
-      // Filter jobs that match the provider's service type and are not already assigned
+      // Filter jobs that are not already assigned to any provider
       return allRequests.filter((job: any) => {
-        // Skip jobs that are already assigned to a provider
-        if (job.assignedProviderId) return false;
-
-        if (!job.selectedItems) return false;
-        try {
-          const items = JSON.parse(job.selectedItems);
-          return items.some(
-            (item: any) =>
-              item.type === provider.serviceType ||
-              item.category === provider.serviceType
-          );
-        } catch {
-          return false;
-        }
+        // Only show jobs that are not assigned to any provider
+        return !job.assignedProviderId && job.status === "pending";
       });
     },
-    enabled: !!provider?.serviceType,
+    enabled: !!provider?.id,
+    // Refetch every 5 seconds to get real-time updates
+    refetchInterval: 5000,
   });
 
   // Fetch provider's accepted jobs
@@ -74,17 +65,35 @@ export default function ProviderDashboardPage() {
     enabled: !!user?.email,
   });
 
-  // Accept job mutation
+  // Accept job mutation - uses the atomic accept endpoint
   const acceptJobMutation = useMutation({
     mutationFn: async (requestId: number) => {
-      return serviceRequestApi.update(requestId, {
-        assignedProviderId: provider.id,
-        status: "confirmed",
+      if (!provider?.id) {
+        throw new Error("Provider not found");
+      }
+      // Use the atomic accept endpoint
+      const response = await fetch(`/api/service-requests/${requestId}/accept`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ providerId: provider.id }),
       });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to accept booking");
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
+      // Invalidate queries to refresh the UI
       queryClient.invalidateQueries({ queryKey: ["available-jobs"] });
       queryClient.invalidateQueries({ queryKey: ["provider-jobs"] });
+    },
+    onError: (error: any) => {
+      console.error("Accept job error:", error);
+      // Show error message to user
+      alert(error.message || "Failed to accept booking. It may have been accepted by another provider.");
     },
   });
 
@@ -293,13 +302,17 @@ export default function ProviderDashboardPage() {
                       </p>
                     </div>
                     <button
-                      onClick={() => acceptJobMutation.mutate(job.requestId)}
+                      onClick={() => {
+                        if (confirm(`Accept Request #${job.requestId}?\n\nYou will be assigned to this job and it will be removed from other providers' dashboards.`)) {
+                          acceptJobMutation.mutate(job.requestId);
+                        }
+                      }}
                       disabled={acceptJobMutation.isPending}
-                      className="bg-[#2563EB] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#1E40AF] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-[#2563EB] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#1E40AF] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-105"
                     >
                       {acceptJobMutation.isPending
                         ? "Accepting..."
-                        : "Accept Job"}
+                        : "✓ Accept Job"}
                     </button>
                   </div>
                 </div>
@@ -307,9 +320,9 @@ export default function ProviderDashboardPage() {
             </div>
           ) : (
             <div className="text-center py-12 bg-gray-50 rounded-xl">
-              <p className="text-gray-600">No available jobs at the moment</p>
+              <p className="text-gray-600 text-lg font-semibold">No available jobs at the moment</p>
               <p className="text-sm text-gray-500 mt-2">
-                Check back later for new service requests
+                New service requests will appear here automatically. This page refreshes every 5 seconds.
               </p>
             </div>
           )}
