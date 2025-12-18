@@ -17,12 +17,31 @@ export async function POST(request: NextRequest) {
     // Check database connection
     try {
       await prisma.$connect();
-    } catch (dbError) {
+    } catch (dbError: any) {
       console.error("Database connection error:", dbError);
+      const errorMessage = dbError?.message || "Unknown database error";
+
+      // Provide more helpful error messages
+      if (
+        errorMessage.includes("P1001") ||
+        errorMessage.includes("Can't reach database")
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "Database connection failed. Please check your DATABASE_URL environment variable.",
+            hint: "If deployed on Vercel, make sure you've set up a PostgreSQL database and added DATABASE_URL to environment variables.",
+          },
+          { status: 500 }
+        );
+      }
+
       return NextResponse.json(
         {
           error:
             "Database connection failed. Please check your DATABASE_URL environment variable.",
+          details:
+            process.env.NODE_ENV === "development" ? errorMessage : undefined,
         },
         { status: 500 }
       );
