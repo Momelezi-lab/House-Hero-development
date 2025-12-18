@@ -8,7 +8,7 @@ generator client {
 // Seed configuration
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -133,18 +133,22 @@ model ServiceRequest {
   totalCustomerPaid      Float?    @map("total_customer_paid")
   totalProviderPayout    Float?    @map("total_provider_payout")
   totalCommissionEarned  Float?    @map("total_commission_earned")
-  status                 String    @default("pending")
+  status                 String    @default("pending") // pending, broadcasted, interested, assigned, in_progress, completed, cancelled
   priority               String    @default("medium")
   assignedProviderId     Int?      @map("assigned_provider_id")
   providerName           String?   @map("provider_name")
   providerPhone          String?   @map("provider_phone")
   providerEmail          String?   @map("provider_email")
+  interestedProviders    String?   @map("interested_providers") // JSON array: [{providerId, providerName, acceptedAt, rating}]
+  assignedAt             DateTime? @map("assigned_at")
+  assignedBy             String?   @map("assigned_by") // admin email who assigned
   paymentMethod          String?   @map("payment_method")
   proofOfPaymentUrl     String?   @map("proof_of_payment_url")
   customerPaymentReceived Boolean  @default(false) @map("customer_payment_received")
   providerPaymentMade    Boolean  @default(false) @map("provider_payment_made")
   commissionCollected     Boolean  @default(false) @map("commission_collected")
   adminNotes             String?   @map("admin_notes")
+  auditLog               String?   @map("audit_log") // JSON array: [{action, userId, timestamp, details}]
   createdAt              DateTime  @default(now()) @map("created_at")
   updatedAt              DateTime  @updatedAt @map("updated_at")
   confirmedAt            DateTime? @map("confirmed_at")

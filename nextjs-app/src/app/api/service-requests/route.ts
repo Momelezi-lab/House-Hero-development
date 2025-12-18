@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
         totalCustomerPaid: parseFloat(totalCustomerPaid.toString()),
         totalProviderPayout: parseFloat(totalProviderPayout.toString()),
         totalCommissionEarned: parseFloat(totalCommissionEarned.toString()),
-        status: "pending",
+        status: "broadcasted", // Start as broadcasted so all providers can see it
       },
     });
 

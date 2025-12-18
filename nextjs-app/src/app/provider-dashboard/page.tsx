@@ -36,17 +36,43 @@ export default function ProviderDashboardPage() {
     }
   }, [providerData]);
 
-  // Fetch available jobs (pending jobs that are not assigned to any provider)
-  // Show ALL pending jobs to ALL providers - they can choose which ones to accept
+  // Fetch available jobs (broadcasted/interested jobs that are not assigned)
+  // Show ALL broadcasted/interested jobs to ALL providers - they can show interest
   const { data: availableJobs, isLoading: isLoadingAvailable } = useQuery({
     queryKey: ["available-jobs", provider?.id],
     queryFn: async () => {
       if (!provider?.id) return [];
-      const allRequests = await serviceRequestApi.getAll({ status: "pending" });
-      // Filter jobs that are not already assigned to any provider
+      const allRequests = await serviceRequestApi.getAll();
+      // Filter jobs that are available for interest (broadcasted, interested, or pending)
+      // and not already assigned (status must be ASSIGNED or higher to be hidden)
       return allRequests.filter((job: any) => {
-        // Only show jobs that are not assigned to any provider
-        return !job.assignedProviderId && job.status === "pending";
+        // Hide jobs that are assigned (status = assigned, in_progress, completed)
+        if (job.assignedProviderId) return false;
+        if (
+          ["assigned", "in_progress", "completed", "cancelled"].includes(
+            job.status
+          )
+        )
+          return false;
+
+        // Only show jobs in broadcastable states
+        if (!["pending", "broadcasted", "interested"].includes(job.status))
+          return false;
+
+        // Check if this provider already showed interest
+        if (job.interestedProviders) {
+          try {
+            const interested = JSON.parse(job.interestedProviders);
+            const alreadyInterested = interested.some(
+              (p: any) => p.providerId === provider.id
+            );
+            // Still show it but mark as already interested
+            return true;
+          } catch {
+            return true;
+          }
+        }
+        return true;
       });
     },
     enabled: !!provider?.id,
@@ -65,24 +91,27 @@ export default function ProviderDashboardPage() {
     enabled: !!user?.email,
   });
 
-  // Accept job mutation - uses the atomic accept endpoint
-  const acceptJobMutation = useMutation({
+  // Show interest mutation - adds provider to interested list (does NOT auto-assign)
+  const showInterestMutation = useMutation({
     mutationFn: async (requestId: number) => {
       if (!provider?.id) {
         throw new Error("Provider not found");
       }
-      // Use the atomic accept endpoint
-      const response = await fetch(`/api/service-requests/${requestId}/accept`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ providerId: provider.id }),
-      });
-      
+      // Use the show interest endpoint
+      const response = await fetch(
+        `/api/service-requests/${requestId}/show-interest`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ providerId: provider.id }),
+        }
+      );
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || "Failed to accept booking");
+        throw new Error(error.error || "Failed to show interest");
       }
-      
+
       return response.json();
     },
     onSuccess: () => {
@@ -91,11 +120,25 @@ export default function ProviderDashboardPage() {
       queryClient.invalidateQueries({ queryKey: ["provider-jobs"] });
     },
     onError: (error: any) => {
-      console.error("Accept job error:", error);
+      console.error("Show interest error:", error);
       // Show error message to user
-      alert(error.message || "Failed to accept booking. It may have been accepted by another provider.");
+      alert(
+        error.message ||
+          "Failed to show interest. You may have already shown interest."
+      );
     },
   });
+
+  // Helper function to check if provider already showed interest
+  const hasShownInterest = (job: any) => {
+    if (!job.interestedProviders || !provider?.id) return false;
+    try {
+      const interested = JSON.parse(job.interestedProviders);
+      return interested.some((p: any) => p.providerId === provider.id);
+    } catch {
+      return false;
+    }
+  };
 
   // Calculate revenue and next payout
   const calculateStats = () => {
@@ -266,8 +309,18 @@ export default function ProviderDashboardPage() {
                         {formatTime(job.preferredTime)}
                       </p>
                     </div>
-                    <span className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold border-2 border-yellow-200">
-                      Pending
+                    <span
+                      className={`px-4 py-2 rounded-full text-sm font-semibold border-2 ${
+                        job.status === "interested"
+                          ? "bg-blue-100 text-blue-800 border-blue-200"
+                          : "bg-yellow-100 text-yellow-800 border-yellow-200"
+                      }`}
+                    >
+                      {job.status === "interested"
+                        ? "Interested"
+                        : job.status === "broadcasted"
+                        ? "Available"
+                        : "Pending"}
                     </span>
                   </div>
 
@@ -291,8 +344,70 @@ export default function ProviderDashboardPage() {
                           Unit {job.unitNumber}
                         </p>
                       )}
+                      {job.complexName && (
+                        <p className="text-sm text-gray-600">
+                          {job.complexName}
+                        </p>
+                      )}
                     </div>
                   </div>
+
+                  {/* Service Details */}
+                  {job.selectedItems && (
+                    <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                      <p className="text-sm font-semibold text-gray-700 mb-2">
+                        Service Details:
+                      </p>
+                      <div className="space-y-1">
+                        {(() => {
+                          try {
+                            const items = JSON.parse(job.selectedItems);
+                            return items.map((item: any, idx: number) => (
+                              <p key={idx} className="text-sm text-gray-600">
+                                • {item.type || item.category} × {item.quantity}
+                                {item.is_white && (
+                                  <span className="text-[#2563EB]">
+                                    {" "}
+                                    (White)
+                                  </span>
+                                )}
+                              </p>
+                            ));
+                          } catch {
+                            return (
+                              <p className="text-sm text-gray-600">
+                                Service details unavailable
+                              </p>
+                            );
+                          }
+                        })()}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Additional Notes */}
+                  {job.additionalNotes && (
+                    <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <p className="text-sm font-semibold text-gray-700 mb-1">
+                        Additional Notes:
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {job.additionalNotes}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Access Instructions */}
+                  {job.accessInstructions && (
+                    <div className="mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                      <p className="text-sm font-semibold text-gray-700 mb-1">
+                        Access Instructions:
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {job.accessInstructions}
+                      </p>
+                    </div>
+                  )}
 
                   <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-200">
                     <div>
@@ -301,28 +416,49 @@ export default function ProviderDashboardPage() {
                         {formatCurrency(job.totalProviderPayout || 0)}
                       </p>
                     </div>
-                    <button
-                      onClick={() => {
-                        if (confirm(`Accept Request #${job.requestId}?\n\nYou will be assigned to this job and it will be removed from other providers' dashboards.`)) {
-                          acceptJobMutation.mutate(job.requestId);
-                        }
-                      }}
-                      disabled={acceptJobMutation.isPending}
-                      className="bg-[#2563EB] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#1E40AF] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-105"
-                    >
-                      {acceptJobMutation.isPending
-                        ? "Accepting..."
-                        : "✓ Accept Job"}
-                    </button>
+                    {hasShownInterest(job) ? (
+                      <div className="flex flex-col items-end">
+                        <button
+                          disabled
+                          className="bg-gray-300 text-gray-600 px-6 py-3 rounded-xl font-bold cursor-not-allowed"
+                        >
+                          Interest Submitted
+                        </button>
+                        <p className="text-sm text-gray-600 mt-2 text-right">
+                          Awaiting confirmation
+                        </p>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          if (
+                            confirm(
+                              `Show interest in Request #${job.requestId}?\n\nYour interest will be submitted to admin for review. The job will not be automatically assigned.`
+                            )
+                          ) {
+                            showInterestMutation.mutate(job.requestId);
+                          }
+                        }}
+                        disabled={showInterestMutation.isPending}
+                        className="bg-[#2563EB] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#1E40AF] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-105"
+                      >
+                        {showInterestMutation.isPending
+                          ? "Submitting..."
+                          : "Accept Job"}
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
             <div className="text-center py-12 bg-gray-50 rounded-xl">
-              <p className="text-gray-600 text-lg font-semibold">No available jobs at the moment</p>
+              <p className="text-gray-600 text-lg font-semibold">
+                No available jobs at the moment
+              </p>
               <p className="text-sm text-gray-500 mt-2">
-                New service requests will appear here automatically. This page refreshes every 5 seconds.
+                New service requests will appear here automatically. This page
+                refreshes every 5 seconds.
               </p>
             </div>
           )}
@@ -359,13 +495,18 @@ export default function ProviderDashboardPage() {
                       className={`px-4 py-2 rounded-full text-sm font-semibold border-2 ${
                         job.status === "completed"
                           ? "bg-[#10B981]/10 text-[#10B981] border-[#10B981]"
-                          : job.status === "confirmed"
+                          : job.status === "assigned" ||
+                            job.status === "confirmed"
                           ? "bg-blue-100 text-blue-800 border-blue-200"
+                          : job.status === "in_progress"
+                          ? "bg-purple-100 text-purple-800 border-purple-200"
                           : "bg-yellow-100 text-yellow-800 border-yellow-200"
                       }`}
                     >
-                      {job.status?.charAt(0).toUpperCase() +
-                        job.status?.slice(1)}
+                      {job.status === "in_progress"
+                        ? "In Progress"
+                        : job.status?.charAt(0).toUpperCase() +
+                          job.status?.slice(1)}
                     </span>
                   </div>
 
