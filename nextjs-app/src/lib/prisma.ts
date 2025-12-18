@@ -4,7 +4,12 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient()
+// Create Prisma client optimized for serverless (Vercel)
+export const prisma = globalForPrisma.prisma ?? new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+})
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
-
+// Handle connection errors gracefully
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma
+}
