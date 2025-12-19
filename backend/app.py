@@ -6,14 +6,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import json
 from sqlalchemy import func
-<<<<<<< HEAD
-from datetime import datetime
-import smtplib
-from email.message import EmailMessage
-=======
 from datetime import datetime, timedelta
 from decimal import Decimal
->>>>>>> 1e533b4361dde9579df50821049cbdd042dcef04
+import smtplib
+from email.message import EmailMessage
 
 app = Flask(__name__)
 
@@ -193,9 +189,8 @@ class ServiceProvider(db.Model):
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
 
-<<<<<<< HEAD
-
-def send_email(to_email: str, subject: str, body: str, reply_to: str = None) -> bool:
+# Email helper function (SMTP version)
+def send_email_smtp(to_email: str, subject: str, body: str, reply_to: str = None) -> bool:
     """Send a plain-text email using SMTP. Relies on environment variables:
     EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS, EMAIL_FROM
     Returns True on success, False otherwise.
@@ -229,7 +224,7 @@ def send_email(to_email: str, subject: str, body: str, reply_to: str = None) -> 
     except Exception as e:
         print('send_email error:', e)
         return False
-=======
+
 # New models for dynamic pricing system
 class ServicePricing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -347,7 +342,6 @@ class ServiceRequest(db.Model):
             'confirmed_at': self.confirmed_at.isoformat() if self.confirmed_at else None,
             'completed_at': self.completed_at.isoformat() if self.completed_at else None
         }
->>>>>>> 1e533b4361dde9579df50821049cbdd042dcef04
 
 @app.route('/api/health')
 def health_check():
@@ -650,8 +644,6 @@ def delete_provider(provider_id):
     db.session.commit()
     return jsonify({'message': 'Provider deleted'})
 
-<<<<<<< HEAD
-
 @app.route('/api/bookings/<int:booking_id>/assign', methods=['POST'])
 def assign_provider(booking_id):
     """Assign a provider to a booking and notify provider + customer.
@@ -694,16 +686,13 @@ def assign_provider(booking_id):
             f"Customer expects you at {booking.time} on {booking.date}.\n\n"
             f"Job ID: {booking.id}"
         )
-        send_email(provider.email, provider_subject, provider_body, reply_to=EMAIL_FROM)
+        send_email(provider.email, provider_subject, provider_body)
     except Exception as e:
         print('Error sending provider email:', e)
 
     # Notify customer (if email present)
     try:
-        customer_email = request.get_json().get('customer_email') or None
-        if not customer_email:
-            # fallback to data payload field 'email' if present
-            customer_email = request.get_json().get('email') or None
+        customer_email = data.get('customer_email') or data.get('email')
         if customer_email:
             cust_subject = 'Your service is confirmed! - HomeSwift'
             cust_body = (
@@ -721,24 +710,27 @@ def assign_provider(booking_id):
                 f"Request ID: {booking.id}\n\n"
                 "- HomeSwift Team"
             )
-            send_email(customer_email, cust_subject, cust_body, reply_to=EMAIL_FROM)
+            send_email(customer_email, cust_subject, cust_body)
     except Exception as e:
         print('Error sending customer confirmation email:', e)
 
     return jsonify({'message': 'Provider assigned and notifications sent', 'booking': booking.to_dict()})
-=======
+
 # ========== DYNAMIC PRICING SYSTEM ENDPOINTS ==========
 
-# Email helper functions
-def send_email(to, subject, body):
-    """Send email using Flask-Mail"""
+# Email helper function (unified - tries Flask-Mail first, falls back to SMTP)
+def send_email(to, subject, body, reply_to=None):
+    """Send email using Flask-Mail, or fall back to SMTP if Flask-Mail not configured"""
+    # Try Flask-Mail first
     try:
         msg = Message(subject, recipients=[to], body=body)
+        if reply_to:
+            msg.reply_to = reply_to
         mail.send(msg)
         return True
     except Exception as e:
-        print(f"Error sending email: {str(e)}")
-        return False
+        # Fall back to SMTP if Flask-Mail fails
+        return send_email_smtp(to, subject, body, reply_to)
 
 def format_currency(amount):
     """Format amount as South African Rand"""
@@ -1282,77 +1274,81 @@ def get_financial_report():
 @app.route('/api/admin/seed-pricing', methods=['POST'])
 def seed_pricing():
     """Seed the service_pricing table with initial data"""
+    # Helper function to calculate provider base price (10% commission)
+    def calc_provider_price(customer_price):
+        return int(round(customer_price * 0.9))
+    
     pricing_data = [
-        # Couch Deep Cleaning
-        ('Couch Deep Cleaning', '1 Seater Couch', '1 Seater Couch', 200, 220, 200, 220, True),
-        ('Couch Deep Cleaning', '2 Seater Couch', '2 Seater Couch', 400, 440, 200, 220, True),
-        ('Couch Deep Cleaning', '3 Seater Couch', '3 Seater Couch', 500, 550, 200, 220, True),
-        ('Couch Deep Cleaning', '4 Seater Couch', '4 Seater Couch', 600, 660, 200, 220, True),
-        ('Couch Deep Cleaning', '5 Seater Couch', '5 Seater Couch', 700, 770, 200, 220, True),
-        ('Couch Deep Cleaning', '6 Seater Couch', '6 Seater Couch', 800, 880, 200, 220, True),
-        ('Couch Deep Cleaning', '3 Seater L Couch', '3 Seater L Couch', 600, 660, 200, 220, True),
-        ('Couch Deep Cleaning', '4 Seater L Couch', '4 Seater L Couch', 700, 770, 200, 220, True),
-        ('Couch Deep Cleaning', '5 Seater L Couch', '5 Seater L Couch', 800, 880, 200, 220, True),
-        ('Couch Deep Cleaning', '6 Seater L Couch', '6 Seater L Couch', 900, 990, 200, 220, True),
+        # Couch Deep Cleaning (+10% commission)
+        ('Couch Deep Cleaning', '1 Seater Couch', '1 Seater Couch', calc_provider_price(220), 220, calc_provider_price(220), 220, True),
+        ('Couch Deep Cleaning', '2 Seater Couch', '2 Seater Couch', calc_provider_price(440), 440, calc_provider_price(220), 220, True),
+        ('Couch Deep Cleaning', '3 Seater Couch', '3 Seater Couch', calc_provider_price(550), 550, calc_provider_price(220), 220, True),
+        ('Couch Deep Cleaning', '4 Seater Couch', '4 Seater Couch', calc_provider_price(660), 660, calc_provider_price(220), 220, True),
+        ('Couch Deep Cleaning', '5 Seater Couch', '5 Seater Couch', calc_provider_price(770), 770, calc_provider_price(220), 220, True),
+        ('Couch Deep Cleaning', '6 Seater Couch', '6 Seater Couch', calc_provider_price(880), 880, calc_provider_price(220), 220, True),
+        ('Couch Deep Cleaning', '3 Seater L Couch', '3 Seater L Couch', calc_provider_price(660), 660, calc_provider_price(220), 220, True),
+        ('Couch Deep Cleaning', '4 Seater L Couch', '4 Seater L Couch', calc_provider_price(770), 770, calc_provider_price(220), 220, True),
+        ('Couch Deep Cleaning', '5 Seater L Couch', '5 Seater L Couch', calc_provider_price(880), 880, calc_provider_price(220), 220, True),
+        ('Couch Deep Cleaning', '6 Seater L Couch', '6 Seater L Couch', calc_provider_price(990), 990, calc_provider_price(220), 220, True),
         # Carpet Deep Cleaning
-        ('Carpet Deep Cleaning', 'Extra-Small', 'Extra-Small', 250, 275, 0, 0, False),
-        ('Carpet Deep Cleaning', 'Small', 'Small', 300, 330, 0, 0, False),
-        ('Carpet Deep Cleaning', 'Medium', 'Medium', 350, 385, 0, 0, False),
-        ('Carpet Deep Cleaning', 'Large', 'Large', 400, 440, 0, 0, False),
-        ('Carpet Deep Cleaning', 'X-Large', 'X-Large', 450, 495, 0, 0, False),
+        ('Carpet Deep Cleaning', 'Extra-Small', 'Extra-Small', calc_provider_price(275), 275, 0, 0, False),
+        ('Carpet Deep Cleaning', 'Small', 'Small', calc_provider_price(330), 330, 0, 0, False),
+        ('Carpet Deep Cleaning', 'Medium', 'Medium', calc_provider_price(385), 385, 0, 0, False),
+        ('Carpet Deep Cleaning', 'Large', 'Large', calc_provider_price(440), 440, 0, 0, False),
+        ('Carpet Deep Cleaning', 'X-Large', 'X-Large', calc_provider_price(495), 495, 0, 0, False),
         # Fitted Carpet Deep Cleaning
-        ('Fitted Carpet Deep Cleaning', 'Standard Room', 'Standard Room', 450, 495, 0, 0, False),
-        ('Fitted Carpet Deep Cleaning', 'Master Bedroom', 'Master Bedroom', 600, 660, 0, 0, False),
+        ('Fitted Carpet Deep Cleaning', 'Standard Room', 'Standard Room', calc_provider_price(495), 495, 0, 0, False),
+        ('Fitted Carpet Deep Cleaning', 'Master Bedroom', 'Master Bedroom', calc_provider_price(660), 660, 0, 0, False),
         # Mattress Deep Cleaning
-        ('Mattress Deep Cleaning', 'Single', 'Single', 350, 385, 0, 0, False),
-        ('Mattress Deep Cleaning', 'Double', 'Double', 450, 495, 0, 0, False),
-        ('Mattress Deep Cleaning', 'Queen', 'Queen', 500, 550, 0, 0, False),
-        ('Mattress Deep Cleaning', 'King', 'King', 550, 605, 0, 0, False),
+        ('Mattress Deep Cleaning', 'Single', 'Single', calc_provider_price(385), 385, 0, 0, False),
+        ('Mattress Deep Cleaning', 'Double', 'Double', calc_provider_price(495), 495, 0, 0, False),
+        ('Mattress Deep Cleaning', 'Queen', 'Queen', calc_provider_price(550), 550, 0, 0, False),
+        ('Mattress Deep Cleaning', 'King', 'King', calc_provider_price(605), 605, 0, 0, False),
         # Headboard Deep Cleaning
-        ('Headboard Deep Cleaning', 'Single', 'Single Headboard', 200, 220, 100, 110, True),
-        ('Headboard Deep Cleaning', 'Double', 'Double Headboard', 250, 275, 100, 110, True),
-        ('Headboard Deep Cleaning', 'Queen', 'Queen Headboard', 300, 330, 100, 110, True),
-        ('Headboard Deep Cleaning', 'King', 'King Headboard', 350, 385, 100, 110, True),
+        ('Headboard Deep Cleaning', 'Single', 'Single Headboard', calc_provider_price(220), 220, calc_provider_price(110), 110, True),
+        ('Headboard Deep Cleaning', 'Double', 'Double Headboard', calc_provider_price(275), 275, calc_provider_price(110), 110, True),
+        ('Headboard Deep Cleaning', 'Queen', 'Queen Headboard', calc_provider_price(330), 330, calc_provider_price(110), 110, True),
+        ('Headboard Deep Cleaning', 'King', 'King Headboard', calc_provider_price(385), 385, calc_provider_price(110), 110, True),
         # Sleigh Bed Deep Cleaning
-        ('Sleigh Bed Deep Cleaning', 'Single', 'Single Sleigh Bed', 300, 330, 150, 165, True),
-        ('Sleigh Bed Deep Cleaning', 'Double', 'Double Sleigh Bed', 350, 385, 150, 165, True),
-        ('Sleigh Bed Deep Cleaning', 'Queen', 'Queen Sleigh Bed', 380, 418, 150, 165, True),
-        ('Sleigh Bed Deep Cleaning', 'King', 'King Sleigh Bed', 400, 440, 150, 165, True),
+        ('Sleigh Bed Deep Cleaning', 'Single', 'Single Sleigh Bed', calc_provider_price(330), 330, calc_provider_price(165), 165, True),
+        ('Sleigh Bed Deep Cleaning', 'Double', 'Double Sleigh Bed', calc_provider_price(385), 385, calc_provider_price(165), 165, True),
+        ('Sleigh Bed Deep Cleaning', 'Queen', 'Queen Sleigh Bed', calc_provider_price(418), 418, calc_provider_price(165), 165, True),
+        ('Sleigh Bed Deep Cleaning', 'King', 'King Sleigh Bed', calc_provider_price(440), 440, calc_provider_price(165), 165, True),
         # Standard Apartment Cleaning
-        ('Standard Apartment Cleaning', 'Bachelor Apartment', 'Bachelor Apartment', 300, 330, 0, 0, False),
-        ('Standard Apartment Cleaning', '1 Bedroom Apartment', '1BR Apartment', 350, 385, 0, 0, False),
-        ('Standard Apartment Cleaning', '2 Bedroom Apartment', '2BR Apartment', 400, 440, 0, 0, False),
-        ('Standard Apartment Cleaning', '3 Bedroom Apartment', '3BR Apartment', 450, 495, 0, 0, False),
+        ('Standard Apartment Cleaning', 'Bachelor Apartment', 'Bachelor Apartment', calc_provider_price(330), 330, 0, 0, False),
+        ('Standard Apartment Cleaning', '1 Bedroom Apartment', '1BR Apartment', calc_provider_price(385), 385, 0, 0, False),
+        ('Standard Apartment Cleaning', '2 Bedroom Apartment', '2BR Apartment', calc_provider_price(440), 440, 0, 0, False),
+        ('Standard Apartment Cleaning', '3 Bedroom Apartment', '3BR Apartment', calc_provider_price(495), 495, 0, 0, False),
         # Apartment Spring Cleaning
-        ('Apartment Spring Cleaning', 'Bachelor Apartment', 'Bachelor Apartment Spring', 600, 660, 0, 0, False),
-        ('Apartment Spring Cleaning', '1 Bedroom Apartment', '1BR Spring', 700, 770, 0, 0, False),
-        ('Apartment Spring Cleaning', '2 Bedroom Apartment', '2BR Spring', 800, 880, 0, 0, False),
-        ('Apartment Spring Cleaning', '3 Bedroom Apartment', '3BR Spring', 1000, 1100, 0, 0, False),
+        ('Apartment Spring Cleaning', 'Bachelor Apartment', 'Bachelor Apartment Spring', calc_provider_price(660), 660, 0, 0, False),
+        ('Apartment Spring Cleaning', '1 Bedroom Apartment', '1BR Spring', calc_provider_price(770), 770, 0, 0, False),
+        ('Apartment Spring Cleaning', '2 Bedroom Apartment', '2BR Spring', calc_provider_price(880), 880, 0, 0, False),
+        ('Apartment Spring Cleaning', '3 Bedroom Apartment', '3BR Spring', calc_provider_price(1100), 1100, 0, 0, False),
         # Apartment Deep Cleaning
-        ('Apartment Deep Cleaning', 'Bachelor Apartment', 'Empty/With Items - Bachelor', 1800, 1980, 0, 0, False),
-        ('Apartment Deep Cleaning', '1 Bedroom Apartment', '1BR Deep', 2000, 2200, 0, 0, False),
-        ('Apartment Deep Cleaning', '2 Bedroom Apartment', '2BR Deep', 2500, 2750, 0, 0, False),
-        ('Apartment Deep Cleaning', '3 Bedroom Apartment', '3BR Deep', 3000, 3300, 0, 0, False),
+        ('Apartment Deep Cleaning', 'Bachelor Apartment', 'Empty/With Items - Bachelor', calc_provider_price(1980), 1980, 0, 0, False),
+        ('Apartment Deep Cleaning', '1 Bedroom Apartment', '1BR Deep', calc_provider_price(2200), 2200, 0, 0, False),
+        ('Apartment Deep Cleaning', '2 Bedroom Apartment', '2BR Deep', calc_provider_price(2750), 2750, 0, 0, False),
+        ('Apartment Deep Cleaning', '3 Bedroom Apartment', '3BR Deep', calc_provider_price(3300), 3300, 0, 0, False),
         # Empty Apartment Deep Cleaning
-        ('Empty Apartment Deep Cleaning', 'Bachelor Apartment', 'Empty Bachelor', 1200, 1320, 0, 0, False),
-        ('Empty Apartment Deep Cleaning', '1 Bedroom Apartment', 'Empty 1BR', 1300, 1430, 0, 0, False),
-        ('Empty Apartment Deep Cleaning', '2 Bedroom Apartment', 'Empty 2BR', 1500, 1650, 0, 0, False),
-        ('Empty Apartment Deep Cleaning', '3 Bedroom Apartment', 'Empty 3BR', 1800, 1980, 0, 0, False),
+        ('Empty Apartment Deep Cleaning', 'Bachelor Apartment', 'Empty Bachelor', calc_provider_price(1320), 1320, 0, 0, False),
+        ('Empty Apartment Deep Cleaning', '1 Bedroom Apartment', 'Empty 1BR', calc_provider_price(1430), 1430, 0, 0, False),
+        ('Empty Apartment Deep Cleaning', '2 Bedroom Apartment', 'Empty 2BR', calc_provider_price(1650), 1650, 0, 0, False),
+        ('Empty Apartment Deep Cleaning', '3 Bedroom Apartment', 'Empty 3BR', calc_provider_price(1980), 1980, 0, 0, False),
         # House Spring Cleaning
-        ('House Spring Cleaning', '2 Bedroom House', '2BR Spring', 1800, 1980, 0, 0, False),
-        ('House Spring Cleaning', '3 Bedroom House', '3BR Spring', 2100, 2310, 0, 0, False),
-        ('House Spring Cleaning', '4 Bedroom House', '4BR Spring', 2500, 2750, 0, 0, False),
-        ('House Spring Cleaning', '5 Bedroom House', '5BR Spring', 3000, 3300, 0, 0, False),
+        ('House Spring Cleaning', '2 Bedroom House', '2BR Spring', calc_provider_price(1980), 1980, 0, 0, False),
+        ('House Spring Cleaning', '3 Bedroom House', '3BR Spring', calc_provider_price(2310), 2310, 0, 0, False),
+        ('House Spring Cleaning', '4 Bedroom House', '4BR Spring', calc_provider_price(2750), 2750, 0, 0, False),
+        ('House Spring Cleaning', '5 Bedroom House', '5BR Spring', calc_provider_price(3300), 3300, 0, 0, False),
         # House Deep Cleaning
-        ('House Deep Cleaning', '2 Bedroom House', '2BR Deep', 3600, 3960, 0, 0, False),
-        ('House Deep Cleaning', '3 Bedroom House', '3BR Deep', 4500, 4950, 0, 0, False),
-        ('House Deep Cleaning', '4 Bedroom House', '4BR Deep', 5400, 5940, 0, 0, False),
-        ('House Deep Cleaning', '5 Bedroom House', '5BR Deep', 6500, 7150, 0, 0, False),
+        ('House Deep Cleaning', '2 Bedroom House', '2BR Deep', calc_provider_price(3960), 3960, 0, 0, False),
+        ('House Deep Cleaning', '3 Bedroom House', '3BR Deep', calc_provider_price(4950), 4950, 0, 0, False),
+        ('House Deep Cleaning', '4 Bedroom House', '4BR Deep', calc_provider_price(5940), 5940, 0, 0, False),
+        ('House Deep Cleaning', '5 Bedroom House', '5BR Deep', calc_provider_price(7150), 7150, 0, 0, False),
         # Empty House Deep Cleaning
-        ('Empty House Deep Cleaning', '2 Bedroom House', 'Empty 2BR', 2500, 2750, 0, 0, False),
-        ('Empty House Deep Cleaning', '3 Bedroom House', 'Empty 3BR', 3500, 3850, 0, 0, False),
-        ('Empty House Deep Cleaning', '4 Bedroom House', 'Empty 4BR', 4500, 4950, 0, 0, False),
-        ('Empty House Deep Cleaning', '5 Bedroom House', 'Empty 5BR', 5500, 6050, 0, 0, False),
+        ('Empty House Deep Cleaning', '2 Bedroom House', 'Empty 2BR', calc_provider_price(2750), 2750, 0, 0, False),
+        ('Empty House Deep Cleaning', '3 Bedroom House', 'Empty 3BR', calc_provider_price(3850), 3850, 0, 0, False),
+        ('Empty House Deep Cleaning', '4 Bedroom House', 'Empty 4BR', calc_provider_price(4950), 4950, 0, 0, False),
+        ('Empty House Deep Cleaning', '5 Bedroom House', 'Empty 5BR', calc_provider_price(6050), 6050, 0, 0, False),
     ]
     
     count = 0
@@ -1361,7 +1357,18 @@ def seed_pricing():
             service_category=data[0],
             service_type=data[1]
         ).first()
-        if not existing:
+        if existing:
+            # Update existing record
+            existing.item_description = data[2]
+            existing.provider_base_price = data[3]
+            existing.customer_display_price = data[4]
+            existing.color_surcharge_provider = data[5]
+            existing.color_surcharge_customer = data[6]
+            existing.is_white_applicable = data[7]
+            existing.commission_percentage = 10
+            count += 1
+        else:
+            # Create new record
             pricing = ServicePricing(
                 service_category=data[0],
                 service_type=data[1],
@@ -1377,8 +1384,7 @@ def seed_pricing():
             count += 1
     
     db.session.commit()
-    return jsonify({'message': f'Seeded {count} pricing records'})
->>>>>>> 1e533b4361dde9579df50821049cbdd042dcef04
+    return jsonify({'message': f'Updated/Created {count} pricing records'})
 
 if __name__ == '__main__':
     import sys
@@ -1387,64 +1393,81 @@ if __name__ == '__main__':
         # Seed pricing data if table is empty
         if ServicePricing.query.count() == 0:
             # Call seed function directly
+            # Helper function to calculate provider base price (10% commission)
+            def calc_provider_price(customer_price):
+                return int(round(customer_price * 0.9))
+            
             pricing_data = [
-                ('Couch Deep Cleaning', '1 Seater Couch', '1 Seater Couch', 200, 220, 200, 220, True),
-                ('Couch Deep Cleaning', '2 Seater Couch', '2 Seater Couch', 400, 440, 200, 220, True),
-                ('Couch Deep Cleaning', '3 Seater Couch', '3 Seater Couch', 500, 550, 200, 220, True),
-                ('Couch Deep Cleaning', '4 Seater Couch', '4 Seater Couch', 600, 660, 200, 220, True),
-                ('Couch Deep Cleaning', '5 Seater Couch', '5 Seater Couch', 700, 770, 200, 220, True),
-                ('Couch Deep Cleaning', '6 Seater Couch', '6 Seater Couch', 800, 880, 200, 220, True),
-                ('Couch Deep Cleaning', '3 Seater L Couch', '3 Seater L Couch', 600, 660, 200, 220, True),
-                ('Couch Deep Cleaning', '4 Seater L Couch', '4 Seater L Couch', 700, 770, 200, 220, True),
-                ('Couch Deep Cleaning', '5 Seater L Couch', '5 Seater L Couch', 800, 880, 200, 220, True),
-                ('Couch Deep Cleaning', '6 Seater L Couch', '6 Seater L Couch', 900, 990, 200, 220, True),
-                ('Carpet Deep Cleaning', 'Extra-Small', 'Extra-Small', 250, 275, 0, 0, False),
-                ('Carpet Deep Cleaning', 'Small', 'Small', 300, 330, 0, 0, False),
-                ('Carpet Deep Cleaning', 'Medium', 'Medium', 350, 385, 0, 0, False),
-                ('Carpet Deep Cleaning', 'Large', 'Large', 400, 440, 0, 0, False),
-                ('Carpet Deep Cleaning', 'X-Large', 'X-Large', 450, 495, 0, 0, False),
-                ('Fitted Carpet Deep Cleaning', 'Standard Room', 'Standard Room', 450, 495, 0, 0, False),
-                ('Fitted Carpet Deep Cleaning', 'Master Bedroom', 'Master Bedroom', 600, 660, 0, 0, False),
-                ('Mattress Deep Cleaning', 'Single', 'Single', 350, 385, 0, 0, False),
-                ('Mattress Deep Cleaning', 'Double', 'Double', 450, 495, 0, 0, False),
-                ('Mattress Deep Cleaning', 'Queen', 'Queen', 500, 550, 0, 0, False),
-                ('Mattress Deep Cleaning', 'King', 'King', 550, 605, 0, 0, False),
-                ('Headboard Deep Cleaning', 'Single', 'Single Headboard', 200, 220, 100, 110, True),
-                ('Headboard Deep Cleaning', 'Double', 'Double Headboard', 250, 275, 100, 110, True),
-                ('Headboard Deep Cleaning', 'Queen', 'Queen Headboard', 300, 330, 100, 110, True),
-                ('Headboard Deep Cleaning', 'King', 'King Headboard', 350, 385, 100, 110, True),
-                ('Sleigh Bed Deep Cleaning', 'Single', 'Single Sleigh Bed', 300, 330, 150, 165, True),
-                ('Sleigh Bed Deep Cleaning', 'Double', 'Double Sleigh Bed', 350, 385, 150, 165, True),
-                ('Sleigh Bed Deep Cleaning', 'Queen', 'Queen Sleigh Bed', 380, 418, 150, 165, True),
-                ('Sleigh Bed Deep Cleaning', 'King', 'King Sleigh Bed', 400, 440, 150, 165, True),
-                ('Standard Apartment Cleaning', 'Bachelor Apartment', 'Bachelor Apartment', 300, 330, 0, 0, False),
-                ('Standard Apartment Cleaning', '1 Bedroom Apartment', '1BR Apartment', 350, 385, 0, 0, False),
-                ('Standard Apartment Cleaning', '2 Bedroom Apartment', '2BR Apartment', 400, 440, 0, 0, False),
-                ('Standard Apartment Cleaning', '3 Bedroom Apartment', '3BR Apartment', 450, 495, 0, 0, False),
-                ('Apartment Spring Cleaning', 'Bachelor Apartment', 'Bachelor Apartment Spring', 600, 660, 0, 0, False),
-                ('Apartment Spring Cleaning', '1 Bedroom Apartment', '1BR Spring', 700, 770, 0, 0, False),
-                ('Apartment Spring Cleaning', '2 Bedroom Apartment', '2BR Spring', 800, 880, 0, 0, False),
-                ('Apartment Spring Cleaning', '3 Bedroom Apartment', '3BR Spring', 1000, 1100, 0, 0, False),
-                ('Apartment Deep Cleaning', 'Bachelor Apartment', 'Empty/With Items - Bachelor', 1800, 1980, 0, 0, False),
-                ('Apartment Deep Cleaning', '1 Bedroom Apartment', '1BR Deep', 2000, 2200, 0, 0, False),
-                ('Apartment Deep Cleaning', '2 Bedroom Apartment', '2BR Deep', 2500, 2750, 0, 0, False),
-                ('Apartment Deep Cleaning', '3 Bedroom Apartment', '3BR Deep', 3000, 3300, 0, 0, False),
-                ('Empty Apartment Deep Cleaning', 'Bachelor Apartment', 'Empty Bachelor', 1200, 1320, 0, 0, False),
-                ('Empty Apartment Deep Cleaning', '1 Bedroom Apartment', 'Empty 1BR', 1300, 1430, 0, 0, False),
-                ('Empty Apartment Deep Cleaning', '2 Bedroom Apartment', 'Empty 2BR', 1500, 1650, 0, 0, False),
-                ('Empty Apartment Deep Cleaning', '3 Bedroom Apartment', 'Empty 3BR', 1800, 1980, 0, 0, False),
-                ('House Spring Cleaning', '2 Bedroom House', '2BR Spring', 1800, 1980, 0, 0, False),
-                ('House Spring Cleaning', '3 Bedroom House', '3BR Spring', 2100, 2310, 0, 0, False),
-                ('House Spring Cleaning', '4 Bedroom House', '4BR Spring', 2500, 2750, 0, 0, False),
-                ('House Spring Cleaning', '5 Bedroom House', '5BR Spring', 3000, 3300, 0, 0, False),
-                ('House Deep Cleaning', '2 Bedroom House', '2BR Deep', 3600, 3960, 0, 0, False),
-                ('House Deep Cleaning', '3 Bedroom House', '3BR Deep', 4500, 4950, 0, 0, False),
-                ('House Deep Cleaning', '4 Bedroom House', '4BR Deep', 5400, 5940, 0, 0, False),
-                ('House Deep Cleaning', '5 Bedroom House', '5BR Deep', 6500, 7150, 0, 0, False),
-                ('Empty House Deep Cleaning', '2 Bedroom House', 'Empty 2BR', 2500, 2750, 0, 0, False),
-                ('Empty House Deep Cleaning', '3 Bedroom House', 'Empty 3BR', 3500, 3850, 0, 0, False),
-                ('Empty House Deep Cleaning', '4 Bedroom House', 'Empty 4BR', 4500, 4950, 0, 0, False),
-                ('Empty House Deep Cleaning', '5 Bedroom House', 'Empty 5BR', 5500, 6050, 0, 0, False),
+                # Couch Deep Cleaning (+10% commission)
+                ('Couch Deep Cleaning', '1 Seater Couch', '1 Seater Couch', calc_provider_price(220), 220, calc_provider_price(220), 220, True),
+                ('Couch Deep Cleaning', '2 Seater Couch', '2 Seater Couch', calc_provider_price(440), 440, calc_provider_price(220), 220, True),
+                ('Couch Deep Cleaning', '3 Seater Couch', '3 Seater Couch', calc_provider_price(550), 550, calc_provider_price(220), 220, True),
+                ('Couch Deep Cleaning', '4 Seater Couch', '4 Seater Couch', calc_provider_price(660), 660, calc_provider_price(220), 220, True),
+                ('Couch Deep Cleaning', '5 Seater Couch', '5 Seater Couch', calc_provider_price(770), 770, calc_provider_price(220), 220, True),
+                ('Couch Deep Cleaning', '6 Seater Couch', '6 Seater Couch', calc_provider_price(880), 880, calc_provider_price(220), 220, True),
+                ('Couch Deep Cleaning', '3 Seater L Couch', '3 Seater L Couch', calc_provider_price(660), 660, calc_provider_price(220), 220, True),
+                ('Couch Deep Cleaning', '4 Seater L Couch', '4 Seater L Couch', calc_provider_price(770), 770, calc_provider_price(220), 220, True),
+                ('Couch Deep Cleaning', '5 Seater L Couch', '5 Seater L Couch', calc_provider_price(880), 880, calc_provider_price(220), 220, True),
+                ('Couch Deep Cleaning', '6 Seater L Couch', '6 Seater L Couch', calc_provider_price(990), 990, calc_provider_price(220), 220, True),
+                # Carpet Deep Cleaning
+                ('Carpet Deep Cleaning', 'Extra-Small', 'Extra-Small', calc_provider_price(275), 275, 0, 0, False),
+                ('Carpet Deep Cleaning', 'Small', 'Small', calc_provider_price(330), 330, 0, 0, False),
+                ('Carpet Deep Cleaning', 'Medium', 'Medium', calc_provider_price(385), 385, 0, 0, False),
+                ('Carpet Deep Cleaning', 'Large', 'Large', calc_provider_price(440), 440, 0, 0, False),
+                ('Carpet Deep Cleaning', 'X-Large', 'X-Large', calc_provider_price(495), 495, 0, 0, False),
+                # Fitted Carpet Deep Cleaning
+                ('Fitted Carpet Deep Cleaning', 'Standard Room', 'Standard Room', calc_provider_price(495), 495, 0, 0, False),
+                ('Fitted Carpet Deep Cleaning', 'Master Bedroom', 'Master Bedroom', calc_provider_price(660), 660, 0, 0, False),
+                # Mattress Deep Cleaning
+                ('Mattress Deep Cleaning', 'Single', 'Single', calc_provider_price(385), 385, 0, 0, False),
+                ('Mattress Deep Cleaning', 'Double', 'Double', calc_provider_price(495), 495, 0, 0, False),
+                ('Mattress Deep Cleaning', 'Queen', 'Queen', calc_provider_price(550), 550, 0, 0, False),
+                ('Mattress Deep Cleaning', 'King', 'King', calc_provider_price(605), 605, 0, 0, False),
+                # Headboard Deep Cleaning
+                ('Headboard Deep Cleaning', 'Single', 'Single Headboard', calc_provider_price(220), 220, calc_provider_price(110), 110, True),
+                ('Headboard Deep Cleaning', 'Double', 'Double Headboard', calc_provider_price(275), 275, calc_provider_price(110), 110, True),
+                ('Headboard Deep Cleaning', 'Queen', 'Queen Headboard', calc_provider_price(330), 330, calc_provider_price(110), 110, True),
+                ('Headboard Deep Cleaning', 'King', 'King Headboard', calc_provider_price(385), 385, calc_provider_price(110), 110, True),
+                # Sleigh Bed Deep Cleaning
+                ('Sleigh Bed Deep Cleaning', 'Single', 'Single Sleigh Bed', calc_provider_price(330), 330, calc_provider_price(165), 165, True),
+                ('Sleigh Bed Deep Cleaning', 'Double', 'Double Sleigh Bed', calc_provider_price(385), 385, calc_provider_price(165), 165, True),
+                ('Sleigh Bed Deep Cleaning', 'Queen', 'Queen Sleigh Bed', calc_provider_price(418), 418, calc_provider_price(165), 165, True),
+                ('Sleigh Bed Deep Cleaning', 'King', 'King Sleigh Bed', calc_provider_price(440), 440, calc_provider_price(165), 165, True),
+                # Standard Apartment Cleaning
+                ('Standard Apartment Cleaning', 'Bachelor Apartment', 'Bachelor Apartment', calc_provider_price(330), 330, 0, 0, False),
+                ('Standard Apartment Cleaning', '1 Bedroom Apartment', '1BR Apartment', calc_provider_price(385), 385, 0, 0, False),
+                ('Standard Apartment Cleaning', '2 Bedroom Apartment', '2BR Apartment', calc_provider_price(440), 440, 0, 0, False),
+                ('Standard Apartment Cleaning', '3 Bedroom Apartment', '3BR Apartment', calc_provider_price(495), 495, 0, 0, False),
+                # Apartment Spring Cleaning
+                ('Apartment Spring Cleaning', 'Bachelor Apartment', 'Bachelor Apartment Spring', calc_provider_price(660), 660, 0, 0, False),
+                ('Apartment Spring Cleaning', '1 Bedroom Apartment', '1BR Spring', calc_provider_price(770), 770, 0, 0, False),
+                ('Apartment Spring Cleaning', '2 Bedroom Apartment', '2BR Spring', calc_provider_price(880), 880, 0, 0, False),
+                ('Apartment Spring Cleaning', '3 Bedroom Apartment', '3BR Spring', calc_provider_price(1100), 1100, 0, 0, False),
+                # Apartment Deep Cleaning
+                ('Apartment Deep Cleaning', 'Bachelor Apartment', 'Empty/With Items - Bachelor', calc_provider_price(1980), 1980, 0, 0, False),
+                ('Apartment Deep Cleaning', '1 Bedroom Apartment', '1BR Deep', calc_provider_price(2200), 2200, 0, 0, False),
+                ('Apartment Deep Cleaning', '2 Bedroom Apartment', '2BR Deep', calc_provider_price(2750), 2750, 0, 0, False),
+                ('Apartment Deep Cleaning', '3 Bedroom Apartment', '3BR Deep', calc_provider_price(3300), 3300, 0, 0, False),
+                # Empty Apartment Deep Cleaning
+                ('Empty Apartment Deep Cleaning', 'Bachelor Apartment', 'Empty Bachelor', calc_provider_price(1320), 1320, 0, 0, False),
+                ('Empty Apartment Deep Cleaning', '1 Bedroom Apartment', 'Empty 1BR', calc_provider_price(1430), 1430, 0, 0, False),
+                ('Empty Apartment Deep Cleaning', '2 Bedroom Apartment', 'Empty 2BR', calc_provider_price(1650), 1650, 0, 0, False),
+                ('Empty Apartment Deep Cleaning', '3 Bedroom Apartment', 'Empty 3BR', calc_provider_price(1980), 1980, 0, 0, False),
+                # House Spring Cleaning
+                ('House Spring Cleaning', '2 Bedroom House', '2BR Spring', calc_provider_price(1980), 1980, 0, 0, False),
+                ('House Spring Cleaning', '3 Bedroom House', '3BR Spring', calc_provider_price(2310), 2310, 0, 0, False),
+                ('House Spring Cleaning', '4 Bedroom House', '4BR Spring', calc_provider_price(2750), 2750, 0, 0, False),
+                ('House Spring Cleaning', '5 Bedroom House', '5BR Spring', calc_provider_price(3300), 3300, 0, 0, False),
+                # House Deep Cleaning
+                ('House Deep Cleaning', '2 Bedroom House', '2BR Deep', calc_provider_price(3960), 3960, 0, 0, False),
+                ('House Deep Cleaning', '3 Bedroom House', '3BR Deep', calc_provider_price(4950), 4950, 0, 0, False),
+                ('House Deep Cleaning', '4 Bedroom House', '4BR Deep', calc_provider_price(5940), 5940, 0, 0, False),
+                ('House Deep Cleaning', '5 Bedroom House', '5BR Deep', calc_provider_price(7150), 7150, 0, 0, False),
+                # Empty House Deep Cleaning
+                ('Empty House Deep Cleaning', '2 Bedroom House', 'Empty 2BR', calc_provider_price(2750), 2750, 0, 0, False),
+                ('Empty House Deep Cleaning', '3 Bedroom House', 'Empty 3BR', calc_provider_price(3850), 3850, 0, 0, False),
+                ('Empty House Deep Cleaning', '4 Bedroom House', 'Empty 4BR', calc_provider_price(4950), 4950, 0, 0, False),
+                ('Empty House Deep Cleaning', '5 Bedroom House', 'Empty 5BR', calc_provider_price(6050), 6050, 0, 0, False),
             ]
             for data in pricing_data:
                 pricing = ServicePricing(
